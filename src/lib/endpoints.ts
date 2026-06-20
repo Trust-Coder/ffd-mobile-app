@@ -152,7 +152,7 @@ export async function setStationAlert(stationId: number, enabled: boolean): Prom
 export async function getPreferences(): Promise<CachedResult<NotificationPreferences>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.preferences()))
   const res = await cachedGet<NotificationPreferences>('/me/preferences', 'me.preferences', { auth: true })
-  // Tolerate either casing of min_severity until backend/0004 pins it (see §E Q7).
+  // 0004 pinned min_severity UPPERCASE; statusFromLoose is a harmless guard against drift.
   return { ...res, data: { ...res.data, min_severity: statusFromLoose(res.data.min_severity) } }
 }
 

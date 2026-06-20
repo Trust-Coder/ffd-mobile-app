@@ -7,9 +7,11 @@ import { PUSH_RECEIVED_EVENT } from '@/lib/events'
 interface UnreadValue {
   count: number
   refresh: () => void
+  /** Local decrement after a single mark-read — avoids refetching the inbox per tap. */
+  decrement: () => void
 }
 
-const UnreadContext = createContext<UnreadValue>({ count: 0, refresh: () => {} })
+const UnreadContext = createContext<UnreadValue>({ count: 0, refresh: () => {}, decrement: () => {} })
 
 /** Tracks the unread inbox count for the Alerts nav badge. Refreshes on auth
  *  change and on every foreground push; AlertsScreen calls refresh() after a
@@ -37,7 +39,9 @@ export function UnreadProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener(PUSH_RECEIVED_EVENT, refresh)
   }, [refresh])
 
-  const value = useMemo(() => ({ count, refresh }), [count, refresh])
+  const decrement = useCallback(() => setCount((c) => Math.max(0, c - 1)), [])
+
+  const value = useMemo(() => ({ count, refresh, decrement }), [count, refresh, decrement])
   return <UnreadContext.Provider value={value}>{children}</UnreadContext.Provider>
 }
 

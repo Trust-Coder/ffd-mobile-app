@@ -59,6 +59,8 @@ export default function PushManager() {
         }),
       )
       // App Link / custom-scheme opens (WhatsApp https://…/app/… and ffd://…).
+      // Mutually exclusive with pushNotificationActionPerformed by event source:
+      // FCM taps fire the push listener; OS VIEW intents fire appUrlOpen.
       await add(
         CapApp.addListener('appUrlOpen', (event) => {
           const route = routeForDeeplink(event.url)

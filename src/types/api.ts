@@ -123,7 +123,7 @@ export type Advisory = Publication
 
 // ── Notifications / alerts ─────────────────────────────────────────────────
 export type AlertType = 'advisory' | 'bulletin' | 'station_alert' | 'info'
-export type AlertScope = 'broadcast' | 'user'
+export type AlertScope = 'broadcast' | 'user' | 'station'
 
 export interface AlertData {
   deeplink?: string // e.g. "ffd://advisory/1"

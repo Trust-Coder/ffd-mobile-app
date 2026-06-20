@@ -44,7 +44,7 @@ export default function BottomNav() {
             </svg>
             {tab.badge && count > 0 ? (
               <span className="nav-badge" aria-label={`${count} unread`}>
-                {count > 9 ? '9+' : count}
+                <span aria-hidden="true">{count > 9 ? '9+' : count}</span>
               </span>
             ) : null}
           </span>

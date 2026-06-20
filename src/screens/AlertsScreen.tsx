@@ -51,7 +51,7 @@ function AlertRow({ alert, unread, onOpen }: RowProps) {
 
 export default function AlertsScreen() {
   const { isAuthenticated } = useAuth()
-  const { refresh: refreshUnread } = useUnread()
+  const { decrement: decrementUnread } = useUnread()
   const { data, error, stale, cachedAt, loading, reload } = useResource(
     () => (isAuthenticated ? getInbox() : getAlerts()),
     [isAuthenticated],
@@ -68,11 +68,10 @@ export default function AlertsScreen() {
     (alert: AlertNotification) => {
       if (!isAuthenticated || alert.read_at != null || readIds.has(alert.id)) return
       setReadIds((prev) => new Set(prev).add(alert.id))
-      void markAlertRead(alert.id)
-        .then(() => refreshUnread())
-        .catch(() => {})
+      decrementUnread() // optimistic; refreshed authoritatively on next push/auth change
+      void markAlertRead(alert.id).catch(() => {})
     },
-    [isAuthenticated, readIds, refreshUnread],
+    [isAuthenticated, readIds, decrementUnread],
   )
 
   const isUnread = (a: AlertNotification) => isAuthenticated && a.read_at == null && !readIds.has(a.id)
