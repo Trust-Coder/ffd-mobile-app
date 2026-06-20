@@ -133,8 +133,8 @@ bulletin** with no expiry; alert `severity` is **lowercase** with an `ffd://type
 | 4 | **Notifications inbox** | ✅ **SHIPPED** (§D, 0004) — `app_notifications` + `app_notification_reads`; `/me/alerts` (paginated, `meta.unread_count`) + mark-read. Empty until §F writes rows. |
 | 5 | **Advisory "active" lifecycle** | ✅ **SHIPPED** (§A) — advisory = latest published `type='advisory'` bulletin; **no expiry** (`Warning` model is a dormant stub). |
 | 6 | **Watchlist + prefs** | ✅ **SHIPPED** (§E, 0004) — `app_user_stations` (full-station snapshot + `alert_enabled`), `app_user_notification_prefs` (toggles, **UPPERCASE** `min_severity`, HH:MM quiet hours). |
-| 7 | **Unified `BroadcastService` fan-out** | ⏳ **§F — requested (0005)**. One publish → `app_notifications` row + FCM (active devices, channel `flood_alerts`) + WhatsApp. Auto-triggered; honours prefs/watchlist. |
-| 8 | **WhatsApp Business/Cloud API** | ⏳ **§G — specs ready (0003)**; templates `UTILITY`; blocked on a WhatsApp Business Account (ops). WhatsApp button uses an https App Link (`/app/<type>/<id>`), not `ffd://`. |
+| 7 | **Unified `BroadcastService` fan-out** | ✅ **SHIPPED** (§F, 0005) — queued `SendAppBroadcastJob`: writes `app_notifications` row + FCM (active devices, `channel_id=flood_alerts`, data `{deeplink,type,id}`) + WhatsApp; auto-triggered on bulletin publish / advisory issue / threshold cross; honours prefs + watchlist. Needs a queue worker. |
+| 8 | **WhatsApp + App Links** | WhatsApp channel **wired but inert** — needs a WhatsApp Business Account + a **phone-opt-in store** (new gap). App Links: `assetlinks.json` + `/app/<type>/<id>` **hosted**; enabling the Android App Link filter awaits the release SHA-256 (Phase 5 / RELEASE.md). |
 | 9 | **(Enhancement) FCM topics** | Dropped for the client: `@capacitor/push-notifications` has no topic API → backend targets by **token** (active-device multicast). |
 
 ---

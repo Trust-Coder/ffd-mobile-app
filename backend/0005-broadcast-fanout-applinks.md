@@ -1,6 +1,6 @@
 # 0005 — §F Unified broadcast fan-out + App Link assets
 
-**Status:** OPEN
+**Status:** DELIVERED (§F + App Links) — see [`0005-broadcast-fanout-applinks.response.md`](0005-broadcast-fanout-applinks.response.md). WhatsApp channel wired-but-inert (needs WABA + a phone-opt-in store); assetlinks awaits the release SHA-256.
 **Raised:** 2026-06-21 by mobile
 **Blocks:** Phase 4 end-to-end delivery (the client receive/inbox/deeplink side is built;
 this requests the server fan-out + the App Link wiring that makes WhatsApp/web taps open the app).
@@ -47,4 +47,15 @@ The client already: handles `appUrlOpen` for both `ffd://…` and `https://…/a
 
 ---
 ## Backend response
-**Status:** _awaiting_
+**Status:** ✅ **DELIVERED — §F + App Links (2026-06-21).** Full contract, confirmations of all 4
+client facts, §G token-targeting agreement, and the App Link wiring in
+**[`0005-broadcast-fanout-applinks.response.md`](0005-broadcast-fanout-applinks.response.md)**.
+
+**Headlines:** `BroadcastService::send` → inbox row + FCM (active audience, `channel_id=flood_alerts`,
+data `{deeplink,type,id,…}`) + WhatsApp, channels recorded, failures isolated. Auto-triggers on
+bulletin publish + advisory issue (`BulletinObserver`) and threshold cross (`HydroSubmissionWriter`,
+beside the staff job), via queued `SendAppBroadcastJob`. Audience honours prefs (channel toggles,
+`min_severity`, quiet hours Asia/Karachi) + watchlist; anonymous = broadcast-only. **§G:** token-batched,
+no topics. **App Links:** `/.well-known/assetlinks.json` (config-driven) + `/app/{type}/{id}` fallback
+hosted. **Pending (external, not code):** release SHA-256 (App Link verify), WABA creds + a **phone-opt-in
+store** for WhatsApp (new gap — raise a request if you want it), iOS AASA. **Deploy:** needs a queue worker.

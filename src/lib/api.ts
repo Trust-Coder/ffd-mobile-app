@@ -16,13 +16,16 @@ export class ApiException extends Error {
   readonly code: string
   readonly fields?: Record<string, string[]>
   readonly httpStatus?: number
+  /** Seconds to wait before retrying, from the Retry-After header on a 429. */
+  readonly retryAfterSeconds?: number
 
-  constructor(error: ApiError, httpStatus?: number) {
+  constructor(error: ApiError, httpStatus?: number, retryAfterSeconds?: number) {
     super(error.message)
     this.name = 'ApiException'
     this.code = error.code
     this.fields = error.fields
     this.httpStatus = httpStatus
+    this.retryAfterSeconds = retryAfterSeconds
   }
 }
 
@@ -53,10 +56,16 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Pr
     throw new ApiException({ code: 'NETWORK_ERROR', message: 'Network unavailable.' })
   }
 
+  // Rate limiting (429): the surface throttles at 120/min per IP.
+  const retryAfter = res.status === 429 ? Number(res.headers.get('Retry-After')) || undefined : undefined
+
   let json: unknown
   try {
     json = await res.json()
   } catch {
+    if (res.status === 429) {
+      throw new ApiException({ code: 'RATE_LIMITED', message: 'Too many requests — please slow down.' }, 429, retryAfter)
+    }
     throw new ApiException({ code: 'SERVER_ERROR', message: 'Malformed server response.' }, res.status)
   }
 
@@ -64,12 +73,12 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Pr
   if (json && typeof json === 'object' && 'ok' in json) {
     const env = json as ApiEnvelope<T>
     if (env.ok) return env.data
-    throw new ApiException(env.error, res.status)
+    throw new ApiException(env.error, res.status, retryAfter)
   }
 
   // Flat responses (auth tokens).
   if (res.ok) return json as T
-  throw new ApiException({ code: 'SERVER_ERROR', message: `Request failed (${res.status}).` }, res.status)
+  throw new ApiException({ code: 'SERVER_ERROR', message: `Request failed (${res.status}).` }, res.status, retryAfter)
 }
 
 export interface CachedResult<T> {

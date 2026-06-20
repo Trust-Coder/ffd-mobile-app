@@ -10,10 +10,13 @@ data, FFD bulletins, the active flood advisory, and an alerts inbox with **zero 
 registered users curate a personal station watchlist and per-station alert prefs. Every
 published message fans out to three channels at once — **FCM push + in-app inbox + WhatsApp**.
 
-**Status: Phase 0 done.** The Vite + React + TypeScript + Capacitor (Android) shell is
-scaffolded and builds: 5-tab navigation, design-system tokens, and the API/cache/auth/severity
-foundation are in place. Screens are on-brand placeholders — live data lands in Phase 1 once
-the public API (`backend/0001`) ships.
+**Status: Phases 0–5 client-complete.** Full app built against the now-shipped `/api/app/v1`
+surface (backend requests 0001–0005 all delivered): public read screens, anonymous push +
+device registration, auth + watchlist + preferences + inbox, broadcast deep-linking + unread
+badge, and release hardening (HTML sanitisation, error boundary, 429 handling, network-security
+config, guarded signing). What remains is **device/Firebase verification** (can't run an APK in
+this env) and external release steps — see `docs/RELEASE.md`. Verified by `npm run build` (strict
+`tsc` + Vite) after every change; each phase was independently strict-reviewed before commit.
 
 ## The two-repo arrangement (read this first)
 
@@ -114,22 +117,32 @@ project needs only Node, but *building/running the APK* needs a **JDK 17+** and 
 
 ```
 src/
-  main.tsx · App.tsx          app entry + HashRouter route table
-  components/                 AppShell (Outlet + nav), BottomNav, ScreenHeader
-  screens/                    Home, Stations, Alerts, Bulletins, Account (placeholders until Phase 1)
+  main.tsx · App.tsx          entry (ErrorBoundary) + AuthProvider/UnreadProvider + HashRouter routes
+  auth/AuthContext.tsx        session (boot/refresh/login/register/logout) + device link/unlink
+  state/UnreadContext.tsx     inbox unread count for the Alerts nav badge
+  hooks/useResource.ts        loading/error/stale/reload state over cachedGet
+  components/                 AppShell, BottomNav (+badge), PushManager, ScreenHeader,
+                              StationRow, DischargeChart (SVG), FilterChips, Switch,
+                              WatchlistControls, PublicationDetail, ErrorBoundary, ui (atoms)
+  screens/                    Home, Stations(+Detail), Alerts, Bulletins(+Detail),
+                              Advisory detail, Account, Watchlist, Preferences
   lib/
-    api.ts                    envelope-aware fetch client + offline-tolerant cachedGet()
-    cache.ts                  Preferences-backed last-payload cache
-    auth.ts                   Sanctum bearer-token storage
-    severity.ts               backend status enum → app label + colour token
-    native.ts                 one-time native init (status bar, hide splash); no-ops on web
-    push.ts                   Phase-2 seam: FCM register → POST /devices (not yet wired in)
-  types/api.ts                provisional API contract types (track backend/0001)
-  styles/                     tokens.css (design tokens), global.css (shell + components)
-android/                      generated Capacitor Android project (gradle)
+    api.ts        envelope-aware client + offline cachedGet() + 429/Retry-After
+    endpoints.ts  all typed API calls (+ dev mock branch); mocks.ts dev fixtures
+    auth.ts/authApi.ts/install.ts   token+user storage, §B auth calls, device_name
+    devices.ts/push.ts              §C device registration + FCM lifecycle wrappers
+    deeplink.ts/events.ts           ffd:// + https /app/ routing; app-wide DOM events
+    severity.ts/format.ts/sanitize.ts/analytics.ts   enum→UI, formatting, DOMPurify, seam
+    cache.ts/native.ts
+  types/api.ts                AUTHORITATIVE client contract types (mirror backend responses)
+  styles/                     tokens.css, global.css (shell), components.css
+android/                      Capacitor Android project: ffd:// + App Link filters, network
+                              security config, guarded release signing (docs/RELEASE.md)
 ```
 
-- `src/types/api.ts` is the single client-side source of truth for API shapes; it mirrors the
-  **proposed** contract in `backend/0001` and must be updated when the backend ships the real one.
+- `src/types/api.ts` is the single client-side source of truth for API shapes — it mirrors the
+  **shipped** backend contracts (`backend/000N-*.response.md`). Reconcile it there when a shape changes.
+- Dev fixtures (`src/lib/mocks.ts`) render every screen without a backend: set `VITE_USE_MOCKS=1`
+  (dev only — double-gated on `import.meta.env.DEV`, never in a production build).
 - Follow the design system in `docs/BACKEND-INTEGRATION.md` §5 / the prototype (tokens, monospace
   "instrument readout" flow values, calm-authority teal, red reserved for severe levels).

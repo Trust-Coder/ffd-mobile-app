@@ -9,6 +9,7 @@ import { APP_VERSION, getPushPermission, pushSupported, registerForPush, request
 import { heartbeat, registerDevice } from '@/lib/devices'
 import { routeForData, routeForDeeplink } from '@/lib/deeplink'
 import { PUSH_RECEIVED_EVENT } from '@/lib/events'
+import { track } from '@/lib/analytics'
 
 const PROMPT_DISMISSED_KEY = 'ffd.push.prompt_dismissed'
 
@@ -54,7 +55,9 @@ export default function PushManager() {
       )
       await add(
         PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-          const route = routeForData(action.notification.data as Record<string, unknown>)
+          const data = action.notification.data as Record<string, unknown>
+          track('notification_open', { type: typeof data.type === 'string' ? data.type : 'unknown' })
+          const route = routeForData(data)
           if (route) navigate(route)
         }),
       )
@@ -78,6 +81,13 @@ export default function PushManager() {
           importance: 5,
           visibility: 1,
         }).catch(() => {})
+      }
+
+      // Cold-start deep link: app launched by an App Link / ffd:// URL.
+      const launch = await CapApp.getLaunchUrl()
+      if (!cancelled && launch?.url) {
+        const route = routeForDeeplink(launch.url)
+        if (route) navigate(route)
       }
 
       const permission = await getPushPermission()

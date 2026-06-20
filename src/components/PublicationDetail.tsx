@@ -2,6 +2,7 @@ import ScreenHeader from '@/components/ScreenHeader'
 import { LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import type { ResourceState } from '@/hooks/useResource'
 import type { Publication } from '@/types/api'
+import { sanitizeHtml } from '@/lib/sanitize'
 import { fmtDateTime } from '@/lib/format'
 
 /**
@@ -31,10 +32,9 @@ export default function PublicationDetail({ title, state }: { title: string; sta
           </div>
           <h2 className="bulletin-detail-title">{data.title}</h2>
 
-          {/* Body is first-party HTML authored by FFD staff in the CMS. Sanitisation
-              is tracked as a Phase 5 hardening item before any external content. */}
+          {/* Server HTML — sanitised (lib/sanitize) before rendering. */}
           {data.body ? (
-            <div className="bulletin-body" dangerouslySetInnerHTML={{ __html: data.body }} />
+            <div className="bulletin-body" dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.body) }} />
           ) : (
             <p className="hint-text">This {data.type} is published as a document — download it below.</p>
           )}

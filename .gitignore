@@ -28,5 +28,10 @@ android/app/src/main/assets/capacitor.plugins.json
 **/google-services.json
 **/GoogleService-Info.plist
 
+# Android signing — never commit
+android/keystore.properties
+*.keystore
+*.jks
+
 # Local backend-folder watcher (session tooling, not project source)
 backend/.watch-backend.sh
