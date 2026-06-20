@@ -1,0 +1,32 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+# Env (committed: .env.example only)
+.env
+.env.*.local
+
+# Editor / OS
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.log
+
+# Capacitor / Android build artifacts
+android/app/build
+android/build
+android/.gradle
+android/captures
+android/local.properties
+android/app/src/main/assets/public
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+
+# Firebase / FCM secrets — never commit
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Local backend-folder watcher (session tooling, not project source)
+backend/.watch-backend.sh

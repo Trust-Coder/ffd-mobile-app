@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FFD Flood App — Prototype</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root{
+    --ink:#0B1F2A;
+    --ink-2:#13323f;
+    --surface:#EEF3F2;
+    --card:#FFFFFF;
+    --line:#DBE5E3;
+    --muted:#5C7079;
+    --primary:#0E6E78;
+    --primary-deep:#0A4A52;
+    --water:#5FB6C4;
+    /* severity scale */
+    --normal:#2E8B7A;
+    --low:#D99700;
+    --medium:#E2660A;
+    --high:#D6452A;
+    --veryhigh:#B01810;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(11,31,42,.06),0 8px 24px rgba(11,31,42,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #1a3946 0%, #0B1F2A 60%) fixed;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    padding:24px 12px;color:var(--ink);
+  }
+
+  /* phone frame */
+  .phone{
+    width:100%;max-width:400px;height:820px;max-height:92vh;
+    background:var(--surface);border-radius:38px;overflow:hidden;position:relative;
+    box-shadow:0 0 0 11px #060f14, 0 0 0 13px #1d2d35, 0 40px 80px rgba(0,0,0,.5);
+    display:flex;flex-direction:column;
+  }
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:130px;height:26px;background:#060f14;border-radius:0 0 16px 16px;z-index:60;}
+
+  /* screens */
+  .screens{flex:1;overflow:hidden;position:relative;}
+  .screen{position:absolute;inset:0;overflow-y:auto;display:none;padding-bottom:88px;-webkit-overflow-scrolling:touch;}
+  .screen.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .screen::-webkit-scrollbar{width:0;}
+
+  /* header */
+  .hdr{background:linear-gradient(160deg,var(--ink) 0%,var(--ink-2) 100%);color:#fff;padding:42px 20px 18px;position:relative;}
+  .hdr .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8fb6bf;font-weight:600;}
+  .hdr h1{font-family:'Sora';font-weight:600;font-size:21px;margin-top:3px;letter-spacing:-.01em;}
+  .hdr .sub{font-size:12.5px;color:#a7c3c9;margin-top:2px;}
+
+  .body{padding:16px;}
+
+  /* river ribbon banner */
+  .ribbon{margin:0 16px;margin-top:-30px;position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:var(--ink-2);}
+  .ribbon svg{display:block;width:100%;height:96px;}
+  .ribbon .label{position:absolute;left:16px;top:14px;color:#fff;z-index:2;}
+  .ribbon .label .lv{font-family:'Sora';font-weight:600;font-size:17px;}
+  .ribbon .label .lx{font-size:11.5px;opacity:.85;letter-spacing:.04em;}
+  .ribbon .pill{position:absolute;right:14px;top:14px;z-index:2;background:rgba(255,255,255,.16);backdrop-filter:blur(4px);color:#fff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:999px;}
+
+  /* stat cards */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  .stat{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border:1px solid var(--line);}
+  .stat .n{font-family:'IBM Plex Mono';font-weight:600;font-size:26px;color:var(--ink);letter-spacing:-.02em;}
+  .stat .n small{font-size:13px;color:var(--muted);}
+  .stat .t{font-size:12px;color:var(--muted);margin-top:2px;font-weight:500;}
+  .stat .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:1px;}
+
+  .sectitle{display:flex;align-items:center;justify-content:space-between;margin:22px 4px 10px;}
+  .sectitle h2{font-family:'Sora';font-weight:600;font-size:14.5px;letter-spacing:.01em;}
+  .sectitle a{font-size:12px;color:var(--primary);font-weight:600;text-decoration:none;}
+
+  /* bulletin teaser / cards */
+  .bulletin{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);overflow:hidden;margin-bottom:12px;cursor:pointer;}
+  .bulletin .bar{height:4px;}
+  .bulletin .bc{padding:14px;}
+  .bulletin .meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);margin-bottom:7px;}
+  .sev-chip{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:6px;color:#fff;}
+  .bulletin h3{font-family:'Sora';font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:4px;}
+  .bulletin p{font-size:12.5px;color:var(--muted);line-height:1.5;}
+
+  /* station rows */
+  .srch{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:12px;box-shadow:var(--shadow);}
+  .srch input{border:0;outline:0;font-family:inherit;font-size:14px;width:100%;color:var(--ink);background:transparent;}
+  .srch svg{flex:none;}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px;}
+  .chips::-webkit-scrollbar{height:0;}
+  .chip{flex:none;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--muted);cursor:pointer;}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .station{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;}
+  .station:active{transform:scale(.99);}
+  .station .sev-bar{width:4px;align-self:stretch;border-radius:4px;}
+  .station .info{flex:1;min-width:0;}
+  .station .nm{font-family:'Sora';font-weight:600;font-size:14px;}
+  .station .rv{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .station .rd{text-align:right;}
+  .station .val{font-family:'IBM Plex Mono';font-weight:600;font-size:15px;}
+  .station .unit{font-size:10px;color:var(--muted);}
+  .station .st{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-top:2px;}
+
+  /* station detail */
+  .detail-hero{background:linear-gradient(160deg,var(--ink) 0%,var(--ink-2) 100%);color:#fff;padding:14px 20px 26px;}
+  .backbtn{display:inline-flex;align-items:center;gap:6px;color:#a7c3c9;font-size:13px;font-weight:600;background:none;border:0;cursor:pointer;padding:6px 0;margin-bottom:6px;}
+  .detail-hero .dn{font-family:'Sora';font-weight:600;font-size:22px;}
+  .detail-hero .dr{font-size:12.5px;color:#a7c3c9;margin-top:2px;}
+  .gauge{display:flex;align-items:flex-end;gap:14px;margin-top:18px;}
+  .gauge .big{font-family:'IBM Plex Mono';font-weight:600;font-size:42px;line-height:1;letter-spacing:-.02em;}
+  .gauge .gu{font-size:13px;color:#a7c3c9;padding-bottom:6px;}
+  .gauge .gstat{margin-left:auto;text-align:right;padding-bottom:4px;}
+  .gauge .gstat .gl{font-size:10.5px;color:#a7c3c9;letter-spacing:.06em;text-transform:uppercase;}
+  .gauge .gstat .gv{font-family:'Sora';font-weight:600;font-size:15px;}
+
+  .chartcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin:16px;margin-top:-14px;padding:16px;}
+  .chartcard .ch-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .chartcard .ch-h h3{font-family:'Sora';font-size:13.5px;font-weight:600;}
+  .chartcard .ch-h span{font-size:11px;color:var(--muted);}
+  .legend{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
+  .legend div{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+  .legend i{width:14px;height:3px;border-radius:2px;display:inline-block;}
+
+  .actrow{margin:0 16px 14px;display:flex;gap:10px;}
+  .btn{flex:1;border:0;border-radius:12px;padding:13px;font-family:'Sora';font-weight:600;font-size:13.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .btn-pri{background:var(--primary);color:#fff;}
+  .btn-out{background:var(--card);border:1px solid var(--line);color:var(--ink);}
+  .toggle{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin:0 16px 16px;box-shadow:var(--shadow);}
+  .toggle .tl{font-size:13.5px;font-weight:600;}
+  .toggle .ts{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .sw{width:46px;height:27px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;flex:none;transition:.2s;}
+  .sw::after{content:"";position:absolute;width:21px;height:21px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+  .sw.on{background:var(--primary);}
+  .sw.on::after{left:22px;}
+
+  /* watchlist empty */
+  .empty{text-align:center;padding:60px 30px;}
+  .empty .ec{width:64px;height:64px;border-radius:50%;background:#dcebe9 0;background:#e0ece9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+  .empty h3{font-family:'Sora';font-weight:600;font-size:16px;margin-bottom:6px;}
+  .empty p{font-size:13px;color:var(--muted);line-height:1.5;max-width:240px;margin:0 auto 18px;}
+
+  /* account */
+  .acc-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;}
+  .acc-row{display:flex;align-items:center;gap:13px;padding:15px 16px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .acc-row:last-child{border-bottom:0;}
+  .acc-row .ai{width:34px;height:34px;border-radius:9px;background:#e7f0ee;display:flex;align-items:center;justify-content:center;flex:none;}
+  .acc-row .at{flex:1;}
+  .acc-row .at .a1{font-size:13.5px;font-weight:600;}
+  .acc-row .at .a2{font-size:11.5px;color:var(--muted);}
+  .login-card{background:linear-gradient(150deg,var(--primary) 0%,var(--primary-deep) 100%);color:#fff;border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
+  .login-card h3{font-family:'Sora';font-weight:600;font-size:16px;}
+  .login-card p{font-size:12.5px;opacity:.9;margin-top:5px;line-height:1.5;}
+  .login-card button{margin-top:14px;background:#fff;color:var(--primary-deep);border:0;border-radius:10px;padding:11px 18px;font-family:'Sora';font-weight:600;font-size:13.5px;cursor:pointer;}
+
+  /* flood advisory */
+  .advisory{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;}
+  .advisory.active{border:1.5px solid var(--medium);box-shadow:0 0 0 4px rgba(226,102,10,.10),var(--shadow);}
+  .advisory .ah{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);}
+  .advisory.active .ah{background:rgba(226,102,10,.07);border-bottom-color:rgba(226,102,10,.18);}
+  .advisory .ah .ti{font-family:'Sora';font-weight:600;font-size:12.5px;letter-spacing:.02em;display:flex;align-items:center;gap:7px;}
+  .advisory .ah .ti svg{color:var(--medium);}
+  .badge-active{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--medium);}
+  .badge-active .pulse{width:8px;height:8px;border-radius:50%;background:var(--medium);animation:pulse 1.8s infinite;}
+  .badge-inactive{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(226,102,10,.5);}70%{box-shadow:0 0 0 9px rgba(226,102,10,0);}100%{box-shadow:0 0 0 0 rgba(226,102,10,0);}}
+  .advisory .ab{padding:13px 14px;}
+  .advisory .ab h3{font-family:'Sora';font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:5px;}
+  .advisory .ab p{font-size:12.5px;color:var(--muted);line-height:1.5;}
+  .advisory .valid{display:flex;gap:18px;margin-top:11px;padding-top:11px;border-top:1px solid var(--line);}
+  .advisory .valid .vl{font-size:10.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;}
+  .advisory .valid .vv{font-family:'IBM Plex Mono';font-weight:600;color:var(--ink);margin-top:2px;font-size:12px;}
+
+  /* alerts inbox */
+  .grp{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:14px 4px 8px;}
+  .alert{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;position:relative;overflow:hidden;}
+  .alert:active{transform:scale(.99);}
+  .alert.unread{background:#f4faf9;}
+  .alert.unread::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--primary);}
+  .alert .ai{width:38px;height:38px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;}
+  .alert .ac{flex:1;min-width:0;}
+  .alert .at{display:flex;align-items:center;gap:7px;}
+  .alert .at .nm{font-family:'Sora';font-weight:600;font-size:13.5px;flex:1;}
+  .alert .at .tm{font-size:10.5px;color:var(--muted);flex:none;}
+  .alert .am{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:3px;}
+  .alert .ud{width:8px;height:8px;border-radius:50%;background:var(--primary);flex:none;align-self:center;}
+  .alerts-note{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.5;padding:8px 24px 0;}
+  .alerts-note b{color:var(--ink);font-weight:600;}
+
+  /* nav badge */
+  .nav .badge{position:absolute;top:9px;left:calc(50% + 5px);background:var(--high);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:1.5px solid var(--card);}
+
+  /* bottom nav */
+  .nav{position:absolute;bottom:0;left:0;right:0;height:72px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;z-index:50;padding-bottom:6px;}
+  .nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);cursor:pointer;font-size:10px;font-weight:600;font-family:'Inter';}
+  .nav button.on{color:var(--primary);}
+  .nav button svg{width:22px;height:22px;}
+
+  .toast{position:absolute;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.3s;z-index:70;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="screens" id="screens">
+
+    <!-- ============ HOME ============ -->
+    <section class="screen active" id="s-home">
+      <div class="hdr">
+        <div class="eyebrow">Flood Forecasting Division · PMD</div>
+        <h1>Flood Watch</h1>
+        <div class="sub">National river status · updated 09:40 PKT</div>
+      </div>
+
+      <div class="ribbon" id="natRibbon">
+        <div class="label">
+          <div class="lx">Highest active level</div>
+          <div class="lv">Medium Flood — Chenab</div>
+        </div>
+        <div class="pill">3 rivers elevated</div>
+        <svg viewBox="0 0 400 96" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="rg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#E2660A" stop-opacity=".55"/>
+              <stop offset="1" stop-color="#E2660A" stop-opacity=".05"/>
+            </linearGradient>
+          </defs>
+          <path id="wave1" fill="url(#rg)" d=""/>
+          <path id="wave2" fill="none" stroke="#ffd9b8" stroke-width="2" stroke-opacity=".7" d=""/>
+        </svg>
+      </div>
+
+      <div class="body" style="padding-top:0;">
+        <div class="advisory active" style="margin-top:16px;" onclick="show('advisory')">
+          <div class="ah">
+            <span class="ti"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Flood Advisory</span>
+            <span class="badge-active"><span class="pulse"></span>Active</span>
+          </div>
+          <div class="ab">
+            <h3>Monsoon Flood Advisory — Chenab & Jhelum catchments</h3>
+            <p>An active weather system over the upper catchments may push flows to medium–high levels. Communities and authorities along the Chenab and Jhelum should stay alert.</p>
+            <div class="valid">
+              <div><div class="vl">Issued</div><div class="vv">21 Jun · 08:00</div></div>
+              <div><div class="vl">Valid until</div><div class="vv">23 Jun · 18:00</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats" style="margin-top:14px;">
+          <div class="stat">
+            <div class="n">42<small> stations</small></div>
+            <div class="t"><span class="dot" style="background:var(--primary)"></span>Monitored live</div>
+          </div>
+          <div class="stat">
+            <div class="n">3<small> / 5</small></div>
+            <div class="t"><span class="dot" style="background:var(--medium)"></span>Rivers above normal</div>
+          </div>
+        </div>
+
+        <div class="sectitle"><h2>Latest bulletin</h2><a href="#" onclick="show('bulletins');return false;">All bulletins</a></div>
+        <div class="bulletin" onclick="show('bulletins')">
+          <div class="bar" style="background:var(--medium)"></div>
+          <div class="bc">
+            <div class="meta">
+              <span class="sev-chip" style="background:var(--medium)">Medium Flood</span>
+              <span>Today · 09:30 PKT</span>
+            </div>
+            <h3>Rising flows expected at Marala on the Chenab</h3>
+            <p>Upstream rainfall over the catchment is pushing inflows higher through the next 24–36 hours. Communities along the Chenab should monitor updates.</p>
+          </div>
+        </div>
+
+        <div class="sectitle"><h2>River flows</h2><a href="#" onclick="show('stations');return false;">View all</a></div>
+        <div id="homeFlows"></div>
+      </div>
+    </section>
+
+    <!-- ============ STATIONS ============ -->
+    <section class="screen" id="s-stations">
+      <div class="hdr">
+        <div class="eyebrow">Live network</div>
+        <h1>Stations</h1>
+        <div class="sub">Gauge & discharge readings across five rivers</div>
+      </div>
+      <div class="body">
+        <div class="srch">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5C7079" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input placeholder="Search a station or river" oninput="filterStations(this.value)">
+        </div>
+        <div class="chips" id="riverChips"></div>
+        <div id="stationList"></div>
+      </div>
+    </section>
+
+    <!-- ============ STATION DETAIL ============ -->
+    <section class="screen" id="s-detail">
+      <div class="detail-hero">
+        <button class="backbtn" onclick="show('stations')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg> Stations
+        </button>
+        <div class="dn" id="dName">Marala</div>
+        <div class="dr" id="dRiver">Chenab River · Sialkot</div>
+        <div class="gauge">
+          <div class="big" id="dVal">186,400</div>
+          <div class="gu">cusecs</div>
+          <div class="gstat">
+            <div class="gl">Status</div>
+            <div class="gv" id="dStat">Medium Flood</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chartcard">
+        <div class="ch-h"><h3>Discharge — last 24 hours</h3><span>cusecs</span></div>
+        <svg id="chart" viewBox="0 0 320 150" style="width:100%;height:150px;"></svg>
+        <div class="legend">
+          <div><i style="background:var(--primary)"></i>Observed flow</div>
+          <div><i style="background:var(--medium)"></i>Medium threshold</div>
+          <div><i style="background:var(--high)"></i>High threshold</div>
+        </div>
+      </div>
+
+      <div class="actrow">
+        <button class="btn btn-pri" onclick="addWatch()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Add to My Stations
+        </button>
+        <button class="btn btn-out">Share</button>
+      </div>
+      <div class="toggle">
+        <div>
+          <div class="tl">Alerts for this station</div>
+          <div class="ts">Push when status changes</div>
+        </div>
+        <div class="sw on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </section>
+
+    <!-- ============ WATCHLIST ============ -->
+    <section class="screen" id="s-watch">
+      <div class="hdr">
+        <div class="eyebrow">Personalized</div>
+        <h1>My Stations</h1>
+        <div class="sub">Your watchlist and alert preferences</div>
+      </div>
+      <div class="body" id="watchBody">
+        <div class="empty">
+          <div class="ec">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8"><path d="M12 21s-7-4.3-9.5-9C1 8.5 3 5 6.5 5 8.7 5 10 6.5 12 9c2-2.5 3.3-4 5.5-4C21 5 23 8.5 21.5 12 19 16.7 12 21 12 21z"/></svg>
+          </div>
+          <h3>No stations yet</h3>
+          <p>Add the gauges you care about to track their flows and get alerts when levels change.</p>
+          <button class="btn btn-pri" style="display:inline-flex;width:auto;padding:12px 22px;" onclick="show('stations')">Browse stations</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BULLETINS ============ -->
+    <section class="screen" id="s-bulletins">
+      <div class="hdr">
+        <div class="eyebrow">Official advisories</div>
+        <h1>Bulletins & Alerts</h1>
+        <div class="sub">Issued by the Flood Forecasting Division</div>
+      </div>
+      <div class="body">
+        <div class="chips" id="bullChips"></div>
+        <div id="bullList"></div>
+      </div>
+    </section>
+
+    <!-- ============ ACCOUNT ============ -->
+    <section class="screen" id="s-account">
+      <div class="hdr">
+        <div class="eyebrow">Your account</div>
+        <h1>Account</h1>
+        <div class="sub">Sign in to sync your watchlist</div>
+      </div>
+      <div class="body">
+        <div class="login-card">
+          <h3>Get alerts that matter to you</h3>
+          <p>Create a free account to save your stations and choose which warnings reach you.</p>
+          <button>Sign in or register</button>
+        </div>
+
+        <div class="sectitle"><h2>Notifications</h2></div>
+        <div class="acc-card">
+          <div class="toggle" style="margin:0;border:0;border-radius:0;box-shadow:none;border-bottom:1px solid var(--line);">
+            <div><div class="tl">Bulletin alerts</div><div class="ts">New FFD advisories</div></div>
+            <div class="sw on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle" style="margin:0;border:0;border-radius:0;box-shadow:none;border-bottom:1px solid var(--line);">
+            <div><div class="tl">Watchlist alerts</div><div class="ts">Status changes at your stations</div></div>
+            <div class="sw on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="acc-row" style="cursor:default;">
+            <div class="at"><div class="a1">Minimum severity</div><div class="a2">Notify at Medium Flood and above</div></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C7079" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="acc-card">
+          <div class="acc-row" onclick="show('watch')"><div class="ai"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8"><path d="M12 21s-7-4.3-9.5-9C1 8.5 3 5 6.5 5 8.7 5 10 6.5 12 9c2-2.5 3.3-4 5.5-4C21 5 23 8.5 21.5 12 19 16.7 12 21 12 21z"/></svg></div><div class="at"><div class="a1">My stations</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C7079" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+          <div class="acc-row"><div class="ai"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></div><div class="at"><div class="a1">Notification history</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C7079" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+          <div class="acc-row"><div class="ai"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="at"><div class="a1">About flood levels</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C7079" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ALERTS ============ -->
+    <section class="screen" id="s-alerts">
+      <div class="hdr">
+        <div class="eyebrow">Updates & messages</div>
+        <h1>Alerts</h1>
+        <div class="sub">Flow changes, advisories and FFD updates</div>
+      </div>
+      <div class="body">
+        <div id="alertList"></div>
+        <p class="alerts-note">These are the same updates we broadcast on <b>WhatsApp</b>, now delivered here too.</p>
+      </div>
+    </section>
+
+    <!-- ============ ADVISORY DETAIL ============ -->
+    <section class="screen" id="s-advisory">
+      <div class="detail-hero" style="background:linear-gradient(160deg,#7a3608 0%,#561f04 100%);">
+        <button class="backbtn" onclick="show('home')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg> Home
+        </button>
+        <div class="dn">Flood Advisory</div>
+        <div class="dr">Issued by the Flood Forecasting Division</div>
+        <div style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:rgba(255,255,255,.16);padding:6px 12px;border-radius:999px;font-size:11.5px;font-weight:600;color:#fff;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#ffcf9e;"></span>Active · valid until 23 Jun, 18:00 PKT
+        </div>
+      </div>
+      <div class="body">
+        <h2 style="font-family:'Sora';font-size:17px;font-weight:600;line-height:1.35;margin:2px 0 10px;">Monsoon Flood Advisory — Chenab & Jhelum catchments</h2>
+        <p style="font-size:13.5px;color:var(--muted);line-height:1.6;">A monsoon system over the upper catchments of the Chenab and Jhelum is expected to bring moderate to heavy rainfall over the next 36 hours. Flows are forecast to rise into the medium flood range at Marala and Khanki, with a chance of brief high flood peaks.</p>
+
+        <div class="sectitle"><h2>Rivers affected</h2></div>
+        <div class="station" style="cursor:default"><div class="sev-bar" style="background:var(--medium)"></div><div class="info"><div class="nm">Chenab</div><div class="rv">Marala · Khanki · Trimmu</div></div><div class="rd"><div class="st" style="color:var(--medium)">Medium Flood</div></div></div>
+        <div class="station" style="cursor:default"><div class="sev-bar" style="background:var(--low)"></div><div class="info"><div class="nm">Jhelum</div><div class="rv">Mangla inflows</div></div><div class="rd"><div class="st" style="color:var(--low)">Low Flood</div></div></div>
+
+        <div class="sectitle"><h2>Guidance</h2></div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;">Keep clear of riverbeds and low-lying crossings. Follow instructions from district and irrigation authorities. This advisory will be updated as the situation develops.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast">Added to My Stations</div>
+
+  <!-- bottom nav -->
+  <nav class="nav" id="nav">
+    <button class="on" data-s="home" onclick="show('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home
+    </button>
+    <button data-s="stations" onclick="show('stations')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 17l4-8 4 5 3-7 4 10"/><path d="M3 21h18"/></svg>Stations
+    </button>
+    <button data-s="alerts" onclick="show('alerts')">
+      <span class="badge" id="alertBadge">2</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Alerts
+    </button>
+    <button data-s="bulletins" onclick="show('bulletins')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 4h16v13H7l-3 3z"/></svg>Bulletins
+    </button>
+    <button data-s="account" onclick="show('account')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Account
+    </button>
+  </nav>
+</div>
+
+<script>
+  const SEV = {
+    normal:{c:'--normal', label:'Normal'},
+    low:{c:'--low', label:'Low Flood'},
+    medium:{c:'--medium', label:'Medium Flood'},
+    high:{c:'--high', label:'High Flood'},
+    veryhigh:{c:'--veryhigh', label:'Very High Flood'}
+  };
+  const cv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  const stations = [
+    {n:'Marala',    r:'Chenab',  loc:'Sialkot',         flow:186400, sev:'medium'},
+    {n:'Khanki',    r:'Chenab',  loc:'Gujranwala',      flow:171200, sev:'medium'},
+    {n:'Trimmu',    r:'Chenab',  loc:'Jhang',           flow:142900, sev:'low'},
+    {n:'Mangla',    r:'Jhelum',  loc:'Mirpur',          flow:98300,  sev:'low'},
+    {n:'Tarbela',   r:'Indus',   loc:'Swabi',           flow:243600, sev:'low'},
+    {n:'Kalabagh',  r:'Indus',   loc:'Mianwali',        flow:221400, sev:'normal'},
+    {n:'Guddu',     r:'Indus',   loc:'Kashmore',        flow:198700, sev:'normal'},
+    {n:'Sukkur',    r:'Indus',   loc:'Sukkur',          flow:175300, sev:'normal'},
+    {n:'Kotri',     r:'Indus',   loc:'Hyderabad',       flow:121500, sev:'normal'},
+    {n:'Balloki',   r:'Ravi',    loc:'Kasur',           flow:41200,  sev:'normal'},
+    {n:'Sidhnai',   r:'Ravi',    loc:'Khanewal',        flow:33800,  sev:'normal'},
+    {n:'Sulemanki', r:'Sutlej',  loc:'Okara',           flow:28600,  sev:'normal'},
+  ];
+  const rivers = ['All','Indus','Jhelum','Chenab','Ravi','Sutlej'];
+
+  const bulletins = [
+    {sev:'medium', t:'Rising flows expected at Marala on the Chenab', time:'Today · 09:30 PKT', body:'Upstream rainfall over the catchment is pushing inflows higher through the next 24–36 hours.'},
+    {sev:'low',    t:'Low flood persists at Trimmu Headworks', time:'Today · 06:00 PKT', body:'Flows holding in the low flood range; no immediate escalation forecast.'},
+    {sev:'low',    t:'Jhelum at Mangla — minor rise overnight', time:'Yesterday · 21:15 PKT', body:'Reservoir inflows ticked up after evening showers in the upper catchment.'},
+    {sev:'normal', t:'Indus system within normal limits', time:'Yesterday · 12:00 PKT', body:'Tarbela through Kotri reporting normal seasonal flows.'},
+  ];
+
+  function fmt(n){return n.toLocaleString('en-US');}
+
+  function stationRow(s, click){
+    const c = cv('--'+SEV[s.sev].c);
+    return `<div class="station" onclick="openStation('${s.n}')">
+      <div class="sev-bar" style="background:${c}"></div>
+      <div class="info"><div class="nm">${s.n}</div><div class="rv">${s.r} River · ${s.loc}</div></div>
+      <div class="rd"><div class="val">${fmt(s.flow)}</div><div class="unit">cusecs</div>
+        <div class="st" style="color:${c}">${SEV[s.sev].label}</div></div>
+    </div>`;
+  }
+
+  // populate home flows (top 4 elevated)
+  document.getElementById('homeFlows').innerHTML =
+    stations.filter(s=>s.sev!=='normal').slice(0,4).map(s=>stationRow(s)).join('');
+
+  // populate stations
+  function renderStations(list){
+    document.getElementById('stationList').innerHTML = list.map(s=>stationRow(s)).join('')
+      || '<p style="text-align:center;color:var(--muted);font-size:13px;padding:30px;">No stations match your search.</p>';
+  }
+  renderStations(stations);
+
+  let activeRiver='All';
+  document.getElementById('riverChips').innerHTML = rivers.map((r,i)=>
+    `<div class="chip ${i===0?'on':''}" onclick="setRiver('${r}',this)">${r}</div>`).join('');
+  function setRiver(r,el){
+    activeRiver=r;
+    document.querySelectorAll('#riverChips .chip').forEach(c=>c.classList.remove('on'));
+    el.classList.add('on');
+    renderStations(activeRiver==='All'?stations:stations.filter(s=>s.r===activeRiver));
+  }
+  function filterStations(q){
+    q=q.toLowerCase();
+    let base = activeRiver==='All'?stations:stations.filter(s=>s.r===activeRiver);
+    renderStations(base.filter(s=>(s.n+' '+s.r+' '+s.loc).toLowerCase().includes(q)));
+  }
+
+  // bulletins
+  const bullSev = ['All','Very High','High','Medium','Low'];
+  document.getElementById('bullChips').innerHTML = bullSev.map((b,i)=>
+    `<div class="chip ${i===0?'on':''}" onclick="document.querySelectorAll('#bullChips .chip').forEach(c=>c.classList.remove('on'));this.classList.add('on')">${b}</div>`).join('');
+  document.getElementById('bullList').innerHTML = bulletins.map(b=>{
+    const c=cv('--'+SEV[b.sev].c);
+    return `<div class="bulletin">
+      <div class="bar" style="background:${c}"></div>
+      <div class="bc"><div class="meta"><span class="sev-chip" style="background:${c}">${SEV[b.sev].label}</span><span>${b.time}</span></div>
+      <h3>${b.t}</h3><p>${b.body}</p></div></div>`;
+  }).join('');
+
+  // navigation
+  function show(name){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('s-'+name).classList.add('active');
+    document.querySelectorAll('.screens')[0].scrollTop=0;
+    document.getElementById('s-'+name).scrollTop=0;
+    const navMap={home:'home',stations:'stations',detail:'stations',watch:'account',bulletins:'bulletins',account:'account',alerts:'alerts',advisory:'home'};
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===navMap[name]));
+  }
+
+  // station detail
+  function openStation(name){
+    const s=stations.find(x=>x.n===name)||stations[0];
+    const c=cv('--'+SEV[s.sev].c);
+    document.getElementById('dName').textContent=s.n;
+    document.getElementById('dRiver').textContent=`${s.r} River · ${s.loc}`;
+    document.getElementById('dVal').textContent=fmt(s.flow);
+    const ds=document.getElementById('dStat'); ds.textContent=SEV[s.sev].label; ds.style.color='#fff';
+    document.querySelector('#s-detail .detail-hero').style.background=`linear-gradient(160deg, ${shade(c,-30)} 0%, ${shade(c,-55)} 100%)`;
+    drawChart(s);
+    show('detail');
+  }
+
+  function shade(hex,amt){
+    hex=hex.replace('#','');
+    let r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
+    r=Math.max(0,Math.min(255,r+amt));g=Math.max(0,Math.min(255,g+amt));b=Math.max(0,Math.min(255,b+amt));
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function drawChart(s){
+    const W=320,H=150,pad=8;
+    // pseudo series trending to current flow
+    let seed=s.n.length*7+s.flow%97, pts=[];
+    for(let i=0;i<13;i++){
+      seed=(seed*9301+49297)%233280; const rnd=seed/233280;
+      const base=s.flow*(0.78+i*0.018);
+      pts.push(base*(0.96+rnd*0.08));
+    }
+    const max=Math.max(...pts)*1.08, min=Math.min(...pts)*0.9;
+    const X=i=>pad+i*(W-2*pad)/(pts.length-1);
+    const Y=v=>H-pad-((v-min)/(max-min))*(H-2*pad);
+    let d='M'+X(0)+' '+Y(pts[0]);
+    for(let i=1;i<pts.length;i++){const cx=(X(i-1)+X(i))/2;d+=` C ${cx} ${Y(pts[i-1])}, ${cx} ${Y(pts[i])}, ${X(i)} ${Y(pts[i])}`;}
+    const area=d+` L ${X(pts.length-1)} ${H-pad} L ${X(0)} ${H-pad} Z`;
+    const medY=Y(s.flow*0.9), highY=Y(s.flow*1.04);
+    document.getElementById('chart').innerHTML=`
+      <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${cv('--primary')}" stop-opacity=".28"/>
+        <stop offset="1" stop-color="${cv('--primary')}" stop-opacity="0"/></linearGradient></defs>
+      <line x1="${pad}" y1="${medY}" x2="${W-pad}" y2="${medY}" stroke="${cv('--medium')}" stroke-width="1.2" stroke-dasharray="4 4" opacity=".7"/>
+      <line x1="${pad}" y1="${highY}" x2="${W-pad}" y2="${highY}" stroke="${cv('--high')}" stroke-width="1.2" stroke-dasharray="4 4" opacity=".7"/>
+      <path d="${area}" fill="url(#cg)"/>
+      <path d="${d}" fill="none" stroke="${cv('--primary')}" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="${X(pts.length-1)}" cy="${Y(pts[pts.length-1])}" r="4" fill="${cv('--primary')}" stroke="#fff" stroke-width="2"/>`;
+  }
+
+  // watchlist add
+  let watched=[];
+  function addWatch(){
+    const name=document.getElementById('dName').textContent;
+    if(!watched.includes(name)){watched.push(name);renderWatch();}
+    toast('Added '+name+' to My Stations');
+  }
+  function renderWatch(){
+    const body=document.getElementById('watchBody');
+    if(!watched.length)return;
+    body.innerHTML='<div style="height:4px"></div>'+watched.map(n=>{
+      const s=stations.find(x=>x.n===n);const c=cv('--'+SEV[s.sev].c);
+      return `<div class="station" onclick="openStation('${s.n}')">
+        <div class="sev-bar" style="background:${c}"></div>
+        <div class="info"><div class="nm">${s.n}</div><div class="rv">${s.r} River · ${s.loc}</div></div>
+        <div class="rd"><div class="val">${fmt(s.flow)}</div><div class="unit">cusecs</div>
+        <div class="st" style="color:${c}">${SEV[s.sev].label}</div></div></div>`;
+    }).join('');
+  }
+
+  function toast(msg){
+    const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+    clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1900);
+  }
+
+  // alerts inbox (mirrors WhatsApp broadcasts)
+  const alerts=[
+    {type:'station',sev:'medium',nm:'Medium Flood — Marala',msg:'Flows rose to 186,400 cusecs on the Chenab and are expected to keep rising over the next 24 hours.',tm:'09:30',grp:'Today',unread:true,go:()=>openStation('Marala')},
+    {type:'advisory',sev:'medium',nm:'Flood advisory issued',msg:'A monsoon flood advisory is now active for the Chenab and Jhelum catchments.',tm:'08:00',grp:'Today',unread:true,go:()=>show('advisory')},
+    {type:'station',sev:'low',nm:'Low Flood — Trimmu',msg:'Trimmu Headworks on the Chenab reached low flood level.',tm:'06:00',grp:'Today',unread:false,go:()=>openStation('Trimmu')},
+    {type:'station',sev:'low',nm:'Minor rise — Mangla',msg:'Jhelum inflows at Mangla ticked up after overnight showers in the upper catchment.',tm:'Yest 21:15',grp:'Earlier',unread:false,go:()=>openStation('Mangla')},
+    {type:'info',sev:'normal',nm:'Indus system normal',msg:'Tarbela through Kotri reporting normal seasonal flows.',tm:'Yest 12:00',grp:'Earlier',unread:false,go:()=>show('bulletins')},
+  ];
+  const AICONS={
+    station:'<path d="M3 17l4-8 4 5 3-7 4 10"/><path d="M3 21h18"/>',
+    advisory:'<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+    info:'<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>'
+  };
+  function hexA(hex,a){
+    if(hex.startsWith('rgb'))return hex.replace('rgb(','rgba(').replace(')',`,${a})`);
+    hex=hex.replace('#','');const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  function renderAlerts(){
+    const groups=[...new Set(alerts.map(a=>a.grp))];let html='';
+    groups.forEach(g=>{
+      html+=`<div class="grp">${g}</div>`;
+      alerts.forEach((a,i)=>{ if(a.grp!==g)return;
+        const c=cv('--'+SEV[a.sev].c);
+        html+=`<div class="alert ${a.unread?'unread':''}" onclick="openAlert(${i})">
+          <div class="ai" style="background:${hexA(c,.12)};color:${c}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">${AICONS[a.type]}</svg></div>
+          <div class="ac"><div class="at"><span class="nm">${a.nm}</span><span class="tm">${a.tm}</span></div><div class="am">${a.msg}</div></div>
+          ${a.unread?'<span class="ud"></span>':''}</div>`;
+      });
+    });
+    document.getElementById('alertList').innerHTML=html;updateBadge();
+  }
+  function openAlert(i){alerts[i].unread=false;renderAlerts();if(alerts[i].go)alerts[i].go();}
+  function updateBadge(){
+    const n=alerts.filter(a=>a.unread).length,b=document.getElementById('alertBadge');
+    if(n){b.textContent=n;b.style.display='flex';}else{b.style.display='none';}
+  }
+  renderAlerts();
+
+  // animated river ribbon
+  function ribbon(t){
+    const w1=document.getElementById('wave1'),w2=document.getElementById('wave2');
+    if(!w1)return;
+    const W=400,H=96,base=46;
+    let d1=`M0 ${H} L0 ${base}`,d2=`M0 ${base}`;
+    for(let x=0;x<=W;x+=20){
+      const y=base+Math.sin((x/52)+t/700)*7+Math.sin((x/120)-t/900)*5;
+      d1+=` L${x} ${y}`;d2+=` L${x} ${y}`;
+    }
+    d1+=` L${W} ${H} Z`;
+    w1.setAttribute('d',d1);w2.setAttribute('d',d2);
+    requestAnimationFrame(ribbon);
+  }
+  requestAnimationFrame(ribbon);
+</script>
+</body>
+</html>

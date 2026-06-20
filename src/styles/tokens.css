@@ -1,0 +1,29 @@
+/* Design tokens — calm authority. Mirrors docs/ffd-app-prototype.html. */
+:root {
+  --ink: #0b1f2a;
+  --surface: #eef3f2;
+  --card: #ffffff;
+  --line: #dbe5e3;
+  --muted: #5c7079;
+
+  --primary: #0e6e78;
+  --primary-deep: #0a4a52;
+  --water: #5fb6c4;
+
+  /* Severity scale — app-owned; mapped from the backend status enum in lib/severity.ts.
+     Red is reserved for genuinely severe levels so it stays meaningful. */
+  --normal: #2e8b7a;
+  --low: #d99700;
+  --medium: #e2660a;
+  --high: #d6452a;
+  --veryhigh: #b01810;
+
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(11, 31, 42, 0.06), 0 8px 24px rgba(11, 31, 42, 0.06);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* "Instrument readout" face for flow/gauge values. */
+  --font-mono: 'SF Mono', 'Roboto Mono', ui-monospace, 'Courier New', monospace;
+
+  --nav-h: 64px;
+}
