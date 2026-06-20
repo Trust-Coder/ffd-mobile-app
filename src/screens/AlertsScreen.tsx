@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
 import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
@@ -6,6 +7,7 @@ import { getAlerts } from '@/lib/endpoints'
 import type { AlertNotification } from '@/types/api'
 import { severityColor, statusFromLoose } from '@/lib/severity'
 import { routeForAlert } from '@/lib/deeplink'
+import { PUSH_RECEIVED_EVENT } from '@/components/PushManager'
 import { fmtRelative, isToday } from '@/lib/format'
 
 function AlertRow({ alert }: { alert: AlertNotification }) {
@@ -43,6 +45,13 @@ function AlertRow({ alert }: { alert: AlertNotification }) {
 
 export default function AlertsScreen() {
   const { data, error, stale, cachedAt, loading, reload } = useResource(() => getAlerts(), [])
+
+  // Refresh the feed when a push lands while the app is in the foreground.
+  useEffect(() => {
+    window.addEventListener(PUSH_RECEIVED_EVENT, reload)
+    return () => window.removeEventListener(PUSH_RECEIVED_EVENT, reload)
+  }, [reload])
+
   const alerts = data ?? []
   const today = alerts.filter((a) => isToday(a.sent_at))
   const earlier = alerts.filter((a) => !isToday(a.sent_at))

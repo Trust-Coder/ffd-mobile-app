@@ -31,6 +31,8 @@ same file. We coordinate directly only when a change spans both sides at once.
 | # | File | Title | Status |
 |---|---|---|---|
 | 0001 | [`0001-public-api-kickoff.md`](0001-public-api-kickoff.md) | Public app API surface — read, auth, devices, inbox, broadcast | DELIVERED (§A) · [response](0001-public-api-kickoff.response.md) |
+| 0002 | [`0002-devices-push-registration.md`](0002-devices-push-registration.md) | §C Devices — anonymous push-token registration + heartbeat + prune | OPEN |
+| 0003 | [`0003-whatsapp-templates-leadtime.md`](0003-whatsapp-templates-leadtime.md) | §G WhatsApp templates — start approval (long-lead) | OPEN (early heads-up) |
 
 ## Request template
 

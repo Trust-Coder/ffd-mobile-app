@@ -562,3 +562,53 @@
   font-size: 12px;
   color: var(--muted);
 }
+
+/* ── Push permission pre-prompt ─────────────────────── */
+.push-prompt {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  animation: prompt-rise 0.25s ease-out;
+}
+@keyframes prompt-rise {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+}
+.push-prompt-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(11, 31, 42, 0.18);
+  padding: 16px;
+}
+.push-prompt-title {
+  display: block;
+  font-size: 16px;
+  color: var(--primary-deep);
+}
+.push-prompt-text {
+  margin: 6px 0 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.push-prompt-actions {
+  display: flex;
+  gap: 10px;
+}
+.push-prompt-actions .btn-ghost {
+  flex: 1;
+}
+.push-prompt-enable {
+  flex: 1;
+  width: auto;
+}
