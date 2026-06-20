@@ -37,3 +37,10 @@ export function severityColor(status: FloodStatus): string {
 export function isElevated(status: FloodStatus): boolean {
   return status !== 'NORMAL'
 }
+
+/** Coerce a loose severity string (e.g. the alerts feed's lowercase "high") to a FloodStatus. */
+export function statusFromLoose(value: string | null | undefined): FloodStatus {
+  if (!value) return 'NORMAL'
+  const upper = value.toUpperCase()
+  return (SEVERITY_ORDER as string[]).includes(upper) ? (upper as FloodStatus) : 'NORMAL'
+}

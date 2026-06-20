@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
-import { SeverityChip, StatusDot, StaleBanner } from '@/components/ui'
+import StationRow from '@/components/StationRow'
+import { StaleBanner } from '@/components/ui'
 import { useResource } from '@/hooks/useResource'
 import { getActiveAdvisory, getBulletins, getFlowsLatest } from '@/lib/endpoints'
-import type { FloodStatus, StationSummary } from '@/types/api'
+import type { FloodStatus, FlowLatest } from '@/types/api'
 import { SEVERITY_ORDER, isElevated, severityColor, severityLabel } from '@/lib/severity'
-import { fmtCusecs, fmtRelative } from '@/lib/format'
+import { fmtRelative } from '@/lib/format'
 
-function highestStatus(list: StationSummary[]): FloodStatus {
-  return list.reduce<FloodStatus>((acc, s) => (SEVERITY_ORDER.indexOf(s.status) > SEVERITY_ORDER.indexOf(acc) ? s.status : acc), 'NORMAL')
+function highestStatus(list: FlowLatest[]): FloodStatus {
+  return list.reduce<FloodStatus>((acc, s) => (s.status_id > SEVERITY_ORDER.indexOf(acc) ? s.status : acc), 'NORMAL')
 }
 
 export default function HomeScreen() {
@@ -17,7 +18,9 @@ export default function HomeScreen() {
   const bulletins = useResource(() => getBulletins(), [])
 
   const stations = flows.data ?? []
-  const elevated = stations.filter((s) => isElevated(s.status)).sort((a, b) => SEVERITY_ORDER.indexOf(b.status) - SEVERITY_ORDER.indexOf(a.status))
+  const elevated = stations
+    .filter((s) => isElevated(s.status))
+    .sort((a, b) => b.status_id - a.status_id)
   const peak = stations.length ? highestStatus(stations) : 'NORMAL'
   const latestBulletin = bulletins.data?.[0]
   const active = advisory.data
@@ -30,15 +33,15 @@ export default function HomeScreen() {
 
       {/* Flood advisory card — highlighted when active. */}
       {active ? (
-        <Link to={`/alerts`} className="advisory-card active link-reset" aria-label="Active flood advisory">
+        <Link to={`/advisories/${active.id}`} className="advisory-card active link-reset" aria-label="Active flood advisory">
           <div className="advisory-head">
-            <span className="advisory-badge pulse" style={{ background: severityColor(active.severity ?? 'HIGH') }}>
+            <span className="advisory-badge pulse" style={{ background: 'var(--medium)' }}>
               Active Advisory
             </span>
-            {active.valid_until ? <span className="advisory-state">until {fmtRelative(active.valid_until)}</span> : null}
+            <span className="advisory-state">{fmtRelative(active.issue_time)}</span>
           </div>
           <h2 className="advisory-title">{active.title}</h2>
-          {active.guidance ? <p className="advisory-body">{active.guidance}</p> : null}
+          <p className="advisory-body">Tap to read the full advisory and guidance.</p>
         </Link>
       ) : (
         <section className="advisory-card" aria-label="Flood advisory">
@@ -74,8 +77,7 @@ export default function HomeScreen() {
       {latestBulletin ? (
         <Link to={`/bulletins/${latestBulletin.id}`} className="teaser link-reset">
           <div className="teaser-head">
-            <span className="teaser-kicker">Latest bulletin</span>
-            {latestBulletin.severity ? <SeverityChip status={latestBulletin.severity} /> : null}
+            <span className="teaser-kicker">Latest {latestBulletin.type_label.toLowerCase()}</span>
           </div>
           <div className="teaser-title">{latestBulletin.title}</div>
           <div className="teaser-meta">{fmtRelative(latestBulletin.issue_time)}</div>
@@ -88,18 +90,8 @@ export default function HomeScreen() {
           <h3 className="section-title">Rivers above normal</h3>
           <ul className="station-list">
             {elevated.map((s) => (
-              <li key={s.id}>
-                <Link to={`/stations/${s.id}`} className="station-row link-reset">
-                  <StatusDot status={s.status} />
-                  <div className="station-row-main">
-                    <div className="station-row-name">{s.name}</div>
-                    <div className="station-row-sub">{s.river}</div>
-                  </div>
-                  <div className="station-row-readout">
-                    <span className="readout">{fmtCusecs(s.latest_value)}</span>
-                    <SeverityChip status={s.status} />
-                  </div>
-                </Link>
+              <li key={s.station_id}>
+                <StationRow id={s.station_id} name={s.name} sub={s.river} discharge={s.discharge} status={s.status} />
               </li>
             ))}
           </ul>

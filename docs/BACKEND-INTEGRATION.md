@@ -19,7 +19,7 @@ The backend already serves three distinct API families. **Ours is a fourth, new 
 | **Staff mobile** | `/api/mobile` | FFD operators/reviewers | Sanctum bearer, **permission-gated** (`use-hydro-feed-app`, `use-met-feed-app`) | Pattern reference only — *not* for public users. Reuse its conventions, auth controller shape, push-token flow. |
 | **DSS sync** | `/api/dss/v1` | PakFlood-DSS modelling server (machine-to-machine) | Managed `dss_…` Bearer **API key**, scoped + rate-limited | Read-only data already exposed (river-flow, bulletins, etc.). **Cannot embed its key in a public app** (leak risk). Good schema reference. |
 | **MDMS / catchment / meteogram** | `/api/mobile/mdms`, others | Staff | Sanctum | Not relevant. |
-| **FFD public app (us)** | **proposed `/api/app/v1`** | **General public** | Open: public read with no token; optional self-registration for personalization | **To be built** — see [`../backend/0001-public-api-kickoff.md`](../backend/0001-public-api-kickoff.md). |
+| **FFD public app (us)** | **`/api/app/v1`** | **General public** | Open: public read with no token; optional self-registration for personalization | **§A read LIVE** (shipped & tested); §B–G contract locked — see [`../backend/0001-public-api-kickoff.response.md`](../backend/0001-public-api-kickoff.response.md). |
 
 **Why a new surface and not DSS:** DSS is keyed M2M with per-client rate limits and is
 not meant for an untrusted, widely-distributed client. Our public reads must be
@@ -117,11 +117,17 @@ local time (`Asia/Karachi`).
 
 ## 4. Gap analysis — what is genuinely NEW (the ask to the backend)
 
-Tracked in [`../backend/0001-public-api-kickoff.md`](../backend/0001-public-api-kickoff.md). Summary:
+Tracked in [`../backend/0001-public-api-kickoff.md`](../backend/0001-public-api-kickoff.md); the
+authoritative shipped/agreed contract is [`../backend/0001-public-api-kickoff.response.md`](../backend/0001-public-api-kickoff.response.md).
+`src/types/api.ts` mirrors the shipped §A shapes. Key facts that differ from our first proposal:
+station `location` is an **object** `{latitude,longitude,area_name}`; `/flows/latest` items key on
+`station_id` (not `id`); `stations/{id}` is **nested** `{station, thresholds[], series{points[]}}`;
+**bulletins have no `severity`/`river`** (filters dropped); an **advisory is a `type='advisory'`
+bulletin** with no expiry; alert `severity` is **lowercase** with an `ffd://type/id` deeplink.
 
 | # | New thing | Notes |
 |---|---|---|
-| 1 | **Public read API** `/api/app/v1/*` | flows-latest, stations list/detail/series, bulletins feed/detail, advisory active + history, public alerts feed. Unauthenticated. Reshapes existing data; does not touch pipelines. |
+| 1 | **Public read API** `/api/app/v1/*` | ✅ **SHIPPED** — flows-latest, stations list/detail/series, bulletins feed/detail, advisory active + history, public alerts feed (empty until §F). 120 req/min/IP. |
 | 2 | **Public auth** | Open self-registration → low-privilege public user; register/login/logout/forgot-password. New app identity, **not** `use-hydro-feed-app`. |
 | 3 | **Anonymous device tokens** | `user_id` nullable, `platform`, `app_version`, `last_seen_at`; register + heartbeat + explicit unregister; daily prune of stale tokens. (Reactive dead-token pruning already in `FcmService`.) |
 | 4 | **Notifications inbox** | `notifications` (canonical message store = inbox source of truth) + `notification_reads` (per recipient). Public feed + authed inbox + mark-read. |

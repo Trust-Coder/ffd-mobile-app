@@ -30,7 +30,7 @@ same file. We coordinate directly only when a change spans both sides at once.
 
 | # | File | Title | Status |
 |---|---|---|---|
-| 0001 | [`0001-public-api-kickoff.md`](0001-public-api-kickoff.md) | Public app API surface — read, auth, devices, inbox, broadcast | OPEN |
+| 0001 | [`0001-public-api-kickoff.md`](0001-public-api-kickoff.md) | Public app API surface — read, auth, devices, inbox, broadcast | DELIVERED (§A) · [response](0001-public-api-kickoff.response.md) |
 
 ## Request template
 

@@ -4,21 +4,22 @@ import type {
   Advisory,
   AlertNotification,
   Bulletin,
+  FlowLatest,
   Paginated,
+  Station,
   StationDetail,
-  StationSummary,
 } from '@/types/api'
 import { mockEnabled, mocks } from '@/lib/mocks'
 
 /**
- * Typed wrappers over the FFD public API (backend/0001 §A). Each read is
- * offline-tolerant via cachedGet. List endpoints tolerate either a bare array
- * or a `{ items, meta }` envelope until the backend pins the shape.
+ * Typed wrappers over the FFD public API (`/api/app/v1`, backend/0001 §A — shipped).
+ * Each read is offline-tolerant via cachedGet. List endpoints tolerate either a
+ * bare array (curated lists: flows/stations) or a `{ items, meta }` page
+ * (bulletins/advisories/alerts).
  */
 
 export interface BulletinFilter {
-  river?: string
-  severity?: string
+  type?: 'bulletin' | 'advisory' | 'all'
   since?: string
 }
 
@@ -35,23 +36,23 @@ async function getList<T>(path: string, cacheKey: string): Promise<CachedResult<
   return { ...res, data: unwrapList(res.data) }
 }
 
-function buildQuery(filter: Record<string, string | undefined>): string {
-  const params = new URLSearchParams()
-  for (const [key, value] of Object.entries(filter)) {
-    if (value) params.set(key, value)
+function buildQuery(params: Record<string, string | undefined>): string {
+  const search = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (value) search.set(key, value)
   }
-  const qs = params.toString()
+  const qs = search.toString()
   return qs ? `?${qs}` : ''
 }
 
-export function getFlowsLatest(): Promise<CachedResult<StationSummary[]>> {
+export function getFlowsLatest(): Promise<CachedResult<FlowLatest[]>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.flowsLatest()))
-  return getList<StationSummary>('/flows/latest', 'flows.latest')
+  return getList<FlowLatest>('/flows/latest', 'flows.latest')
 }
 
-export function getStations(): Promise<CachedResult<StationSummary[]>> {
+export function getStations(): Promise<CachedResult<Station[]>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.stations()))
-  return getList<StationSummary>('/stations', 'stations.list')
+  return getList<Station>('/stations', 'stations.list')
 }
 
 export function getStation(id: number): Promise<CachedResult<StationDetail>> {
@@ -65,14 +66,22 @@ export function getActiveAdvisory(): Promise<CachedResult<Advisory | null>> {
 }
 
 export function getBulletins(filter: BulletinFilter = {}): Promise<CachedResult<Bulletin[]>> {
-  if (mockEnabled) return Promise.resolve(ok(mocks.bulletins(filter)))
-  const qs = buildQuery({ river: filter.river, severity: filter.severity, since: filter.since })
+  if (mockEnabled) return Promise.resolve(ok(mocks.bulletins()))
+  const qs = buildQuery({ type: filter.type, since: filter.since })
   return getList<Bulletin>(`/bulletins${qs}`, `bulletins.list${qs}`)
 }
 
 export function getBulletin(id: number): Promise<CachedResult<Bulletin>> {
-  if (mockEnabled) return Promise.resolve(ok(mocks.bulletin(id)))
+  if (mockEnabled) return Promise.resolve(ok(mocks.publication(id)))
   return cachedGet<Bulletin>(`/bulletins/${id}`, `bulletins.${id}`)
+}
+
+// NOTE: the /advisories history list endpoint exists but has no screen yet — add
+// getAdvisories() back when an "Advisory history" view lands (Phase 3+).
+
+export function getAdvisory(id: number): Promise<CachedResult<Advisory>> {
+  if (mockEnabled) return Promise.resolve(ok(mocks.publication(id)))
+  return cachedGet<Advisory>(`/advisories/${id}`, `advisories.${id}`)
 }
 
 export function getAlerts(): Promise<CachedResult<AlertNotification[]>> {

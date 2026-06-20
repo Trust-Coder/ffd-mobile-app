@@ -4,22 +4,19 @@ import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from 
 import { useResource } from '@/hooks/useResource'
 import { getAlerts } from '@/lib/endpoints'
 import type { AlertNotification } from '@/types/api'
-import { severityColor } from '@/lib/severity'
+import { severityColor, statusFromLoose } from '@/lib/severity'
+import { routeForAlert } from '@/lib/deeplink'
 import { fmtRelative, isToday } from '@/lib/format'
 
-function deeplink(a: AlertNotification): string | null {
-  const data = a.data ?? {}
-  if (a.type === 'station_alert' && typeof data.station_id === 'number') return `/stations/${data.station_id}`
-  if (a.type === 'bulletin' && typeof data.bulletin_id === 'number') return `/bulletins/${data.bulletin_id}`
-  return null
-}
-
 function AlertRow({ alert }: { alert: AlertNotification }) {
-  const unread = alert.read_at == null
-  const href = deeplink(alert)
+  // Read state only exists on the authenticated inbox (§D); the public feed omits it.
+  const unread = 'read_at' in alert && alert.read_at == null
+  const status = statusFromLoose(alert.severity)
+  const href = routeForAlert(alert)
+
   const inner = (
     <>
-      {alert.severity ? <span className="alert-accent" style={{ background: severityColor(alert.severity) }} /> : null}
+      {alert.severity ? <span className="alert-accent" style={{ background: severityColor(status) }} /> : null}
       <div className="alert-main">
         <div className="alert-row-head">
           <span className="alert-title">{alert.title}</span>
@@ -27,12 +24,13 @@ function AlertRow({ alert }: { alert: AlertNotification }) {
         </div>
         <p className="alert-body">{alert.body}</p>
         <div className="alert-meta">
-          {alert.severity ? <SeverityChip status={alert.severity} /> : null}
+          {alert.severity ? <SeverityChip status={status} /> : null}
           <span className="alert-time">{fmtRelative(alert.sent_at)}</span>
         </div>
       </div>
     </>
   )
+
   const className = 'alert-item' + (unread ? ' unread' : '')
   return href ? (
     <Link to={href} className={className + ' link-reset'}>
@@ -60,7 +58,7 @@ export default function AlertsScreen() {
       ) : error && !data ? (
         <ErrorState message={error} onRetry={reload} />
       ) : alerts.length === 0 ? (
-        <EmptyState message="No alerts yet. You’ll see flood advisories, bulletins and station alerts here." />
+        <EmptyState message="No alerts yet. Flood advisories, bulletins and station alerts will appear here." />
       ) : (
         <>
           {today.length ? (

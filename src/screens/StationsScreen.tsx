@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
 import FilterChips from '@/components/FilterChips'
-import { SeverityChip, StatusDot, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
+import StationRow from '@/components/StationRow'
+import { LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import { useResource } from '@/hooks/useResource'
 import { getStations } from '@/lib/endpoints'
-import { fmtCusecs } from '@/lib/format'
 
 const RIVERS = ['All', 'Indus', 'Jhelum', 'Chenab', 'Ravi', 'Sutlej'] as const
 type RiverFilter = (typeof RIVERS)[number]
@@ -21,7 +20,10 @@ export default function StationsScreen() {
     const q = query.trim().toLowerCase()
     return (data ?? []).filter((s) => {
       if (river !== 'All' && s.river !== river) return false
-      if (q && !s.name.toLowerCase().includes(q) && !(s.location ?? '').toLowerCase().includes(q)) return false
+      if (q) {
+        const haystack = `${s.name} ${s.location?.area_name ?? ''}`.toLowerCase()
+        if (!haystack.includes(q)) return false
+      }
       return true
     })
   }, [data, river, query])
@@ -53,20 +55,13 @@ export default function StationsScreen() {
         <ul className="station-list">
           {filtered.map((s) => (
             <li key={s.id}>
-              <Link to={`/stations/${s.id}`} className="station-row link-reset">
-                <StatusDot status={s.status} />
-                <div className="station-row-main">
-                  <div className="station-row-name">{s.name}</div>
-                  <div className="station-row-sub">
-                    {s.river}
-                    {s.location ? ` · ${s.location}` : ''}
-                  </div>
-                </div>
-                <div className="station-row-readout">
-                  <span className="readout">{fmtCusecs(s.latest_value)}</span>
-                  <SeverityChip status={s.status} />
-                </div>
-              </Link>
+              <StationRow
+                id={s.id}
+                name={s.name}
+                sub={s.location?.area_name ? `${s.river} · ${s.location.area_name}` : s.river}
+                discharge={s.discharge}
+                status={s.status}
+              />
             </li>
           ))}
         </ul>

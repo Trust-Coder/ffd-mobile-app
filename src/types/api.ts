@@ -1,9 +1,9 @@
 /**
- * API contract types for the FFD public app surface.
+ * API contract types for the FFD public app surface (`/api/app/v1`).
  *
- * These mirror the PROPOSED contract in `backend/0001-public-api-kickoff.md`.
- * Treat them as provisional until the backend ships that request — update here
- * (the single source of truth for the client) when the real shapes land.
+ * AUTHORITATIVE as shipped — see `backend/0001-public-api-kickoff.response.md`
+ * (§A served & tested 2026-06-21). This file is the single client-side source of
+ * truth; reconcile here when the backend revises a shape.
  */
 
 // ── Envelope ───────────────────────────────────────────────────────────────
@@ -16,12 +16,11 @@ export interface ApiError {
 }
 
 // ── Domain primitives ──────────────────────────────────────────────────────
-/** Backend is canonical: SIX levels. The UI collapses EX_HIGH into the top bucket. */
+/** Six-level flood status; `status_id` is its 0..5 ordinal (NORMAL..EX_HIGH). */
 export type FloodStatus = 'NORMAL' | 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY_HIGH' | 'EX_HIGH'
 export type Trend = 'up' | 'down' | 'right'
-export type River = 'Indus' | 'Jhelum' | 'Chenab' | 'Ravi' | 'Sutlej'
 
-// ── Cursor pagination (keyset, never page numbers) ─────────────────────────
+// ── Cursor pagination (paginated lists only: bulletins, advisories, alerts) ─
 export interface CursorMeta {
   count: number
   per_page: number
@@ -35,85 +34,124 @@ export interface Paginated<T> {
 }
 
 // ── Stations / flows ───────────────────────────────────────────────────────
-export interface StationSummary {
+export interface StationLocation {
+  latitude: number | null
+  longitude: number | null
+  area_name: string | null
+}
+
+/** Full station shape — `/stations` list items and `stations/{id}.station`. */
+export interface Station {
   id: number
   name: string
   river: string
-  location?: string | null
-  latest_value: number | null
-  unit: string // e.g. "Cs" (cusecs)
+  is_dam: boolean
+  location: StationLocation | null
   status: FloodStatus
-  status_label: string
-  trend?: Trend
-  observed_at?: string | null // ISO 8601 with offset
+  status_id: number
+  inflow_discharge: number | null
+  outflow_discharge: number | null
+  /** outflow ?? inflow — the headline figure (cusecs). */
+  discharge: number | null
+  inflow_trend: Trend
+  outflow_trend: Trend
+  trend: Trend
+  dam_level: number | null // feet, dams only
+  observed_at: string | null // ISO 8601 +05:00
 }
 
-export interface StationThresholds {
-  medium?: number | null
-  high?: number | null
-  very_high?: number | null
+/** Trimmed `/flows/latest` item — note `station_id` (not `id`). */
+export interface FlowLatest {
+  station_id: number
+  name: string
+  river: string
+  discharge: number | null
+  status: FloodStatus
+  status_id: number
+  trend: Trend
+  observed_at: string | null
+}
+
+export interface StationThreshold {
+  level: FloodStatus
+  status_id: number
+  min_discharge: number | null // cusecs; draw reference lines off this
 }
 
 export interface SeriesPoint {
-  timestamp: string // ISO 8601 with offset
-  value: number
+  t: string // ISO 8601 +05:00
+  inflow: number | null
+  outflow: number | null
+  level: number | null
+  dam_level: number | null
+  status: FloodStatus
 }
 
-export interface StationDetail extends StationSummary {
-  catchment?: string | null
-  is_dam?: boolean
-  thresholds?: StationThresholds
-  series?: SeriesPoint[] // recent readings for the 24h chart
+export interface StationSeries {
+  hours: number
+  from: string
+  to: string
+  points: SeriesPoint[]
 }
 
-// ── Bulletins & advisories ─────────────────────────────────────────────────
-export interface Bulletin {
+export interface StationDetail {
+  station: Station
+  thresholds: StationThreshold[] // ascending by min_discharge
+  series: StationSeries
+}
+
+// ── Publications (bulletins & advisories share one shape/table) ────────────
+export type PublicationType = 'bulletin' | 'advisory'
+
+export interface Publication {
   id: number
-  uuid?: string
+  type: PublicationType
+  type_label: string
   title: string
-  body?: string | null // HTML; null for file-only publications
-  severity?: FloodStatus | null
+  body: string | null // frozen published HTML; null for PDF-only → use download_url
   issue_time: string
-  published_at?: string | null
-  has_file?: boolean
-  download_url?: string | null
+  published_at: string | null
+  has_file: boolean
+  original_filename: string | null
+  download_url: string | null // null if no file
 }
 
-export interface Advisory {
-  id: number
-  title: string
-  body?: string | null
-  severity?: FloodStatus | null
-  status: 'active' | 'expired' | 'draft'
-  valid_from?: string | null
-  valid_until?: string | null
-  rivers_affected?: string[]
-  guidance?: string | null
-  published_at?: string | null
-}
+export type Bulletin = Publication
+export type Advisory = Publication
 
-// ── Notifications / alerts inbox ───────────────────────────────────────────
+// ── Notifications / alerts ─────────────────────────────────────────────────
 export type AlertType = 'advisory' | 'bulletin' | 'station_alert' | 'info'
+export type AlertScope = 'broadcast' | 'user'
+
+export interface AlertData {
+  deeplink?: string // e.g. "ffd://advisory/1"
+  station_id?: number
+  bulletin_id?: number
+  advisory_id?: number
+  [key: string]: unknown
+}
 
 export interface AlertNotification {
   id: number
   type: AlertType
+  scope: AlertScope
   title: string
   body: string
-  severity?: FloodStatus | null
-  data?: Record<string, unknown> // advisory_id / bulletin_id / station_id / deeplink
+  severity?: string | null // lowercase: normal|low|medium|high|very_high|ex_high
+  data?: AlertData
   sent_at: string
+  /** Present only on the authenticated §D inbox; absent on the public feed. */
   read_at?: string | null
 }
 
-// ── Auth ───────────────────────────────────────────────────────────────────
+// ── Auth (§B — forthcoming) ────────────────────────────────────────────────
 export interface AuthUser {
   id: number
   name: string
   email: string
 }
 
-/** Flat (not enveloped) — matches the staff mobile auth convention. */
+/** Flat (not enveloped), matching the staff mobile auth convention. */
 export interface AuthTokenResponse {
   token: string
   token_type: string

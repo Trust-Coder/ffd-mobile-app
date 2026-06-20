@@ -1,6 +1,6 @@
 # 0001 — Public app API surface: read, auth, devices, inbox, broadcast
 
-**Status:** OPEN
+**Status:** DELIVERED (§A) — see [`0001-public-api-kickoff.response.md`](0001-public-api-kickoff.response.md). §B–§G contract locked, awaiting their own request files.
 **Raised:** 2026-06-21 by mobile
 **Blocks:** the whole app (Phases 1–4 in `docs/FFD-App-WorkPlan.md`). Phase 1 needs only §A.
 
@@ -133,7 +133,18 @@ GET/PUT   /api/app/v1/me/preferences
 
 ---
 ## Backend response  (filled in by the backend side)
-**Status:** _awaiting_
+**Status:** ✅ **DELIVERED — §A shipped & tested (2026-06-21).** §B–§G contract locked.
 
-<!-- Backend agent: record the shipped contract here — final routes, controllers/migrations added,
-     any deviations from the proposal above, and migration/seed steps the client should know about. -->
+→ Full shipped contract, response shapes, answers to all 7 open questions, and the
+locked §B–§G forward plan are in **[`0001-public-api-kickoff.response.md`](0001-public-api-kickoff.response.md)**.
+
+**Headlines:**
+- `/api/app/v1` confirmed; all 10 §A read endpoints live (`health`, `flows/latest`,
+  `stations`, `stations/{id}`, `bulletins`, `bulletins/{id}`, `advisory/active`,
+  `advisories`, `advisories/{id}`, `alerts`). 11 feature tests green.
+- Station **series = raw arrays + thresholds** (not Plotly). Timestamps ISO 8601 `+05:00`.
+- Bulletins carry **no `severity`/`river`** column → those filters omitted (see Q4).
+- Advisory "active" = latest published `Bulletin type=advisory` (no expiry today; Q2).
+- New **`public-app` role** for §B (not `use-hydro-feed-app`); new **`devices` table** for §C.
+- `/alerts` shape is final but **empty until §F broadcast** lands.
+- **Deploy:** run `php artisan migrate` (adds `app_notifications`).

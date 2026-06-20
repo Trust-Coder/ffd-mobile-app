@@ -1,6 +1,6 @@
 # 0001 — Backend response: Public app API surface
 
-**Status:** ✅ **SERVED — §A (public read) shipped & tested.** §B–§G contract agreed below (decisions locked; implementation lands on your next requests).
+**Status:** ✅ **DELIVERED — §A (public read) shipped & tested.** §B–§G contract agreed below (decisions locked; implementation lands on your next requests).
 **Served:** 2026-06-21 by backend
 **Backend commit scope:** new `/api/app/v1` surface in `ffd-web-2026`. No ingestion pipeline touched.
 

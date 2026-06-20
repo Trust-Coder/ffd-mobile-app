@@ -3,19 +3,20 @@ import type {
   AlertNotification,
   Bulletin,
   FloodStatus,
+  FlowLatest,
+  Publication,
   SeriesPoint,
+  Station,
   StationDetail,
-  StationSummary,
+  StationThreshold,
+  Trend,
 } from '@/types/api'
-import { severityLabel } from '@/lib/severity'
-import type { BulletinFilter } from '@/lib/endpoints'
+import { SEVERITY_ORDER } from '@/lib/severity'
 
 /**
- * Dev-only fixtures so the screens render realistic data without a live backend.
- *
- * Gated on BOTH `VITE_USE_MOCKS=1` AND `import.meta.env.DEV`, so a production
- * `vite build` can never ship mock data regardless of env. Set the flag in your
- * local `.env` to preview Phase 1 screens; unset it to hit the real API.
+ * Dev-only fixtures matching the shipped §A shapes, so screens render without a
+ * live backend. Gated on BOTH `VITE_USE_MOCKS=1` AND `import.meta.env.DEV`, so a
+ * production `vite build` can never ship them.
  */
 export const mockEnabled = import.meta.env.VITE_USE_MOCKS === '1' && import.meta.env.DEV
 
@@ -25,100 +26,136 @@ function isoAgo(ms: number): string {
   return new Date(Date.now() - ms).toISOString()
 }
 
-function hourlySeries(base: number, amp: number, hours = 24): SeriesPoint[] {
-  const pts: SeriesPoint[] = []
-  for (let i = hours - 1; i >= 0; i--) {
-    const v = Math.round(base + amp * Math.sin((hours - i) / 3) + amp * 0.25 * Math.cos((hours - i) / 1.7))
-    pts.push({ timestamp: isoAgo(i * HOUR), value: Math.max(0, v) })
-  }
-  return pts
+function statusId(status: FloodStatus): number {
+  return SEVERITY_ORDER.indexOf(status)
 }
 
 interface Seed {
   id: number
   name: string
   river: string
-  location: string
-  value: number
+  area: string
+  discharge: number
   status: FloodStatus
+  trend: Trend
   is_dam?: boolean
-  thresholds: { medium: number; high: number; very_high: number }
+  thr: { low: number; medium: number; high: number; very_high: number }
 }
 
 const SEEDS: Seed[] = [
-  { id: 1, name: 'Tarbela', river: 'Indus', location: 'Swabi', value: 142300, status: 'NORMAL', is_dam: true, thresholds: { medium: 200000, high: 250000, very_high: 300000 } },
-  { id: 2, name: 'Kalabagh', river: 'Indus', location: 'Mianwali', value: 221400, status: 'NORMAL', thresholds: { medium: 400000, high: 550000, very_high: 700000 } },
-  { id: 3, name: 'Guddu', river: 'Indus', location: 'Kashmore', value: 198700, status: 'NORMAL', thresholds: { medium: 400000, high: 550000, very_high: 700000 } },
-  { id: 4, name: 'Sukkur', river: 'Indus', location: 'Sukkur', value: 175300, status: 'LOW', thresholds: { medium: 400000, high: 550000, very_high: 700000 } },
-  { id: 5, name: 'Marala', river: 'Chenab', location: 'Sialkot', value: 186400, status: 'MEDIUM', thresholds: { medium: 150000, high: 250000, very_high: 400000 } },
-  { id: 6, name: 'Trimmu', river: 'Chenab', location: 'Jhang', value: 96500, status: 'LOW', thresholds: { medium: 150000, high: 250000, very_high: 400000 } },
-  { id: 7, name: 'Balloki', river: 'Ravi', location: 'Kasur', value: 41200, status: 'NORMAL', thresholds: { medium: 90000, high: 150000, very_high: 225000 } },
-  { id: 8, name: 'Sulemanki', river: 'Sutlej', location: 'Okara', value: 28600, status: 'NORMAL', thresholds: { medium: 75000, high: 150000, very_high: 200000 } },
-  { id: 9, name: 'Mangla', river: 'Jhelum', location: 'Mirpur', value: 88300, status: 'NORMAL', is_dam: true, thresholds: { medium: 150000, high: 250000, very_high: 350000 } },
+  { id: 1, name: 'Tarbela', river: 'Indus', area: 'Swabi', discharge: 142300, status: 'NORMAL', trend: 'right', is_dam: true, thr: { low: 120000, medium: 200000, high: 250000, very_high: 300000 } },
+  { id: 2, name: 'Kalabagh', river: 'Indus', area: 'Mianwali', discharge: 221400, status: 'NORMAL', trend: 'right', thr: { low: 250000, medium: 400000, high: 550000, very_high: 700000 } },
+  { id: 3, name: 'Guddu', river: 'Indus', area: 'Kashmore', discharge: 198700, status: 'NORMAL', trend: 'right', thr: { low: 250000, medium: 400000, high: 550000, very_high: 700000 } },
+  { id: 4, name: 'Sukkur', river: 'Indus', area: 'Sukkur', discharge: 275300, status: 'LOW', trend: 'up', thr: { low: 250000, medium: 400000, high: 550000, very_high: 700000 } },
+  { id: 5, name: 'Marala', river: 'Chenab', area: 'Sialkot', discharge: 186400, status: 'MEDIUM', trend: 'up', thr: { low: 100000, medium: 150000, high: 250000, very_high: 400000 } },
+  { id: 6, name: 'Trimmu', river: 'Chenab', area: 'Jhang', discharge: 112500, status: 'LOW', trend: 'up', thr: { low: 100000, medium: 150000, high: 250000, very_high: 400000 } },
+  { id: 7, name: 'Balloki', river: 'Ravi', area: 'Kasur', discharge: 41200, status: 'NORMAL', trend: 'right', thr: { low: 60000, medium: 90000, high: 150000, very_high: 225000 } },
+  { id: 8, name: 'Sulemanki', river: 'Sutlej', area: 'Okara', discharge: 28600, status: 'NORMAL', trend: 'right', thr: { low: 50000, medium: 75000, high: 150000, very_high: 200000 } },
+  { id: 9, name: 'Mangla', river: 'Jhelum', area: 'Mirpur', discharge: 88300, status: 'NORMAL', trend: 'right', is_dam: true, thr: { low: 100000, medium: 150000, high: 250000, very_high: 350000 } },
 ]
 
-function summary(seed: Seed): StationSummary {
+function thresholds(seed: Seed): StationThreshold[] {
+  return [
+    { level: 'LOW' as const, value: seed.thr.low },
+    { level: 'MEDIUM' as const, value: seed.thr.medium },
+    { level: 'HIGH' as const, value: seed.thr.high },
+    { level: 'VERY_HIGH' as const, value: seed.thr.very_high },
+  ].map((t) => ({ level: t.level, status_id: statusId(t.level), min_discharge: t.value }))
+}
+
+function statusForValue(value: number, seed: Seed): FloodStatus {
+  if (value >= seed.thr.very_high) return 'VERY_HIGH'
+  if (value >= seed.thr.high) return 'HIGH'
+  if (value >= seed.thr.medium) return 'MEDIUM'
+  if (value >= seed.thr.low) return 'LOW'
+  return 'NORMAL'
+}
+
+function station(seed: Seed): Station {
+  const inflow = Math.round(seed.discharge * 0.92)
   return {
     id: seed.id,
     name: seed.name,
     river: seed.river,
-    location: seed.location,
-    latest_value: seed.value,
-    unit: 'Cs',
+    is_dam: seed.is_dam ?? false,
+    location: { latitude: null, longitude: null, area_name: seed.area },
     status: seed.status,
-    status_label: severityLabel(seed.status),
-    trend: seed.status === 'MEDIUM' ? 'up' : 'right',
+    status_id: statusId(seed.status),
+    inflow_discharge: inflow,
+    outflow_discharge: seed.discharge,
+    discharge: seed.discharge,
+    inflow_trend: seed.trend,
+    outflow_trend: seed.trend,
+    trend: seed.trend,
+    dam_level: seed.is_dam ? 1550 : null,
     observed_at: isoAgo(HOUR),
   }
 }
 
-function detail(seed: Seed): StationDetail {
-  const amp = Math.max(2000, Math.round(seed.value * 0.06))
+function flow(seed: Seed): FlowLatest {
   return {
-    ...summary(seed),
-    catchment: seed.river,
-    is_dam: seed.is_dam ?? false,
-    thresholds: seed.thresholds,
-    series: hourlySeries(seed.value, amp),
+    station_id: seed.id,
+    name: seed.name,
+    river: seed.river,
+    discharge: seed.discharge,
+    status: seed.status,
+    status_id: statusId(seed.status),
+    trend: seed.trend,
+    observed_at: isoAgo(HOUR),
+  }
+}
+
+function series(seed: Seed): SeriesPoint[] {
+  const amp = Math.max(2000, Math.round(seed.discharge * 0.06))
+  const pts: SeriesPoint[] = []
+  for (let i = 23; i >= 0; i--) {
+    const outflow = Math.max(0, Math.round(seed.discharge + amp * Math.sin((24 - i) / 3) + amp * 0.25 * Math.cos((24 - i) / 1.7)))
+    pts.push({
+      t: isoAgo(i * HOUR),
+      inflow: Math.round(outflow * 0.92),
+      outflow,
+      level: null,
+      dam_level: seed.is_dam ? 1550 : null,
+      status: statusForValue(outflow, seed),
+    })
+  }
+  return pts
+}
+
+function detail(seed: Seed): StationDetail {
+  return {
+    station: station(seed),
+    thresholds: thresholds(seed),
+    series: { hours: 24, from: isoAgo(23 * HOUR), to: isoAgo(0), points: series(seed) },
   }
 }
 
 const BULLETINS: Bulletin[] = [
-  { id: 101, title: 'Daily Flood Bulletin — Chenab rising at Marala', body: '<p>The Chenab at Marala has risen to <strong>186,400 cusecs</strong> and is expected to keep rising over the next 24 hours. All other rivers are within normal limits.</p>', severity: 'MEDIUM', issue_time: isoAgo(5 * HOUR), published_at: isoAgo(5 * HOUR), has_file: true, download_url: '#' },
-  { id: 102, title: 'Daily Flood Bulletin — Indus system normal', body: '<p>Tarbela through Kotri reporting normal seasonal flows. No flood threat anticipated.</p>', severity: 'NORMAL', issue_time: isoAgo(29 * HOUR), published_at: isoAgo(29 * HOUR), has_file: true, download_url: '#' },
-  { id: 103, title: 'Weekly Hydrological Summary', body: '<p>Catchment rainfall remained below normal across the upper Indus basin this week.</p>', severity: 'LOW', issue_time: isoAgo(3 * 24 * HOUR), published_at: isoAgo(3 * 24 * HOUR), has_file: false, download_url: null },
+  { id: 101, type: 'bulletin', type_label: 'Bulletin', title: 'Daily Flood Bulletin — Chenab rising at Marala', body: '<p>The Chenab at Marala has risen to <strong>186,400 cusecs</strong> and is expected to keep rising over the next 24 hours. All other rivers are within normal limits.</p>', issue_time: isoAgo(5 * HOUR), published_at: isoAgo(5 * HOUR), has_file: true, original_filename: 'daily-bulletin.pdf', download_url: '#' },
+  { id: 102, type: 'bulletin', type_label: 'Bulletin', title: 'Daily Flood Bulletin — Indus system normal', body: '<p>Tarbela through Kotri reporting normal seasonal flows. No flood threat anticipated.</p>', issue_time: isoAgo(29 * HOUR), published_at: isoAgo(29 * HOUR), has_file: true, original_filename: 'daily-bulletin.pdf', download_url: '#' },
+  { id: 103, type: 'bulletin', type_label: 'Bulletin', title: 'Weekly Hydrological Summary', body: '<p>Catchment rainfall remained below normal across the upper Indus basin this week.</p>', issue_time: isoAgo(3 * 24 * HOUR), published_at: isoAgo(3 * 24 * HOUR), has_file: false, original_filename: null, download_url: null },
+]
+
+const ADVISORIES: Advisory[] = [
+  { id: 201, type: 'advisory', type_label: 'Advisory', title: 'High flood risk on the Chenab at Marala', body: '<p>Rising flows on the Chenab are expected to reach <strong>high flood</strong> level at Marala within 24 hours. Communities along the river between Marala and Khanki should remain alert and avoid riverbanks and low-lying crossings.</p>', issue_time: isoAgo(6 * HOUR), published_at: isoAgo(6 * HOUR), has_file: true, original_filename: 'advisory.pdf', download_url: '#' },
+  { id: 202, type: 'advisory', type_label: 'Advisory', title: 'Seasonal flood outlook — monsoon onset', body: '<p>The monsoon is expected to establish over the upper catchments next week. Routine vigilance advised.</p>', issue_time: isoAgo(10 * 24 * HOUR), published_at: isoAgo(10 * 24 * HOUR), has_file: false, original_filename: null, download_url: null },
 ]
 
 const ALERTS: AlertNotification[] = [
-  { id: 201, type: 'station_alert', title: 'Medium Flood — Marala', body: 'Flows rose to 186,400 cusecs on the Chenab and are expected to keep rising over the next 24 hours.', severity: 'MEDIUM', data: { station_id: 5 }, sent_at: isoAgo(2 * HOUR), read_at: null },
-  { id: 202, type: 'advisory', title: 'Flood advisory issued for the Chenab', body: 'A high flood risk advisory is now active for the Chenab at Marala. Tap for guidance.', severity: 'HIGH', data: { advisory_id: 1 }, sent_at: isoAgo(6 * HOUR), read_at: isoAgo(5 * HOUR) },
-  { id: 203, type: 'bulletin', title: 'Daily Flood Bulletin published', body: 'The latest FFD flood bulletin is now available.', severity: 'NORMAL', data: { bulletin_id: 101 }, sent_at: isoAgo(28 * HOUR), read_at: isoAgo(20 * HOUR) },
-  { id: 204, type: 'info', title: 'Indus system within normal limits', body: 'Tarbela through Kotri reporting normal seasonal flows.', severity: 'NORMAL', data: {}, sent_at: isoAgo(3 * 24 * HOUR), read_at: null },
+  { id: 301, type: 'station_alert', scope: 'broadcast', title: 'Medium Flood — Marala', body: 'Flows rose to 186,400 cusecs on the Chenab and are expected to keep rising over the next 24 hours.', severity: 'medium', data: { station_id: 5, deeplink: 'ffd://station/5' }, sent_at: isoAgo(2 * HOUR) },
+  { id: 302, type: 'advisory', scope: 'broadcast', title: 'Flood advisory issued for the Chenab', body: 'A high flood risk advisory is now active for the Chenab at Marala. Tap for guidance.', severity: 'high', data: { advisory_id: 201, deeplink: 'ffd://advisory/201' }, sent_at: isoAgo(6 * HOUR) },
+  { id: 303, type: 'bulletin', scope: 'broadcast', title: 'Daily Flood Bulletin published', body: 'The latest FFD flood bulletin is now available.', severity: 'normal', data: { bulletin_id: 101, deeplink: 'ffd://bulletin/101' }, sent_at: isoAgo(28 * HOUR) },
+  { id: 304, type: 'info', scope: 'broadcast', title: 'Indus system within normal limits', body: 'Tarbela through Kotri reporting normal seasonal flows.', severity: 'normal', data: {}, sent_at: isoAgo(3 * 24 * HOUR) },
 ]
 
-const ACTIVE_ADVISORY: Advisory = {
-  id: 1,
-  title: 'High flood risk on the Chenab at Marala',
-  body: '<p>Rising flows on the Chenab are expected to reach <strong>high flood</strong> level at Marala within 24 hours. Communities along the river between Marala and Khanki should remain alert.</p>',
-  severity: 'HIGH',
-  status: 'active',
-  valid_from: isoAgo(6 * HOUR),
-  valid_until: isoAgo(-18 * HOUR),
-  rivers_affected: ['Chenab'],
-  guidance: 'Avoid riverbanks and low-lying crossings. Follow instructions from local district administration.',
-  published_at: isoAgo(6 * HOUR),
-}
+const ALL_PUBLICATIONS: Publication[] = [...BULLETINS, ...ADVISORIES]
 
 export const mocks = {
-  flowsLatest: (): StationSummary[] => SEEDS.map(summary),
-  stations: (): StationSummary[] => SEEDS.map(summary),
-  station: (id: number): StationDetail => {
-    const seed = SEEDS.find((s) => s.id === id) ?? SEEDS[0]
-    return detail(seed)
-  },
-  activeAdvisory: (): Advisory | null => ACTIVE_ADVISORY,
-  bulletins: (filter: BulletinFilter): Bulletin[] =>
-    BULLETINS.filter((b) => !filter.severity || b.severity === filter.severity),
-  bulletin: (id: number): Bulletin => BULLETINS.find((b) => b.id === id) ?? BULLETINS[0],
+  flowsLatest: (): FlowLatest[] => SEEDS.map(flow),
+  stations: (): Station[] => SEEDS.map(station),
+  station: (id: number): StationDetail => detail(SEEDS.find((s) => s.id === id) ?? SEEDS[0]),
+  activeAdvisory: (): Advisory | null => ADVISORIES[0],
+  bulletins: (): Bulletin[] => BULLETINS,
+  publication: (id: number): Publication => ALL_PUBLICATIONS.find((p) => p.id === id) ?? ALL_PUBLICATIONS[0],
   alerts: (): AlertNotification[] => ALERTS,
 }
