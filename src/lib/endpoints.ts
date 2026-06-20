@@ -11,7 +11,11 @@ import type {
   StationDetail,
   WatchlistStation,
 } from '@/types/api'
+import { statusFromLoose } from '@/lib/severity'
+import { clearCacheKey } from '@/lib/cache'
 import { mockEnabled, mocks } from '@/lib/mocks'
+
+const WATCHLIST_CACHE_KEY = 'me.stations'
 
 /**
  * Typed wrappers over the FFD public API (`/api/app/v1`, backend/0001 §A — shipped).
@@ -108,7 +112,7 @@ export async function markAlertRead(id: number): Promise<void> {
 
 export function getWatchlist(): Promise<CachedResult<WatchlistStation[]>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.watchlist()))
-  return getList<WatchlistStation>('/me/stations', 'me.stations', { auth: true })
+  return getList<WatchlistStation>('/me/stations', WATCHLIST_CACHE_KEY, { auth: true })
 }
 
 export async function addToWatchlist(stationId: number): Promise<void> {
@@ -117,6 +121,7 @@ export async function addToWatchlist(stationId: number): Promise<void> {
     return
   }
   await apiRequest(`/me/stations/${stationId}`, { method: 'POST', auth: true })
+  await clearCacheKey(WATCHLIST_CACHE_KEY) // avoid serving a stale watchlist offline
 }
 
 export async function removeFromWatchlist(stationId: number): Promise<void> {
@@ -125,6 +130,7 @@ export async function removeFromWatchlist(stationId: number): Promise<void> {
     return
   }
   await apiRequest(`/me/stations/${stationId}`, { method: 'DELETE', auth: true })
+  await clearCacheKey(WATCHLIST_CACHE_KEY)
 }
 
 export async function setStationAlert(stationId: number, enabled: boolean): Promise<void> {
@@ -133,11 +139,14 @@ export async function setStationAlert(stationId: number, enabled: boolean): Prom
     return
   }
   await apiRequest(`/me/stations/${stationId}`, { method: 'PUT', auth: true, body: { alert_enabled: enabled } })
+  await clearCacheKey(WATCHLIST_CACHE_KEY)
 }
 
-export function getPreferences(): Promise<CachedResult<NotificationPreferences>> {
+export async function getPreferences(): Promise<CachedResult<NotificationPreferences>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.preferences()))
-  return cachedGet<NotificationPreferences>('/me/preferences', 'me.preferences', { auth: true })
+  const res = await cachedGet<NotificationPreferences>('/me/preferences', 'me.preferences', { auth: true })
+  // Tolerate either casing of min_severity until backend/0004 pins it (see §E Q7).
+  return { ...res, data: { ...res.data, min_severity: statusFromLoose(res.data.min_severity) } }
 }
 
 export async function updatePreferences(prefs: NotificationPreferences): Promise<void> {

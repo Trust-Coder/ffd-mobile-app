@@ -50,11 +50,11 @@ function AuthPanel() {
 
   return (
     <section className="auth-card">
-      <div className="auth-tabs" role="tablist">
-        <button type="button" role="tab" aria-selected={mode === 'login'} className={'auth-tab' + (mode === 'login' ? ' active' : '')} onClick={() => setMode('login')}>
+      <div className="auth-tabs">
+        <button type="button" aria-pressed={mode === 'login'} className={'auth-tab' + (mode === 'login' ? ' active' : '')} onClick={() => setMode('login')}>
           Sign in
         </button>
-        <button type="button" role="tab" aria-selected={mode === 'register'} className={'auth-tab' + (mode === 'register' ? ' active' : '')} onClick={() => setMode('register')}>
+        <button type="button" aria-pressed={mode === 'register'} className={'auth-tab' + (mode === 'register' ? ' active' : '')} onClick={() => setMode('register')}>
           Register
         </button>
       </div>

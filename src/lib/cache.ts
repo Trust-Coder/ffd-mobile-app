@@ -28,6 +28,10 @@ export async function writeCache<T>(key: string, data: T): Promise<void> {
   await Preferences.set({ key: PREFIX + key, value: JSON.stringify(entry) })
 }
 
+export async function clearCacheKey(key: string): Promise<void> {
+  await Preferences.remove({ key: PREFIX + key })
+}
+
 export async function clearCache(): Promise<void> {
   const { keys } = await Preferences.keys()
   await Promise.all(

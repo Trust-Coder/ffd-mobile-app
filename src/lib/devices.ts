@@ -24,14 +24,16 @@ interface HeartbeatResponse {
 }
 
 export async function registerDevice(fcmToken: string, platform: string, appVersion: string): Promise<void> {
+  // Persist the token BEFORE the network call so a failed POST (e.g. offline at
+  // logout/login) never leaves the device tokenless — heartbeat/next launch retry.
+  await Preferences.set({ key: TOKEN_KEY, value: fcmToken })
   const data = await apiRequest<RegisterResponse>('/devices', {
     method: 'POST',
     auth: true,
     body: { fcm_token: fcmToken, platform, app_version: appVersion },
   })
-  await Preferences.set({ key: TOKEN_KEY, value: fcmToken })
   if (typeof data?.device_id === 'number') {
-    // Stored for §D read-state (notification_reads.device_id) in Phase 3.
+    // Stored for §D read-state (notification_reads.device_id).
     await Preferences.set({ key: DEVICE_ID_KEY, value: String(data.device_id) })
   }
   await markHeartbeat()

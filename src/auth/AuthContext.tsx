@@ -4,6 +4,7 @@ import { Capacitor } from '@capacitor/core'
 import type { AuthTokenResponse, AuthUser } from '@/types/api'
 import { clearStoredUser, clearToken, getStoredUser, getToken, setStoredUser, setToken } from '@/lib/auth'
 import { clearCache } from '@/lib/cache'
+import { ApiException } from '@/lib/api'
 import * as authApi from '@/lib/authApi'
 import type { RegisterInput } from '@/lib/authApi'
 import { APP_VERSION } from '@/lib/push'
@@ -53,6 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!active) return
         setUser(fresh)
         await setStoredUser(fresh)
+        // Re-assert the device↔user link on every authed start, so a link that
+        // failed at login time (offline) eventually reconciles.
+        await linkDevice()
       } catch {
         await clearToken()
         await clearStoredUser()
@@ -68,6 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const applySession = useCallback(async (res: AuthTokenResponse) => {
+    if (!res?.token || !res.user) {
+      throw new ApiException({ code: 'SERVER_ERROR', message: 'Unexpected sign-in response.' })
+    }
     await setToken(res.token)
     await setStoredUser(res.user)
     setUser(res.user)
