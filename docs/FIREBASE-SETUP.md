@@ -23,13 +23,13 @@ buildscript {
   }
 }
 ```
-`android/app/build.gradle` — apply the plugin at the **bottom**:
-```gradle
-apply plugin: 'com.google.gms.google-services'
-```
 > The `com.google.gms:google-services` classpath resolves from **Google's Maven repo** —
 > ensure `google()` is in `buildscript { repositories { … } }`. Capacitor 6's generated
 > `android/build.gradle` already includes it; only an eye on it if you've customised repos.
+
+**Do NOT add `apply plugin: 'com.google.gms.google-services'` yourself** — `android/app/build.gradle`
+already auto-applies it (the guarded block at the bottom) **when `google-services.json` is present**.
+Adding it manually causes a duplicate-plugin Gradle error. You only need the classpath above.
 
 ## 3. Sync + run
 ```bash

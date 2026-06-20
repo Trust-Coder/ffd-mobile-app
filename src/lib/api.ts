@@ -36,6 +36,16 @@ export interface RequestOptions {
   signal?: AbortSignal
 }
 
+/** Retry-After is either delay-seconds or an HTTP-date; return seconds-to-wait. */
+function parseRetryAfter(raw: string | null): number | undefined {
+  if (!raw) return undefined
+  const seconds = Number(raw)
+  if (Number.isFinite(seconds)) return seconds
+  const dateMs = Date.parse(raw)
+  if (Number.isNaN(dateMs)) return undefined
+  return Math.max(0, Math.round((dateMs - Date.now()) / 1000))
+}
+
 export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' }
   if (opts.body !== undefined) headers['Content-Type'] = 'application/json'
@@ -57,7 +67,7 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Pr
   }
 
   // Rate limiting (429): the surface throttles at 120/min per IP.
-  const retryAfter = res.status === 429 ? Number(res.headers.get('Retry-After')) || undefined : undefined
+  const retryAfter = res.status === 429 ? parseRetryAfter(res.headers.get('Retry-After')) : undefined
 
   let json: unknown
   try {
