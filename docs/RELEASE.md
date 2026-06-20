@@ -42,7 +42,7 @@ cd android && ./gradlew bundleRelease   # → app/build/outputs/bundle/release/a
 > APK but must be **verified on-device** with the Capacitor consumer ProGuard rules before relying on it.
 
 ## 5. App Links (so WhatsApp/web links open the app)
-Send the backend (request **0005**) the **package** `pk.gov.pmd.ffd.flood` + the release **SHA-256**.
+Send the backend (request **0005**) the **package** `com.pmd.floodupdates` + the release **SHA-256**.
 They host `/.well-known/assetlinks.json` and the `/app/{type}/{id}` redirect on the app host. Then
 uncomment the App Link `<intent-filter android:autoVerify="true">` in `AndroidManifest.xml` (set the
 real host) and re-build. The `ffd://` scheme filter already works for push taps.

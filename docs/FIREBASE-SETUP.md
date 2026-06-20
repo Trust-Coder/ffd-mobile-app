@@ -11,7 +11,7 @@ Firebase project and add the Google Services Gradle plugin. None of this is comm
 
 ## 1. Firebase project
 1. Create a Firebase project (or reuse the Pak Flood DSS one if shared).
-2. Add an **Android app** with package name **`pk.gov.pmd.ffd.flood`** (matches `capacitor.config.ts`).
+2. Add an **Android app** with package name **`com.pmd.floodupdates`** (matches `capacitor.config.ts`).
 3. Download **`google-services.json`** → place at `android/app/google-services.json`.
 
 ## 2. Gradle wiring (Capacitor does not add this automatically)

@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'pk.gov.pmd.ffd.flood',
+  appId: 'com.pmd.floodupdates',
   appName: 'FFD Flood',
   webDir: 'dist',
   backgroundColor: '#0A4A52',

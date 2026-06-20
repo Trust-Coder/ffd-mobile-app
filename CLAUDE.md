@@ -111,7 +111,7 @@ project needs only Node, but *building/running the APK* needs a **JDK 17+** and 
 - **Vite + React 18 + TypeScript + Capacitor 6** (Android first; a `platform` field is carried so
   iOS/APNs is cheap later). HashRouter for in-WebView routing.
 - Capacitor plugins wired: `push-notifications` (FCM), `preferences` (token + offline cache),
-  `app`, `network`, `splash-screen`, `status-bar`. App id `pk.gov.pmd.ffd.flood` (`capacitor.config.ts`).
+  `app`, `network`, `splash-screen`, `status-bar`. App id `com.pmd.floodupdates` (`capacitor.config.ts`).
 - Five-tab bottom nav: **Home · Stations · Alerts · Bulletins · Account**. Watchlist (My Stations)
   is reached from Home/Account/station detail — not a top-level tab.
 

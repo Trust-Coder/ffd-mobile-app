@@ -10,10 +10,10 @@ if (hasKeystore) {
 }
 
 android {
-    namespace "pk.gov.pmd.ffd.flood"
+    namespace "com.pmd.floodupdates"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "pk.gov.pmd.ffd.flood"
+        applicationId "com.pmd.floodupdates"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -36,7 +36,9 @@ preferred.
 ## App Link assets (for the WhatsApp `https://<host>/app/<type>/<id>` button → opens the app)
 Per your 0003 deeplink contract, WhatsApp can't open `ffd://`, so it uses an https App Link. To
 make Android verify and open the app:
-- **Android package:** `pk.gov.pmd.ffd.flood`
+- **Android package:** `com.pmd.floodupdates`  ← **UPDATED 2026-06-21** (was `pk.gov.pmd.ffd.flood`).
+  Please set **`FFD_APP_ANDROID_PACKAGE=com.pmd.floodupdates`** so `assetlinks.json` matches; the
+  release SHA-256 still follows at signing time.
 - **SHA-256 signing fingerprint:** *pending release signing (Phase 5)* — we'll send it then.
 - Please host on the app host: `/.well-known/assetlinks.json` (Android App Links) and a thin
   `/app/{type}/{id}` route that deep-links into the app (and shows a web fallback). iOS AASA later.

@@ -1,4 +1,4 @@
-package pk.gov.pmd.ffd.flood;
+package com.pmd.floodupdates;
 
 import com.getcapacitor.BridgeActivity;
 
