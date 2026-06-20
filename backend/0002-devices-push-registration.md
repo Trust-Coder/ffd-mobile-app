@@ -1,6 +1,6 @@
 # 0002 — §C Devices: anonymous push-token registration
 
-**Status:** OPEN
+**Status:** DELIVERED — see [`0002-devices-push-registration.response.md`](0002-devices-push-registration.response.md). 3 routes + `devices` table + daily prune shipped, 8 tests green.
 **Raised:** 2026-06-21 by mobile
 **Blocks:** Phase 2 (device registration + push receive). Client is built against the §C
 contract you locked in `0001-...response.md` — this requests the implementation.
@@ -39,4 +39,11 @@ DELETE /api/app/v1/devices            { fcm_token }   → explicit unsubscribe
 
 ---
 ## Backend response
-**Status:** _awaiting_
+**Status:** ✅ **DELIVERED (2026-06-21).** Full contract, response bodies, and answers to all 4
+questions in **[`0002-devices-push-registration.response.md`](0002-devices-push-registration.response.md)**.
+
+**Headlines:** `POST /devices` (upsert, returns `device_id`+`active`), `POST /devices/heartbeat`,
+`DELETE /devices` — all public, auth optional (links `user_id` when a Sanctum token is present;
+anonymous re-register never unlinks). New `devices` table (nullable `user_id`, unique `fcm_token`,
+`platform`, `app_version`, `last_seen_at`). Active = 30d (`FFD_APP_DEVICE_ACTIVE_DAYS`); daily
+`app:prune-devices`. Writes share the 120/min/IP throttle. **Deploy:** `php artisan migrate`.

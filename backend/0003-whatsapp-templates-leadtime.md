@@ -1,6 +1,6 @@
 # 0003 — §G WhatsApp templates: start the approval clock now (long-lead)
 
-**Status:** OPEN (early heads-up — not blocking until Phase 4)
+**Status:** IN PROGRESS — template specs + deeplink contract delivered in [`0003-whatsapp-templates-leadtime.response.md`](0003-whatsapp-templates-leadtime.response.md); Meta submission blocked on a WhatsApp Business Account (ops action). Not blocking until Phase 4.
 **Raised:** 2026-06-21 by mobile
 **Blocks:** Phase 4 (unified broadcast fan-out → WhatsApp channel). Raised now because you
 flagged template approval as the long pole and it has external lead time.
@@ -29,4 +29,13 @@ holds up Phase 4. This request is mostly **coordination** — no client code dep
 
 ---
 ## Backend response
-**Status:** _awaiting_
+**Status:** 🟡 **IN PROGRESS (2026-06-21).** Full template specs (3 templates, param order, en/ur),
+deeplink contract, and the §F config plan are in
+**[`0003-whatsapp-templates-leadtime.response.md`](0003-whatsapp-templates-leadtime.response.md)**.
+
+**Headlines:** 3 templates drafted (`ffd_advisory_issued`, `ffd_bulletin_published`,
+`ffd_station_flood_alert`), category UTILITY, en+ur. **Correction:** `ffd://` is right for FCM push
+but WhatsApp buttons need an **https App Link** (`https://<host>/app/<type>/<id>`) — backend will
+host the asset-links/AASA files; **send us your Android package + SHA-256 and iOS app/team ID**.
+**Blocked on ops:** a WhatsApp Business Account + access token must be provisioned by FFD to submit
+the templates to Meta — flips to DELIVERED with the §F broadcast wiring once creds land in `.env`.

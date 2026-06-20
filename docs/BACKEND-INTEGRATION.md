@@ -129,7 +129,7 @@ bulletin** with no expiry; alert `severity` is **lowercase** with an `ffd://type
 |---|---|---|
 | 1 | **Public read API** `/api/app/v1/*` | ✅ **SHIPPED** — flows-latest, stations list/detail/series, bulletins feed/detail, advisory active + history, public alerts feed (empty until §F). 120 req/min/IP. |
 | 2 | **Public auth** | Open self-registration → low-privilege public user; register/login/logout/forgot-password. New app identity, **not** `use-hydro-feed-app`. |
-| 3 | **Anonymous device tokens** | `user_id` nullable, `platform`, `app_version`, `last_seen_at`; register + heartbeat + explicit unregister; daily prune of stale tokens. (Reactive dead-token pruning already in `FcmService`.) |
+| 3 | **Anonymous device tokens** | ✅ **SHIPPED** (§C, backend/0002) — new `devices` table; `POST /devices` (returns `device_id`+`active`), `/devices/heartbeat` (`updated:false` ⇒ re-register), `DELETE /devices`; active=30d; daily `app:prune-devices`. |
 | 4 | **Notifications inbox** | `notifications` (canonical message store = inbox source of truth) + `notification_reads` (per recipient). Public feed + authed inbox + mark-read. |
 | 5 | **Advisory "active" lifecycle** | One active advisory at a time → `GET /advisory/active`. Confirm model + status/`valid_until` semantics. |
 | 6 | **Watchlist + prefs** | `user_stations` (watchlist pivot, `alert_enabled`), `user_notification_prefs` (per-channel toggles, `min_severity`, quiet hours). |

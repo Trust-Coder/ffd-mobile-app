@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
 import type { PluginListenerHandle } from '@capacitor/core'
@@ -23,36 +23,41 @@ export const PUSH_RECEIVED_EVENT = 'ffd:push-received'
 export default function PushManager() {
   const navigate = useNavigate()
   const [showPrompt, setShowPrompt] = useState(false)
-  const initialised = useRef(false)
 
   useEffect(() => {
-    if (!pushSupported() || initialised.current) return
-    initialised.current = true
+    if (!pushSupported()) return
 
-    const handles: PluginListenerHandle[] = []
     let cancelled = false
+    const handles: PluginListenerHandle[] = []
+    // Adds a listener but discards it if the effect was already cleaned up
+    // (guards the async add/cleanup race, incl. React StrictMode remounts).
+    const add = async (pending: Promise<PluginListenerHandle>) => {
+      const handle = await pending
+      if (cancelled) void handle.remove()
+      else handles.push(handle)
+    }
 
     async function init() {
-      handles.push(
-        await PushNotifications.addListener('registration', (token) => {
+      await add(
+        PushNotifications.addListener('registration', (token) => {
           void registerDevice(token.value, Capacitor.getPlatform(), APP_VERSION).catch(() => {
             // best-effort; retried on next launch
           })
         }),
       )
-      handles.push(await PushNotifications.addListener('registrationError', () => {}))
-      handles.push(
-        await PushNotifications.addListener('pushNotificationReceived', () => {
+      await add(PushNotifications.addListener('registrationError', () => {}))
+      await add(
+        PushNotifications.addListener('pushNotificationReceived', () => {
           window.dispatchEvent(new Event(PUSH_RECEIVED_EVENT))
         }),
       )
-      handles.push(
-        await PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
+      await add(
+        PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
           const route = routeForData(action.notification.data as Record<string, unknown>)
           if (route) navigate(route)
         }),
       )
-      handles.push(await CapApp.addListener('resume', () => void heartbeat()))
+      await add(CapApp.addListener('resume', () => void heartbeat()))
 
       const permission = await getPushPermission()
       if (cancelled) return
