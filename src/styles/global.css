@@ -148,6 +148,16 @@ body {
   border-width: 1.5px;
 }
 
+/* Expired advisory fails safe to a calm, de-emphasised state. */
+.advisory-card.expired {
+  opacity: 0.92;
+  border-style: dashed;
+}
+.advisory-badge.muted {
+  background: var(--line);
+  color: var(--muted);
+}
+
 .advisory-head {
   display: flex;
   align-items: center;

@@ -1,6 +1,6 @@
 # 0006 — Advisory lifecycle (valid_until/severity) + Bulletin severity
 
-**Status:** OPEN
+**Status:** DELIVERED — see [`0006-advisory-lifecycle-bulletin-severity.response.md`](0006-advisory-lifecycle-bulletin-severity.response.md). All 4 advisory items + bulletin severity shipped (10 tests).
 **Raised:** 2026-06-21 by mobile
 **Why:** an independent senior-dev audit of the app flagged two **life-safety-relevant** gaps that
 trace to missing contract fields. Both were anticipated in the work plan (§3) but dropped because
@@ -41,4 +41,14 @@ a severity `?severity=` filter on the feed.
 
 ---
 ## Backend response
-**Status:** _awaiting_
+**Status:** ✅ **DELIVERED (2026-06-21).** Full contract + lifecycle semantics in
+**[`0006-advisory-lifecycle-bulletin-severity.response.md`](0006-advisory-lifecycle-bulletin-severity.response.md)**.
+
+**Headlines:** 5 nullable cols on `bulletins` — `severity`, `valid_until`, `withdrawn_at`,
+`rivers_affected` (json), `guidance`. Resource now returns `severity`, `valid_until`, computed
+`lifecycle` (active|expired|withdrawn, advisories only), `rivers_affected`, `guidance`. `?severity=`
+filter on `/bulletins` + `/advisories`. **`advisory/active` excludes withdrawn**; an expired advisory
+is still returned with `lifecycle:"expired"` (fail-safe — de-emphasise, don't blank). Lifecycle is a
+**derived** field (`withdrawn_at` + `valid_until`), not a separate `status` enum (avoids colliding with
+the editorial `status`). CMS: severity + advisory-detail fields on create/edit + a **Withdraw** action.
+No `valid_until`? client default = stale after 24h from `issue_time`. **Deploy:** `php artisan migrate`.

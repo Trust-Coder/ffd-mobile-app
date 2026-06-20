@@ -134,15 +134,34 @@ function detail(seed: Seed): StationDetail {
   }
 }
 
+function bulletin(over: Partial<Bulletin> & Pick<Bulletin, 'id' | 'title'>): Bulletin {
+  return {
+    type: 'bulletin',
+    type_label: 'Bulletin',
+    body: null,
+    severity: null,
+    issue_time: isoAgo(5 * HOUR),
+    published_at: isoAgo(5 * HOUR),
+    valid_until: null,
+    lifecycle: null,
+    rivers_affected: null,
+    guidance: null,
+    has_file: false,
+    original_filename: null,
+    download_url: null,
+    ...over,
+  }
+}
+
 const BULLETINS: Bulletin[] = [
-  { id: 101, type: 'bulletin', type_label: 'Bulletin', title: 'Daily Flood Bulletin — Chenab rising at Marala', body: '<p>The Chenab at Marala has risen to <strong>186,400 cusecs</strong> and is expected to keep rising over the next 24 hours. All other rivers are within normal limits.</p>', issue_time: isoAgo(5 * HOUR), published_at: isoAgo(5 * HOUR), has_file: true, original_filename: 'daily-bulletin.pdf', download_url: '#' },
-  { id: 102, type: 'bulletin', type_label: 'Bulletin', title: 'Daily Flood Bulletin — Indus system normal', body: '<p>Tarbela through Kotri reporting normal seasonal flows. No flood threat anticipated.</p>', issue_time: isoAgo(29 * HOUR), published_at: isoAgo(29 * HOUR), has_file: true, original_filename: 'daily-bulletin.pdf', download_url: '#' },
-  { id: 103, type: 'bulletin', type_label: 'Bulletin', title: 'Weekly Hydrological Summary', body: '<p>Catchment rainfall remained below normal across the upper Indus basin this week.</p>', issue_time: isoAgo(3 * 24 * HOUR), published_at: isoAgo(3 * 24 * HOUR), has_file: false, original_filename: null, download_url: null },
+  bulletin({ id: 101, title: 'Daily Flood Bulletin — Chenab rising at Marala', severity: 'MEDIUM', body: '<p>The Chenab at Marala has risen to <strong>186,400 cusecs</strong> and is expected to keep rising over the next 24 hours. All other rivers are within normal limits.</p>', has_file: true, original_filename: 'daily-bulletin.pdf', download_url: 'https://example.com/bulletin/101.pdf' }),
+  bulletin({ id: 102, title: 'Daily Flood Bulletin — Indus system normal', severity: 'NORMAL', body: '<p>Tarbela through Kotri reporting normal seasonal flows. No flood threat anticipated.</p>', issue_time: isoAgo(29 * HOUR), published_at: isoAgo(29 * HOUR), has_file: true, original_filename: 'daily-bulletin.pdf', download_url: 'https://example.com/bulletin/102.pdf' }),
+  bulletin({ id: 103, title: 'Weekly Hydrological Summary', severity: 'LOW', body: '<p>Catchment rainfall remained below normal across the upper Indus basin this week.</p>', issue_time: isoAgo(3 * 24 * HOUR), published_at: isoAgo(3 * 24 * HOUR) }),
 ]
 
 const ADVISORIES: Advisory[] = [
-  { id: 201, type: 'advisory', type_label: 'Advisory', title: 'High flood risk on the Chenab at Marala', body: '<p>Rising flows on the Chenab are expected to reach <strong>high flood</strong> level at Marala within 24 hours. Communities along the river between Marala and Khanki should remain alert and avoid riverbanks and low-lying crossings.</p>', issue_time: isoAgo(6 * HOUR), published_at: isoAgo(6 * HOUR), has_file: true, original_filename: 'advisory.pdf', download_url: '#' },
-  { id: 202, type: 'advisory', type_label: 'Advisory', title: 'Seasonal flood outlook — monsoon onset', body: '<p>The monsoon is expected to establish over the upper catchments next week. Routine vigilance advised.</p>', issue_time: isoAgo(10 * 24 * HOUR), published_at: isoAgo(10 * 24 * HOUR), has_file: false, original_filename: null, download_url: null },
+  { id: 201, type: 'advisory', type_label: 'Advisory', title: 'High flood risk on the Chenab at Marala', body: '<p>Rising flows on the Chenab are expected to reach <strong>high flood</strong> level at Marala within 24 hours.</p>', severity: 'HIGH', issue_time: isoAgo(6 * HOUR), published_at: isoAgo(6 * HOUR), valid_until: isoAgo(-18 * HOUR), lifecycle: 'active', rivers_affected: ['Chenab', 'Jhelum'], guidance: 'Move livestock and valuables to higher ground. Avoid riverbanks and low-lying crossings between Marala and Khanki. Follow instructions from the district administration.', has_file: true, original_filename: 'advisory.pdf', download_url: 'https://example.com/advisory/201.pdf' },
+  { id: 202, type: 'advisory', type_label: 'Advisory', title: 'Seasonal flood outlook — monsoon onset', body: '<p>The monsoon is expected to establish over the upper catchments next week. Routine vigilance advised.</p>', severity: 'LOW', issue_time: isoAgo(10 * 24 * HOUR), published_at: isoAgo(10 * 24 * HOUR), valid_until: null, lifecycle: 'expired', rivers_affected: null, guidance: null, has_file: false, original_filename: null, download_url: null },
 ]
 
 const ALERTS: AlertNotification[] = [
@@ -180,7 +199,8 @@ export const mocks = {
   stations: (): Station[] => SEEDS.map(station),
   station: (id: number): StationDetail => detail(SEEDS.find((s) => s.id === id) ?? SEEDS[0]),
   activeAdvisory: (): Advisory | null => ADVISORIES[0],
-  bulletins: (): Bulletin[] => BULLETINS,
+  bulletins: (severity?: string): Bulletin[] =>
+    severity ? BULLETINS.filter((b) => b.severity === severity) : BULLETINS,
   publication: (id: number): Publication => ALL_PUBLICATIONS.find((p) => p.id === id) ?? ALL_PUBLICATIONS[0],
   alerts: (): AlertNotification[] => ALERTS,
 

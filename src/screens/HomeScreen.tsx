@@ -6,6 +6,7 @@ import { useResource } from '@/hooks/useResource'
 import { getActiveAdvisory, getBulletins, getFlowsLatest } from '@/lib/endpoints'
 import type { FloodStatus, FlowLatest } from '@/types/api'
 import { SEVERITY_ORDER, isElevated, severityColor, severityLabel } from '@/lib/severity'
+import { advisoryState } from '@/lib/advisory'
 import { fmtRelative } from '@/lib/format'
 
 function highestStatus(list: FlowLatest[]): FloodStatus {
@@ -24,6 +25,7 @@ export default function HomeScreen() {
   const peak = stations.length ? highestStatus(stations) : 'NORMAL'
   const latestBulletin = bulletins.data?.[0]
   const active = advisory.data
+  const advState = active ? advisoryState(active) : null
 
   return (
     <div className="screen">
@@ -31,17 +33,29 @@ export default function HomeScreen() {
 
       {flows.stale || advisory.stale ? <StaleBanner cachedAt={flows.cachedAt ?? advisory.cachedAt} /> : null}
 
-      {/* Flood advisory card — highlighted when active. */}
-      {active ? (
+      {/* Flood advisory card — highlighted only when genuinely active; an expired
+          cached advisory fails safe to a de-emphasised state (0006 lifecycle). */}
+      {active && advState === 'active' ? (
         <Link to={`/advisories/${active.id}`} className="advisory-card active link-reset" aria-label="Active flood advisory">
           <div className="advisory-head">
-            <span className="advisory-badge pulse" style={{ background: 'var(--medium)' }}>
+            <span className="advisory-badge pulse" style={{ background: severityColor(active.severity ?? 'HIGH') }}>
               Active Advisory
             </span>
-            <span className="advisory-state">{fmtRelative(active.issue_time)}</span>
+            <span className="advisory-state">
+              {active.valid_until ? `until ${fmtRelative(active.valid_until)}` : fmtRelative(active.issue_time)}
+            </span>
           </div>
           <h2 className="advisory-title">{active.title}</h2>
-          <p className="advisory-body">Tap to read the full advisory and guidance.</p>
+          <p className="advisory-body">{active.guidance ?? 'Tap to read the full advisory and guidance.'}</p>
+        </Link>
+      ) : active && advState === 'expired' ? (
+        <Link to={`/advisories/${active.id}`} className="advisory-card expired link-reset" aria-label="Expired flood advisory">
+          <div className="advisory-head">
+            <span className="advisory-badge muted">Expired Advisory</span>
+            <span className="advisory-state">issued {fmtRelative(active.issue_time)}</span>
+          </div>
+          <h2 className="advisory-title">{active.title}</h2>
+          <p className="advisory-body">This advisory has expired and is no longer in force. Tap to read it.</p>
         </Link>
       ) : (
         <section className="advisory-card" aria-label="Flood advisory">

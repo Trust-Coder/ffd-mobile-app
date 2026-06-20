@@ -105,14 +105,22 @@ export interface StationDetail {
 // ── Publications (bulletins & advisories share one shape/table) ────────────
 export type PublicationType = 'bulletin' | 'advisory'
 
+export type AdvisoryLifecycle = 'active' | 'expired' | 'withdrawn'
+
 export interface Publication {
   id: number
   type: PublicationType
   type_label: string
   title: string
   body: string | null // frozen published HTML; null for PDF-only → use download_url
+  severity: FloodStatus | null // 6-level enum; bulletins AND advisories (0006)
   issue_time: string
   published_at: string | null
+  // Advisory-only (null for bulletins) — 0006:
+  valid_until: string | null
+  lifecycle: AdvisoryLifecycle | null
+  rivers_affected: string[] | null
+  guidance: string | null
   has_file: boolean
   original_filename: string | null
   download_url: string | null // null if no file

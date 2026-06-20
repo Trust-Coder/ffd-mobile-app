@@ -1,5 +1,5 @@
 import ScreenHeader from '@/components/ScreenHeader'
-import { LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
+import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import type { ResourceState } from '@/hooks/useResource'
 import type { Publication } from '@/types/api'
 import { isSafeHttpUrl, sanitizeHtml } from '@/lib/sanitize'
@@ -27,10 +27,26 @@ export default function PublicationDetail({ title, state }: { title: string; sta
       ) : (
         <article className="bulletin-detail">
           <div className="bulletin-detail-head">
-            <span className="bulletin-kicker">{data.type_label}</span>
+            {data.severity ? <SeverityChip status={data.severity} /> : <span className="bulletin-kicker">{data.type_label}</span>}
             <span className="bulletin-detail-time">{fmtDateTime(data.issue_time)}</span>
           </div>
           <h2 className="bulletin-detail-title">{data.title}</h2>
+
+          {/* Advisory-only structured fields (0006). */}
+          {data.valid_until ? <p className="advisory-valid">Valid until {fmtDateTime(data.valid_until)}</p> : null}
+          {data.rivers_affected?.length ? (
+            <div className="rivers-affected" aria-label="Rivers affected">
+              {data.rivers_affected.map((river) => (
+                <span key={river} className="river-chip">{river}</span>
+              ))}
+            </div>
+          ) : null}
+          {data.guidance ? (
+            <div className="guidance-block">
+              <strong>Guidance</strong>
+              <p>{data.guidance}</p>
+            </div>
+          ) : null}
 
           {/* Server HTML — sanitised (lib/sanitize) before rendering. */}
           {data.body ? (

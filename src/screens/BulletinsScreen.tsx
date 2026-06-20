@@ -1,17 +1,36 @@
+import { useState } from 'react'
+import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
-import { LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
+import FilterChips from '@/components/FilterChips'
+import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import { useResource } from '@/hooks/useResource'
 import { getBulletins } from '@/lib/endpoints'
+import { severityColor } from '@/lib/severity'
 import { fmtDateTime } from '@/lib/format'
 
+const SEVERITY_OPTIONS = [
+  { value: '', label: 'All' },
+  { value: 'VERY_HIGH', label: 'Very High' },
+  { value: 'HIGH', label: 'High' },
+  { value: 'MEDIUM', label: 'Medium' },
+  { value: 'LOW', label: 'Low' },
+  { value: 'NORMAL', label: 'Normal' },
+]
+
 export default function BulletinsScreen() {
-  const { data, error, stale, cachedAt, loading, reload } = useResource(() => getBulletins(), [])
+  const [severity, setSeverity] = useState('')
+  const { data, error, stale, cachedAt, loading, reload } = useResource(
+    () => getBulletins({ severity: severity || undefined }),
+    [severity],
+  )
   const bulletins = data ?? []
 
   return (
     <div className="screen">
       <ScreenHeader title="Bulletins" subtitle="FFD daily flood bulletins" />
+
+      <FilterChips options={SEVERITY_OPTIONS} value={severity} onChange={setSeverity} ariaLabel="Filter bulletins by severity" />
 
       {stale ? <StaleBanner cachedAt={cachedAt} /> : null}
 
@@ -20,14 +39,18 @@ export default function BulletinsScreen() {
       ) : error && !data ? (
         <ErrorState message={error} onRetry={reload} />
       ) : bulletins.length === 0 ? (
-        <EmptyState message="No bulletins published yet." />
+        <EmptyState message="No bulletins match this filter." />
       ) : (
         <ul className="bulletin-list">
           {bulletins.map((b) => (
             <li key={b.id}>
-              <Link to={`/bulletins/${b.id}`} className="bulletin-card link-reset">
+              <Link
+                to={`/bulletins/${b.id}`}
+                className="bulletin-card link-reset"
+                style={b.severity ? ({ '--accent': severityColor(b.severity) } as CSSProperties) : undefined}
+              >
                 <div className="bulletin-card-head">
-                  <span className="bulletin-kicker">{b.type_label}</span>
+                  {b.severity ? <SeverityChip status={b.severity} /> : <span className="bulletin-kicker">{b.type_label}</span>}
                   <span className="bulletin-card-time">{fmtDateTime(b.issue_time)}</span>
                 </div>
                 <div className="bulletin-card-title">{b.title}</div>

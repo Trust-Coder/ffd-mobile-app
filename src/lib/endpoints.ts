@@ -26,6 +26,7 @@ const WATCHLIST_CACHE_KEY = 'me.stations'
 
 export interface BulletinFilter {
   type?: 'bulletin' | 'advisory' | 'all'
+  severity?: string // 6-level enum (0006); omit for all
   since?: string
 }
 
@@ -72,8 +73,8 @@ export function getActiveAdvisory(): Promise<CachedResult<Advisory | null>> {
 }
 
 export function getBulletins(filter: BulletinFilter = {}): Promise<CachedResult<Bulletin[]>> {
-  if (mockEnabled) return Promise.resolve(ok(mocks.bulletins()))
-  const qs = buildQuery({ type: filter.type, since: filter.since })
+  if (mockEnabled) return Promise.resolve(ok(mocks.bulletins(filter.severity)))
+  const qs = buildQuery({ type: filter.type, severity: filter.severity, since: filter.since })
   return getList<Bulletin>(`/bulletins${qs}`, `bulletins.list${qs}`)
 }
 
