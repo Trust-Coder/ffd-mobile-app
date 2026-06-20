@@ -144,7 +144,7 @@ export interface AlertNotification {
   read_at?: string | null
 }
 
-// ── Auth (§B — forthcoming) ────────────────────────────────────────────────
+// ── Auth (§B) ──────────────────────────────────────────────────────────────
 export interface AuthUser {
   id: number
   name: string
@@ -157,4 +157,19 @@ export interface AuthTokenResponse {
   token_type: string
   expires_at?: string | null
   user: AuthUser
+}
+
+// ── Personalization (§D / §E — provisional, reconcile on backend/0004) ──────
+/** A watchlisted station: the full station plus the per-station alert toggle. */
+export interface WatchlistStation extends Station {
+  alert_enabled: boolean
+}
+
+export interface NotificationPreferences {
+  bulletins_enabled: boolean
+  advisory_enabled: boolean
+  watchlist_alerts_enabled: boolean
+  min_severity: FloodStatus
+  quiet_hours_start: string | null // "HH:MM", Asia/Karachi
+  quiet_hours_end: string | null
 }

@@ -1,18 +1,23 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
 import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import { useResource } from '@/hooks/useResource'
-import { getAlerts } from '@/lib/endpoints'
+import { getAlerts, getInbox, markAlertRead } from '@/lib/endpoints'
 import type { AlertNotification } from '@/types/api'
 import { severityColor, statusFromLoose } from '@/lib/severity'
 import { routeForAlert } from '@/lib/deeplink'
+import { useAuth } from '@/auth/AuthContext'
 import { PUSH_RECEIVED_EVENT } from '@/components/PushManager'
 import { fmtRelative, isToday } from '@/lib/format'
 
-function AlertRow({ alert }: { alert: AlertNotification }) {
-  // Read state only exists on the authenticated inbox (§D); the public feed omits it.
-  const unread = 'read_at' in alert && alert.read_at == null
+interface RowProps {
+  alert: AlertNotification
+  unread: boolean
+  onOpen: (alert: AlertNotification) => void
+}
+
+function AlertRow({ alert, unread, onOpen }: RowProps) {
   const status = statusFromLoose(alert.severity)
   const href = routeForAlert(alert)
 
@@ -35,7 +40,7 @@ function AlertRow({ alert }: { alert: AlertNotification }) {
 
   const className = 'alert-item' + (unread ? ' unread' : '')
   return href ? (
-    <Link to={href} className={className + ' link-reset'}>
+    <Link to={href} className={className + ' link-reset'} onClick={() => onOpen(alert)}>
       {inner}
     </Link>
   ) : (
@@ -44,21 +49,51 @@ function AlertRow({ alert }: { alert: AlertNotification }) {
 }
 
 export default function AlertsScreen() {
-  const { data, error, stale, cachedAt, loading, reload } = useResource(() => getAlerts(), [])
+  const { isAuthenticated } = useAuth()
+  const { data, error, stale, cachedAt, loading, reload } = useResource(
+    () => (isAuthenticated ? getInbox() : getAlerts()),
+    [isAuthenticated],
+  )
+  const [readIds, setReadIds] = useState<Set<number>>(new Set())
 
-  // Refresh the feed when a push lands while the app is in the foreground.
+  // Refresh when a push lands while in the foreground.
   useEffect(() => {
     window.addEventListener(PUSH_RECEIVED_EVENT, reload)
     return () => window.removeEventListener(PUSH_RECEIVED_EVENT, reload)
   }, [reload])
 
+  const onOpen = useCallback(
+    (alert: AlertNotification) => {
+      if (!isAuthenticated || alert.read_at != null || readIds.has(alert.id)) return
+      setReadIds((prev) => new Set(prev).add(alert.id))
+      void markAlertRead(alert.id).catch(() => {})
+    },
+    [isAuthenticated, readIds],
+  )
+
+  const isUnread = (a: AlertNotification) => isAuthenticated && a.read_at == null && !readIds.has(a.id)
+
   const alerts = data ?? []
   const today = alerts.filter((a) => isToday(a.sent_at))
   const earlier = alerts.filter((a) => !isToday(a.sent_at))
 
+  function group(title: string, list: AlertNotification[]) {
+    if (!list.length) return null
+    return (
+      <section className="section-block">
+        <h3 className="section-title">{title}</h3>
+        <div className="alert-list">
+          {list.map((a) => (
+            <AlertRow key={a.id} alert={a} unread={isUnread(a)} onOpen={onOpen} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
   return (
     <div className="screen">
-      <ScreenHeader title="Alerts" subtitle="Mirrors every push & WhatsApp broadcast" />
+      <ScreenHeader title="Alerts" subtitle={isAuthenticated ? 'Your alerts inbox' : 'Mirrors every push & WhatsApp broadcast'} />
 
       {stale ? <StaleBanner cachedAt={cachedAt} /> : null}
 
@@ -70,26 +105,8 @@ export default function AlertsScreen() {
         <EmptyState message="No alerts yet. Flood advisories, bulletins and station alerts will appear here." />
       ) : (
         <>
-          {today.length ? (
-            <section className="section-block">
-              <h3 className="section-title">Today</h3>
-              <div className="alert-list">
-                {today.map((a) => (
-                  <AlertRow key={a.id} alert={a} />
-                ))}
-              </div>
-            </section>
-          ) : null}
-          {earlier.length ? (
-            <section className="section-block">
-              <h3 className="section-title">Earlier</h3>
-              <div className="alert-list">
-                {earlier.map((a) => (
-                  <AlertRow key={a.id} alert={a} />
-                ))}
-              </div>
-            </section>
-          ) : null}
+          {group('Today', today)}
+          {group('Earlier', earlier)}
         </>
       )}
     </div>

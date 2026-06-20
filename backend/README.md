@@ -32,7 +32,8 @@ same file. We coordinate directly only when a change spans both sides at once.
 |---|---|---|---|
 | 0001 | [`0001-public-api-kickoff.md`](0001-public-api-kickoff.md) | Public app API surface — read, auth, devices, inbox, broadcast | DELIVERED (§A) · [response](0001-public-api-kickoff.response.md) |
 | 0002 | [`0002-devices-push-registration.md`](0002-devices-push-registration.md) | §C Devices — anonymous push-token registration + heartbeat + prune | DELIVERED · [response](0002-devices-push-registration.response.md) |
-| 0003 | [`0003-whatsapp-templates-leadtime.md`](0003-whatsapp-templates-leadtime.md) | §G WhatsApp templates — start approval (long-lead) | OPEN (early heads-up) |
+| 0003 | [`0003-whatsapp-templates-leadtime.md`](0003-whatsapp-templates-leadtime.md) | §G WhatsApp templates — start approval (long-lead) | IN PROGRESS · specs ready, [response](0003-whatsapp-templates-leadtime.response.md) · blocked on WABA account |
+| 0004 | [`0004-auth-inbox-personalization.md`](0004-auth-inbox-personalization.md) | §B Auth + §D Inbox + §E Watchlist/Prefs (Phase 3) | OPEN |
 
 ## Request template
 

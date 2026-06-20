@@ -4,6 +4,7 @@ import ScreenHeader from '@/components/ScreenHeader'
 import DischargeChart from '@/components/DischargeChart'
 import type { ChartPoint, ChartThreshold } from '@/components/DischargeChart'
 import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
+import WatchlistControls from '@/components/WatchlistControls'
 import { useResource } from '@/hooks/useResource'
 import { getStation } from '@/lib/endpoints'
 import { severityColor, severityLabel } from '@/lib/severity'
@@ -103,13 +104,7 @@ export default function StationDetailScreen() {
         </section>
       ) : null}
 
-      {/* Watchlist + per-station alerts arrive with auth in Phase 3. */}
-      <button type="button" className="btn-primary" disabled aria-describedby="watchlist-hint">
-        ★ Add to My Stations
-      </button>
-      <p id="watchlist-hint" className="hint-text">
-        Sign in to add this station to your watchlist and get alerts — coming in Phase 3.
-      </p>
+      <WatchlistControls stationId={station.id} />
     </div>
   )
 }

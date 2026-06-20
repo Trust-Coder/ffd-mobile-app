@@ -1,15 +1,19 @@
 import type {
   Advisory,
   AlertNotification,
+  AuthTokenResponse,
+  AuthUser,
   Bulletin,
   FloodStatus,
   FlowLatest,
+  NotificationPreferences,
   Publication,
   SeriesPoint,
   Station,
   StationDetail,
   StationThreshold,
   Trend,
+  WatchlistStation,
 } from '@/types/api'
 import { SEVERITY_ORDER } from '@/lib/severity'
 
@@ -150,6 +154,27 @@ const ALERTS: AlertNotification[] = [
 
 const ALL_PUBLICATIONS: Publication[] = [...BULLETINS, ...ADVISORIES]
 
+// ── Personalization fixtures (mutable so add/remove/toggle reflect in dev) ───
+const DEMO_USER: AuthUser = { id: 1, name: 'Demo User', email: 'demo@ffd.gov.pk' }
+
+const watchlistIds = new Set<number>([5, 1]) // Marala, Tarbela
+const alertEnabled = new Map<number, boolean>([
+  [5, true],
+  [1, false],
+])
+
+let prefs: NotificationPreferences = {
+  bulletins_enabled: true,
+  advisory_enabled: true,
+  watchlist_alerts_enabled: true,
+  min_severity: 'MEDIUM',
+  quiet_hours_start: null,
+  quiet_hours_end: null,
+}
+
+// The authed inbox = the broadcast feed with per-user read state layered on.
+const inbox: AlertNotification[] = ALERTS.map((a, i) => ({ ...a, scope: 'broadcast', read_at: i < 1 ? null : a.sent_at }))
+
 export const mocks = {
   flowsLatest: (): FlowLatest[] => SEEDS.map(flow),
   stations: (): Station[] => SEEDS.map(station),
@@ -158,4 +183,37 @@ export const mocks = {
   bulletins: (): Bulletin[] => BULLETINS,
   publication: (id: number): Publication => ALL_PUBLICATIONS.find((p) => p.id === id) ?? ALL_PUBLICATIONS[0],
   alerts: (): AlertNotification[] => ALERTS,
+
+  inbox: (): AlertNotification[] => inbox,
+  markRead: (id: number): void => {
+    const item = inbox.find((a) => a.id === id)
+    if (item) item.read_at = new Date().toISOString()
+  },
+  watchlist: (): WatchlistStation[] =>
+    SEEDS.filter((s) => watchlistIds.has(s.id)).map((s) => ({ ...station(s), alert_enabled: alertEnabled.get(s.id) ?? true })),
+  addWatch: (id: number): void => {
+    watchlistIds.add(id)
+    if (!alertEnabled.has(id)) alertEnabled.set(id, true)
+  },
+  removeWatch: (id: number): void => {
+    watchlistIds.delete(id)
+  },
+  isWatched: (id: number): boolean => watchlistIds.has(id),
+  setAlert: (id: number, enabled: boolean): void => {
+    alertEnabled.set(id, enabled)
+  },
+  preferences: (): NotificationPreferences => prefs,
+  setPreferences: (next: NotificationPreferences): void => {
+    prefs = next
+  },
+}
+
+export const mockAuth = {
+  login: (email: string, name?: string): AuthTokenResponse => ({
+    token: 'mock-token',
+    token_type: 'Bearer',
+    expires_at: null,
+    user: { ...DEMO_USER, email, name: name ?? DEMO_USER.name },
+  }),
+  me: (): AuthUser => DEMO_USER,
 }

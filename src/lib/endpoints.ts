@@ -1,13 +1,15 @@
-import { cachedGet } from '@/lib/api'
-import type { CachedResult } from '@/lib/api'
+import { apiRequest, cachedGet } from '@/lib/api'
+import type { CachedResult, RequestOptions } from '@/lib/api'
 import type {
   Advisory,
   AlertNotification,
   Bulletin,
   FlowLatest,
+  NotificationPreferences,
   Paginated,
   Station,
   StationDetail,
+  WatchlistStation,
 } from '@/types/api'
 import { mockEnabled, mocks } from '@/lib/mocks'
 
@@ -31,8 +33,8 @@ function unwrapList<T>(payload: T[] | Paginated<T>): T[] {
   return Array.isArray(payload) ? payload : payload.items
 }
 
-async function getList<T>(path: string, cacheKey: string): Promise<CachedResult<T[]>> {
-  const res = await cachedGet<T[] | Paginated<T>>(path, cacheKey)
+async function getList<T>(path: string, cacheKey: string, opts: RequestOptions = {}): Promise<CachedResult<T[]>> {
+  const res = await cachedGet<T[] | Paginated<T>>(path, cacheKey, opts)
   return { ...res, data: unwrapList(res.data) }
 }
 
@@ -87,4 +89,61 @@ export function getAdvisory(id: number): Promise<CachedResult<Advisory>> {
 export function getAlerts(): Promise<CachedResult<AlertNotification[]>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.alerts()))
   return getList<AlertNotification>('/alerts', 'alerts.feed')
+}
+
+// ── Authenticated (§D inbox / §E watchlist + preferences) ──────────────────
+
+export function getInbox(): Promise<CachedResult<AlertNotification[]>> {
+  if (mockEnabled) return Promise.resolve(ok(mocks.inbox()))
+  return getList<AlertNotification>('/me/alerts', 'me.alerts', { auth: true })
+}
+
+export async function markAlertRead(id: number): Promise<void> {
+  if (mockEnabled) {
+    mocks.markRead(id)
+    return
+  }
+  await apiRequest(`/me/alerts/${id}/read`, { method: 'POST', auth: true })
+}
+
+export function getWatchlist(): Promise<CachedResult<WatchlistStation[]>> {
+  if (mockEnabled) return Promise.resolve(ok(mocks.watchlist()))
+  return getList<WatchlistStation>('/me/stations', 'me.stations', { auth: true })
+}
+
+export async function addToWatchlist(stationId: number): Promise<void> {
+  if (mockEnabled) {
+    mocks.addWatch(stationId)
+    return
+  }
+  await apiRequest(`/me/stations/${stationId}`, { method: 'POST', auth: true })
+}
+
+export async function removeFromWatchlist(stationId: number): Promise<void> {
+  if (mockEnabled) {
+    mocks.removeWatch(stationId)
+    return
+  }
+  await apiRequest(`/me/stations/${stationId}`, { method: 'DELETE', auth: true })
+}
+
+export async function setStationAlert(stationId: number, enabled: boolean): Promise<void> {
+  if (mockEnabled) {
+    mocks.setAlert(stationId, enabled)
+    return
+  }
+  await apiRequest(`/me/stations/${stationId}`, { method: 'PUT', auth: true, body: { alert_enabled: enabled } })
+}
+
+export function getPreferences(): Promise<CachedResult<NotificationPreferences>> {
+  if (mockEnabled) return Promise.resolve(ok(mocks.preferences()))
+  return cachedGet<NotificationPreferences>('/me/preferences', 'me.preferences', { auth: true })
+}
+
+export async function updatePreferences(prefs: NotificationPreferences): Promise<void> {
+  if (mockEnabled) {
+    mocks.setPreferences(prefs)
+    return
+  }
+  await apiRequest('/me/preferences', { method: 'PUT', auth: true, body: prefs })
 }
