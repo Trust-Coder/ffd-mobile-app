@@ -40,5 +40,7 @@ export async function forgotPassword(email: string): Promise<void> {
 
 export async function fetchMe(): Promise<AuthUser> {
   if (mockEnabled) return mockAuth.me()
-  return apiRequest<AuthUser>('/me', { auth: true })
+  // GET /me is enveloped as { ok, data: { user } } (0004).
+  const data = await apiRequest<{ user: AuthUser }>('/me', { auth: true })
+  return data.user
 }

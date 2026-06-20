@@ -1,6 +1,6 @@
 # 0004 — §B Auth + §D Inbox + §E Watchlist/Prefs (Phase 3)
 
-**Status:** OPEN
+**Status:** DELIVERED — see [`0004-auth-inbox-personalization.response.md`](0004-auth-inbox-personalization.response.md). 13 endpoints (§B auth, §D inbox, §E watchlist/prefs), 15 tests green.
 **Raised:** 2026-06-21 by mobile
 **Blocks:** Phase 3 (auth + personalization). Building the client against the §B/§D/§E
 contracts you locked in `0001-...response.md`; this requests implementation + the
@@ -58,4 +58,13 @@ PUT    /api/app/v1/me/preferences         (auth)
 
 ---
 ## Backend response
-**Status:** _awaiting_
+**Status:** ✅ **DELIVERED (2026-06-21).** Full contract, response shapes, and answers to all 7
+questions in **[`0004-auth-inbox-personalization.response.md`](0004-auth-inbox-personalization.response.md)**.
+
+**Headlines:** §B `auth/register|login` (flat token, ability `app:access`, new `public-app` role,
+**auto-verified** email), `auth/logout`, `auth/forgot-password` (always 200 → web reset), `GET /me`
+(minimal profile — staff scope never leaks). §D `GET /me/alerts` (broadcast + user + watchlist-station,
+`read_at` + `meta.unread_count`), `POST /me/alerts/{id}/read`. §E `GET/POST/PUT/DELETE /me/stations`
+(full station + `alert_enabled`), `GET/PUT /me/preferences` (3 bools + uppercase `min_severity` +
+`HH:MM` quiet hours, Asia/Karachi). Staff-email **login succeeds** with app:access; register rejects
+dupes. Inbox/alerts are **empty until §F broadcast**. **Deploy:** `php artisan migrate` (3 tables).

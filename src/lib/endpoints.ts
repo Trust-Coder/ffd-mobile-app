@@ -110,6 +110,13 @@ export async function markAlertRead(id: number): Promise<void> {
   await apiRequest(`/me/alerts/${id}/read`, { method: 'POST', auth: true })
 }
 
+/** The authoritative unread count for the nav badge (meta.unread_count spans all pages). */
+export async function getUnreadCount(): Promise<number> {
+  if (mockEnabled) return mocks.inbox().filter((a) => a.read_at == null).length
+  const page = await apiRequest<Paginated<AlertNotification>>('/me/alerts', { auth: true })
+  return page.meta?.unread_count ?? page.items.filter((a) => a.read_at == null).length
+}
+
 export function getWatchlist(): Promise<CachedResult<WatchlistStation[]>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.watchlist()))
   return getList<WatchlistStation>('/me/stations', WATCHLIST_CACHE_KEY, { auth: true })

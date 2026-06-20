@@ -27,6 +27,8 @@ export interface CursorMeta {
   next_cursor: string | null
   has_more: boolean
   server_time: string
+  /** Present on the §D inbox (/me/alerts) meta — total unread across all pages. */
+  unread_count?: number
 }
 export interface Paginated<T> {
   items: T[]

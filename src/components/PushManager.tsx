@@ -7,12 +7,13 @@ import { App as CapApp } from '@capacitor/app'
 import { Preferences } from '@capacitor/preferences'
 import { APP_VERSION, getPushPermission, pushSupported, registerForPush, requestPushPermission } from '@/lib/push'
 import { heartbeat, registerDevice } from '@/lib/devices'
-import { routeForData } from '@/lib/deeplink'
+import { routeForData, routeForDeeplink } from '@/lib/deeplink'
+import { PUSH_RECEIVED_EVENT } from '@/lib/events'
 
 const PROMPT_DISMISSED_KEY = 'ffd.push.prompt_dismissed'
 
-/** Foreground push → let screens (e.g. Alerts) refresh themselves. */
-export const PUSH_RECEIVED_EVENT = 'ffd:push-received'
+/** Android notification channel for flood alerts — lets FcmService target a high-importance tone. */
+const FLOOD_CHANNEL_ID = 'flood_alerts'
 
 /**
  * Owns the push lifecycle: registers the (anonymous) device token, heartbeats on
@@ -57,7 +58,25 @@ export default function PushManager() {
           if (route) navigate(route)
         }),
       )
+      // App Link / custom-scheme opens (WhatsApp https://…/app/… and ffd://…).
+      await add(
+        CapApp.addListener('appUrlOpen', (event) => {
+          const route = routeForDeeplink(event.url)
+          if (route) navigate(route)
+        }),
+      )
       await add(CapApp.addListener('resume', () => void heartbeat()))
+
+      // Distinct Android channel for flood alerts (Android-only; safe to call repeatedly).
+      if (Capacitor.getPlatform() === 'android') {
+        await PushNotifications.createChannel({
+          id: FLOOD_CHANNEL_ID,
+          name: 'Flood alerts',
+          description: 'Flood advisories, bulletins and station alerts',
+          importance: 5,
+          visibility: 1,
+        }).catch(() => {})
+      }
 
       const permission = await getPushPermission()
       if (cancelled) return

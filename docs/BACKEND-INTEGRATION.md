@@ -128,14 +128,14 @@ bulletin** with no expiry; alert `severity` is **lowercase** with an `ffd://type
 | # | New thing | Notes |
 |---|---|---|
 | 1 | **Public read API** `/api/app/v1/*` | ✅ **SHIPPED** — flows-latest, stations list/detail/series, bulletins feed/detail, advisory active + history, public alerts feed (empty until §F). 120 req/min/IP. |
-| 2 | **Public auth** | Open self-registration → low-privilege public user; register/login/logout/forgot-password. New app identity, **not** `use-hydro-feed-app`. |
+| 2 | **Public auth** | ✅ **SHIPPED** (§B, 0004) — `public-app` role + `app:access` ability; register/login (flat token), logout/forgot-password/me (enveloped; `/me` = `{data:{user}}`). Auto-verifies email. |
 | 3 | **Anonymous device tokens** | ✅ **SHIPPED** (§C, backend/0002) — new `devices` table; `POST /devices` (returns `device_id`+`active`), `/devices/heartbeat` (`updated:false` ⇒ re-register), `DELETE /devices`; active=30d; daily `app:prune-devices`. |
-| 4 | **Notifications inbox** | `notifications` (canonical message store = inbox source of truth) + `notification_reads` (per recipient). Public feed + authed inbox + mark-read. |
-| 5 | **Advisory "active" lifecycle** | One active advisory at a time → `GET /advisory/active`. Confirm model + status/`valid_until` semantics. |
-| 6 | **Watchlist + prefs** | `user_stations` (watchlist pivot, `alert_enabled`), `user_notification_prefs` (per-channel toggles, `min_severity`, quiet hours). |
-| 7 | **Unified `BroadcastService` fan-out** | One publish → notifications row + FCM (public audience) + WhatsApp. Wire to existing auto-triggers (bulletin publish, advisory activate, threshold cross). Honour active-only + prefs + watchlist. |
-| 8 | **WhatsApp Business/Cloud API** | New integration: creds + approved templates. |
-| 9 | **(Enhancement) FCM topics** | Topic subscribe/publish for cheap broadcast, if volume warrants. |
+| 4 | **Notifications inbox** | ✅ **SHIPPED** (§D, 0004) — `app_notifications` + `app_notification_reads`; `/me/alerts` (paginated, `meta.unread_count`) + mark-read. Empty until §F writes rows. |
+| 5 | **Advisory "active" lifecycle** | ✅ **SHIPPED** (§A) — advisory = latest published `type='advisory'` bulletin; **no expiry** (`Warning` model is a dormant stub). |
+| 6 | **Watchlist + prefs** | ✅ **SHIPPED** (§E, 0004) — `app_user_stations` (full-station snapshot + `alert_enabled`), `app_user_notification_prefs` (toggles, **UPPERCASE** `min_severity`, HH:MM quiet hours). |
+| 7 | **Unified `BroadcastService` fan-out** | ⏳ **§F — requested (0005)**. One publish → `app_notifications` row + FCM (active devices, channel `flood_alerts`) + WhatsApp. Auto-triggered; honours prefs/watchlist. |
+| 8 | **WhatsApp Business/Cloud API** | ⏳ **§G — specs ready (0003)**; templates `UTILITY`; blocked on a WhatsApp Business Account (ops). WhatsApp button uses an https App Link (`/app/<type>/<id>`), not `ffd://`. |
+| 9 | **(Enhancement) FCM topics** | Dropped for the client: `@capacitor/push-notifications` has no topic API → backend targets by **token** (active-device multicast). |
 
 ---
 

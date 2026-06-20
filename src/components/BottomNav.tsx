@@ -1,10 +1,12 @@
 import { NavLink } from 'react-router-dom'
+import { useUnread } from '@/state/UnreadContext'
 
 interface Tab {
   to: string
   label: string
   icon: string // SVG path data
   end?: boolean
+  badge?: boolean
 }
 
 const TABS: Tab[] = [
@@ -13,6 +15,7 @@ const TABS: Tab[] = [
   {
     to: '/alerts',
     label: 'Alerts',
+    badge: true,
     icon: 'M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6v-5a6 6 0 1 0-12 0v5l-2 2v1h16v-1z',
   },
   { to: '/bulletins', label: 'Bulletins', icon: 'M6 2h9l5 5v15H6zM14 3.5V8h4.5' },
@@ -24,6 +27,8 @@ const TABS: Tab[] = [
 ]
 
 export default function BottomNav() {
+  const { count } = useUnread()
+
   return (
     <nav className="bottom-nav">
       {TABS.map((tab) => (
@@ -33,9 +38,16 @@ export default function BottomNav() {
           end={tab.end}
           className={({ isActive }) => 'nav-item' + (isActive ? ' active' : '')}
         >
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <path d={tab.icon} fill="currentColor" />
-          </svg>
+          <span className="nav-icon-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+              <path d={tab.icon} fill="currentColor" />
+            </svg>
+            {tab.badge && count > 0 ? (
+              <span className="nav-badge" aria-label={`${count} unread`}>
+                {count > 9 ? '9+' : count}
+              </span>
+            ) : null}
+          </span>
           <span>{tab.label}</span>
         </NavLink>
       ))}

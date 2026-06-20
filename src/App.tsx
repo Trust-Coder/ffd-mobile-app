@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from '@/auth/AuthContext'
+import { UnreadProvider } from '@/state/UnreadContext'
 import AppShell from '@/components/AppShell'
 import HomeScreen from '@/screens/HomeScreen'
 import StationsScreen from '@/screens/StationsScreen'
@@ -17,22 +18,24 @@ import PreferencesScreen from '@/screens/PreferencesScreen'
 export default function App() {
   return (
     <AuthProvider>
-      <HashRouter>
-        <Routes>
-          <Route element={<AppShell />}>
-            <Route index element={<HomeScreen />} />
-            <Route path="stations" element={<StationsScreen />} />
-            <Route path="stations/:id" element={<StationDetailScreen />} />
-            <Route path="alerts" element={<AlertsScreen />} />
-            <Route path="bulletins" element={<BulletinsScreen />} />
-            <Route path="bulletins/:id" element={<BulletinDetailScreen />} />
-            <Route path="advisories/:id" element={<AdvisoryDetailScreen />} />
-            <Route path="account" element={<AccountScreen />} />
-            <Route path="watchlist" element={<WatchlistScreen />} />
-            <Route path="preferences" element={<PreferencesScreen />} />
-          </Route>
-        </Routes>
-      </HashRouter>
+      <UnreadProvider>
+        <HashRouter>
+          <Routes>
+            <Route element={<AppShell />}>
+              <Route index element={<HomeScreen />} />
+              <Route path="stations" element={<StationsScreen />} />
+              <Route path="stations/:id" element={<StationDetailScreen />} />
+              <Route path="alerts" element={<AlertsScreen />} />
+              <Route path="bulletins" element={<BulletinsScreen />} />
+              <Route path="bulletins/:id" element={<BulletinDetailScreen />} />
+              <Route path="advisories/:id" element={<AdvisoryDetailScreen />} />
+              <Route path="account" element={<AccountScreen />} />
+              <Route path="watchlist" element={<WatchlistScreen />} />
+              <Route path="preferences" element={<PreferencesScreen />} />
+            </Route>
+          </Routes>
+        </HashRouter>
+      </UnreadProvider>
     </AuthProvider>
   )
 }

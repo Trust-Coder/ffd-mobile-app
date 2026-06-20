@@ -22,6 +22,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Custom-scheme deep links: ffd://<type>/<id> (FCM push, direct opens). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="ffd" />
+            </intent-filter>
+
+            <!-- App Links for WhatsApp/web: https://<app-host>/app/<type>/<id>.
+                 Enable in Phase 5: set the real host, publish
+                 /.well-known/assetlinks.json with the release SHA-256, then add
+                 android:autoVerify="true".
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="APP_HOST_TBD" android:pathPrefix="/app/" />
+            </intent-filter>
+            -->
+
         </activity>
 
         <provider

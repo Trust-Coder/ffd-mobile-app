@@ -8,7 +8,8 @@ import type { AlertNotification } from '@/types/api'
 import { severityColor, statusFromLoose } from '@/lib/severity'
 import { routeForAlert } from '@/lib/deeplink'
 import { useAuth } from '@/auth/AuthContext'
-import { PUSH_RECEIVED_EVENT } from '@/components/PushManager'
+import { useUnread } from '@/state/UnreadContext'
+import { PUSH_RECEIVED_EVENT } from '@/lib/events'
 import { fmtRelative, isToday } from '@/lib/format'
 
 interface RowProps {
@@ -50,6 +51,7 @@ function AlertRow({ alert, unread, onOpen }: RowProps) {
 
 export default function AlertsScreen() {
   const { isAuthenticated } = useAuth()
+  const { refresh: refreshUnread } = useUnread()
   const { data, error, stale, cachedAt, loading, reload } = useResource(
     () => (isAuthenticated ? getInbox() : getAlerts()),
     [isAuthenticated],
@@ -66,9 +68,11 @@ export default function AlertsScreen() {
     (alert: AlertNotification) => {
       if (!isAuthenticated || alert.read_at != null || readIds.has(alert.id)) return
       setReadIds((prev) => new Set(prev).add(alert.id))
-      void markAlertRead(alert.id).catch(() => {})
+      void markAlertRead(alert.id)
+        .then(() => refreshUnread())
+        .catch(() => {})
     },
-    [isAuthenticated, readIds],
+    [isAuthenticated, readIds, refreshUnread],
   )
 
   const isUnread = (a: AlertNotification) => isAuthenticated && a.read_at == null && !readIds.has(a.id)

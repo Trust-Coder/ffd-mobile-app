@@ -25,8 +25,13 @@ const KIND_TO_PATH: Record<string, string> = {
   advisory: 'advisories',
 }
 
-export function routeForDeeplink(deeplink: string): string | null {
-  const match = deeplink.match(/^ffd:\/\/(station|bulletin|advisory)\/(\d+)/)
+/**
+ * Resolves both deeplink forms the backend uses (0003 contract):
+ *   ffd://<type>/<id>                  — FCM push data (in-app)
+ *   https://<host>/app/<type>/<id>     — App Link / Universal Link (WhatsApp, web)
+ */
+export function routeForDeeplink(url: string): string | null {
+  const match = url.match(/(?:ffd:\/\/|\/app\/)(station|bulletin|advisory)\/(\d+)/)
   if (!match) return null
   return `/${KIND_TO_PATH[match[1]]}/${match[2]}`
 }
