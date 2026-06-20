@@ -27,3 +27,17 @@ export function sanitizeHtml(html: string): string {
     ALLOW_DATA_ATTR: false,
   })
 }
+
+/**
+ * True only for absolute http(s) URLs. Guards server-controlled URLs (e.g.
+ * bulletin download_url) before they reach an href — blocks javascript:/intent:/file:.
+ */
+export function isSafeHttpUrl(url: string | null | undefined): boolean {
+  if (!url) return false
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'https:' || parsed.protocol === 'http:'
+  } catch {
+    return false
+  }
+}

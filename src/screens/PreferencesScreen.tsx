@@ -8,14 +8,11 @@ import { LoadingState, ErrorState, EmptyState } from '@/components/ui'
 import { useAuth } from '@/auth/AuthContext'
 import { ApiException } from '@/lib/api'
 import { getPreferences, updatePreferences } from '@/lib/endpoints'
-import type { FloodStatus, NotificationPreferences } from '@/types/api'
+import { SEVERITY_ORDER, severityLabel } from '@/lib/severity'
+import type { NotificationPreferences } from '@/types/api'
 
-const MIN_SEVERITY_OPTIONS: { value: FloodStatus; label: string }[] = [
-  { value: 'LOW', label: 'Low' },
-  { value: 'MEDIUM', label: 'Medium' },
-  { value: 'HIGH', label: 'High' },
-  { value: 'VERY_HIGH', label: 'Very High' },
-]
+// Full backend enum incl. NORMAL (= receive all) and EX_HIGH, labelled consistently.
+const MIN_SEVERITY_OPTIONS = SEVERITY_ORDER.map((value) => ({ value, label: severityLabel(value) }))
 
 export default function PreferencesScreen() {
   const { isAuthenticated } = useAuth()

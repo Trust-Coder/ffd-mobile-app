@@ -29,7 +29,7 @@ export default function HomeScreen() {
     <div className="screen">
       <ScreenHeader title="FFD Flood" subtitle="Flood Forecasting Division · Pakistan" />
 
-      {flows.stale ? <StaleBanner cachedAt={flows.cachedAt} /> : null}
+      {flows.stale || advisory.stale ? <StaleBanner cachedAt={flows.cachedAt ?? advisory.cachedAt} /> : null}
 
       {/* Flood advisory card — highlighted when active. */}
       {active ? (

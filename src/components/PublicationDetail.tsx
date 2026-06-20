@@ -2,7 +2,7 @@ import ScreenHeader from '@/components/ScreenHeader'
 import { LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import type { ResourceState } from '@/hooks/useResource'
 import type { Publication } from '@/types/api'
-import { sanitizeHtml } from '@/lib/sanitize'
+import { isSafeHttpUrl, sanitizeHtml } from '@/lib/sanitize'
 import { fmtDateTime } from '@/lib/format'
 
 /**
@@ -39,8 +39,8 @@ export default function PublicationDetail({ title, state }: { title: string; sta
             <p className="hint-text">This {data.type} is published as a document — download it below.</p>
           )}
 
-          {data.has_file && data.download_url ? (
-            <a className="btn-primary" href={data.download_url} target="_blank" rel="noopener noreferrer">
+          {data.has_file && isSafeHttpUrl(data.download_url) ? (
+            <a className="btn-primary" href={data.download_url ?? undefined} target="_blank" rel="noopener noreferrer">
               ⬇ Download {data.original_filename ?? 'document'}
             </a>
           ) : null}

@@ -12,13 +12,13 @@ interface Props<T extends string> {
 
 export default function FilterChips<T extends string>({ options, value, onChange, ariaLabel }: Props<T>) {
   return (
-    <div className="filter-chips" role="tablist" aria-label={ariaLabel}>
+    <div className="filter-chips" role="radiogroup" aria-label={ariaLabel}>
       {options.map((opt) => (
         <button
           key={opt.value}
           type="button"
-          role="tab"
-          aria-selected={opt.value === value}
+          role="radio"
+          aria-checked={opt.value === value}
           className={'chip' + (opt.value === value ? ' active' : '')}
           onClick={() => onChange(opt.value)}
         >

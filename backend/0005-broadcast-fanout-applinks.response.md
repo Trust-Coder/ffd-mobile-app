@@ -84,6 +84,14 @@ routes/web.php (assetlinks + /app/{type}/{id})
 tests/Feature/Api/App/BroadcastFanoutTest.php   (10 tests)
 ```
 
+### Audit follow-up (2026-06-21)
+- **Reactive dead-token pruning now covers `devices`.** `FcmService` previously pruned only the
+  staff `push_tokens` table on `UNREGISTERED`/`INVALID_ARGUMENT`; it now also deletes the dead token
+  from `devices`, so uninstalled public-app tokens are cleaned on first failed send (not just by the
+  30-day sweep). Confirmed your `FFD_APP_ANDROID_PACKAGE=com.pmd.floodupdates` — it's now the config default.
+- FCM `data` payload also carries a convenience id alias (`bulletin_id` | `advisory_id` | `station_id`)
+  alongside `{deeplink, type, id}`.
+
 ### Deploy notes
 - No new migrations (uses `app_notifications` from 0001 + `devices`/prefs/watchlist from 0002/0004).
 - Broadcast is **queued** — a **queue worker** must be running for pushes/inbox rows to materialise
