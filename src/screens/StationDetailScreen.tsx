@@ -55,6 +55,7 @@ export default function StationDetailScreen() {
   }
 
   const { station, thresholds } = data
+  const latestLevel = data.series.points.at(-1)?.level ?? null
   const trendArrow = station.trend === 'up' ? '▲' : station.trend === 'down' ? '▼' : '▬'
   const subtitle = station.location?.area_name ? `${station.river} · ${station.location.area_name}` : station.river
 
@@ -74,6 +75,9 @@ export default function StationDetailScreen() {
           <SeverityChip status={station.status} />
           <span className="gauge-time">{station.observed_at ? fmtRelative(station.observed_at) : ''}</span>
         </div>
+        {latestLevel != null ? (
+          <div className="gauge-sub">River level <span className="readout">{latestLevel.toFixed(2)}</span> m</div>
+        ) : null}
         {station.is_dam && station.dam_level != null ? (
           <div className="gauge-sub">Dam level <span className="readout">{fmtInt(station.dam_level)}</span> ft</div>
         ) : null}

@@ -27,7 +27,7 @@ export default function BulletinsScreen() {
 
   return (
     <div className="screen">
-      <ScreenHeader title="Bulletins" subtitle="FFD daily flood bulletins" />
+      <ScreenHeader title="Bulletins" subtitle="FFD daily flood bulletins" refreshable />
 
       <FilterChips options={SEVERITY_OPTIONS} value={severity} onChange={setSeverity} ariaLabel="Filter bulletins by severity" />
 

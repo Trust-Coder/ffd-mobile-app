@@ -30,16 +30,23 @@ export default function StationsScreen() {
 
   return (
     <div className="screen">
-      <ScreenHeader title="Stations" subtitle="Indus · Jhelum · Chenab · Ravi · Sutlej" />
+      <ScreenHeader title="Stations" subtitle="Indus · Jhelum · Chenab · Ravi · Sutlej" refreshable />
 
-      <input
-        type="search"
-        className="search-input"
-        placeholder="Search station or location…"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        aria-label="Search stations"
-      />
+      <div className="search-row">
+        <input
+          type="search"
+          className="search-input"
+          placeholder="Search station or location…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search stations"
+        />
+        {query ? (
+          <button type="button" className="search-clear" onClick={() => setQuery('')} aria-label="Clear search">
+            ✕
+          </button>
+        ) : null}
+      </div>
 
       <FilterChips options={RIVER_OPTIONS} value={river} onChange={setRiver} ariaLabel="Filter by river" />
 

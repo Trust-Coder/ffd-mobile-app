@@ -10,7 +10,6 @@ type AnalyticsProps = Record<string, string | number | boolean | null | undefine
 
 export function track(event: string, props: AnalyticsProps = {}): void {
   if (import.meta.env.DEV) {
-    // eslint-disable-next-line no-console
     console.debug('[analytics]', event, props)
   }
   // TODO(prod): forward to the analytics provider.

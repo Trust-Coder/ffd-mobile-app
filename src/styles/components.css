@@ -32,7 +32,31 @@
   cursor: pointer;
 }
 
+/* ── Header refresh action ──────────────────────────── */
+.refresh-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--primary-deep);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.refresh-btn:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+.refresh-btn .spin {
+  animation: spin 0.8s linear infinite;
+}
+
 /* ── Search + filter chips ──────────────────────────── */
+.search-row {
+  position: relative;
+  margin-bottom: 12px;
+}
 .search-input {
   width: 100%;
   padding: 11px 14px;
@@ -41,9 +65,21 @@
   background: var(--card);
   font-size: 14px;
   color: var(--ink);
-  margin-bottom: 12px;
   -webkit-appearance: none;
   appearance: none;
+}
+.search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
 }
 .search-input:focus {
   outline: none;
@@ -715,6 +751,16 @@
 .load-more-error {
   text-align: center;
   padding: 8px 0 12px;
+}
+.quiet-note {
+  background: rgba(14, 110, 120, 0.08);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--primary-deep);
+  margin-bottom: 12px;
+  line-height: 1.45;
 }
 .link-btn {
   display: inline-block;

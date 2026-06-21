@@ -56,7 +56,6 @@ export function UnreadProvider({ children }: { children: ReactNode }) {
   return <UnreadContext.Provider value={value}>{children}</UnreadContext.Provider>
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useUnread(): UnreadValue {
   return useContext(UnreadContext)
 }

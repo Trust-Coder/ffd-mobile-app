@@ -30,7 +30,7 @@ export default function HomeScreen() {
 
   return (
     <div className="screen">
-      <ScreenHeader title="FFD Flood" subtitle="Flood Forecasting Division · Pakistan" />
+      <ScreenHeader title="FFD Flood" subtitle="Flood Forecasting Division · Pakistan" refreshable />
 
       {flows.stale || advisory.stale ? <StaleBanner cachedAt={flows.cachedAt ?? advisory.cachedAt} /> : null}
 

@@ -148,8 +148,21 @@ body {
 }
 
 .screen-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   padding-top: calc(env(safe-area-inset-top) + 4px);
   margin-bottom: 16px;
+}
+
+.screen-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.screen-header-actions {
+  flex: none;
+  margin-top: 2px;
 }
 
 .screen-header h1 {

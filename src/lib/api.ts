@@ -37,7 +37,7 @@ export interface RequestOptions {
 }
 
 /** Retry-After is either delay-seconds or an HTTP-date; return seconds-to-wait. */
-function parseRetryAfter(raw: string | null): number | undefined {
+export function parseRetryAfter(raw: string | null): number | undefined {
   if (!raw) return undefined
   const seconds = Number(raw)
   if (Number.isFinite(seconds)) return seconds
@@ -97,22 +97,34 @@ export interface CachedResult<T> {
   cachedAt?: string
 }
 
+// In-flight de-duplication: concurrent reads of the same cacheKey (e.g. the
+// inbox fetched by both the Alerts screen and the unread badge, or N resources
+// reloading on resume) share one network round-trip.
+const inFlight = new Map<string, Promise<CachedResult<unknown>>>()
+
 /**
  * Offline-tolerant GET: network-first, falling back to the last cached payload.
- * Throws only when the request fails AND there is nothing cached.
+ * Throws only when the request fails AND there is nothing cached. Concurrent
+ * calls for the same `cacheKey` are coalesced into one request.
  */
-export async function cachedGet<T>(
-  path: string,
-  cacheKey: string,
-  opts: RequestOptions = {},
-): Promise<CachedResult<T>> {
-  try {
-    const data = await apiRequest<T>(path, { ...opts, method: 'GET' })
-    await writeCache(cacheKey, data)
-    return { data, stale: false }
-  } catch (err) {
-    const cached = await readCache<T>(cacheKey)
-    if (cached) return { data: cached.data, stale: true, cachedAt: cached.at }
-    throw err
+export function cachedGet<T>(path: string, cacheKey: string, opts: RequestOptions = {}): Promise<CachedResult<T>> {
+  const existing = inFlight.get(cacheKey)
+  if (existing) return existing as Promise<CachedResult<T>>
+
+  const run = async (): Promise<CachedResult<T>> => {
+    try {
+      const data = await apiRequest<T>(path, { ...opts, method: 'GET' })
+      await writeCache(cacheKey, data)
+      return { data, stale: false }
+    } catch (err) {
+      const cached = await readCache<T>(cacheKey)
+      if (cached) return { data: cached.data, stale: true, cachedAt: cached.at }
+      throw err
+    }
   }
+
+  const promise = run()
+  inFlight.set(cacheKey, promise as Promise<CachedResult<unknown>>)
+  void promise.finally(() => inFlight.delete(cacheKey))
+  return promise
 }

@@ -83,7 +83,10 @@ the push/broadcast machinery already exists (see below).
 ```bash
 npm install            # install deps
 npm run dev            # Vite dev server (http://localhost:5173, also on LAN)
-npm run typecheck      # tsc --noEmit  (the type gate; run before committing)
+npm run typecheck      # tsc --noEmit
+npm run lint           # eslint (flat config: typescript-eslint + react-hooks)
+npm run test           # vitest run (unit tests for the security/logic seams)
+npm run check          # typecheck + lint + test — the full gate before committing
 npm run build          # typecheck + vite build → dist/
 npm run preview        # serve the production build locally
 

@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
 import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import { usePaginated } from '@/hooks/usePaginated'
-import { getAlertsPage, getInboxPage, markAlertRead } from '@/lib/endpoints'
+import { getAlertsPage, getInboxPage, getPreferences, markAlertRead } from '@/lib/endpoints'
 import type { AlertNotification } from '@/types/api'
 import { severityColor, statusFromLoose } from '@/lib/severity'
 import { routeForAlert } from '@/lib/deeplink'
+import { isQuietHoursActive } from '@/lib/quietHours'
 import { useAuth } from '@/auth/AuthContext'
 import { useUnread } from '@/state/UnreadContext'
 import { PUSH_RECEIVED_EVENT } from '@/lib/events'
@@ -55,6 +56,24 @@ export default function AlertsScreen() {
   const { items, meta, error, loadMoreError, stale, cachedAt, loading, loadingMore, hasMore, reload, loadMore } =
     usePaginated((cursor) => (isAuthenticated ? getInboxPage(cursor) : getAlertsPage(cursor)), [isAuthenticated])
   const [readIds, setReadIds] = useState<Set<number>>(new Set())
+  const [quietHours, setQuietHours] = useState(false)
+
+  // Surface a "quiet hours active" cue (prefs are cheap/cached).
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setQuietHours(false)
+      return
+    }
+    let active = true
+    void getPreferences()
+      .then((res) => {
+        if (active) setQuietHours(isQuietHoursActive(res.data))
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [isAuthenticated])
 
   // Drive the nav badge from the inbox we're showing (one fetch, badge ↔ list agree).
   useEffect(() => {
@@ -99,9 +118,15 @@ export default function AlertsScreen() {
 
   return (
     <div className="screen">
-      <ScreenHeader title="Alerts" subtitle={isAuthenticated ? 'Your alerts inbox' : 'Mirrors every push & WhatsApp broadcast'} />
+      <ScreenHeader title="Alerts" subtitle={isAuthenticated ? 'Your alerts inbox' : 'Mirrors every push & WhatsApp broadcast'} refreshable />
 
       {stale ? <StaleBanner cachedAt={cachedAt} /> : null}
+
+      {quietHours ? (
+        <div className="quiet-note" role="note">
+          🌙 Quiet hours are on — non-critical alerts arrive silently. High-severity flood alerts still notify you.
+        </div>
+      ) : null}
 
       {loading && !items.length ? (
         <LoadingState label="Loading alerts…" />
