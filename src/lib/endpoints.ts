@@ -84,9 +84,10 @@ export function getStations(): Promise<CachedResult<Station[]>> {
   return getList<Station>('/stations', 'stations.list')
 }
 
+/** Station detail with a 7-day discharge series for the chart (backend caps hours at 168). */
 export function getStation(id: number): Promise<CachedResult<StationDetail>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.station(id)))
-  return cachedGet<StationDetail>(`/stations/${id}`, `stations.${id}`)
+  return cachedGet<StationDetail>(`/stations/${id}?hours=168`, `stations.${id}`)
 }
 
 export function getActiveAdvisory(): Promise<CachedResult<Advisory | null>> {

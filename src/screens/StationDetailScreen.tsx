@@ -58,6 +58,8 @@ export default function StationDetailScreen() {
 
   const { station, thresholds } = data
   const latestLevel = data.series.points.at(-1)?.level ?? null
+  const seriesHours = data.series.hours
+  const rangeLabel = seriesHours >= 48 ? `Last ${Math.round(seriesHours / 24)} days` : `Last ${seriesHours} hours`
   const trendIcon: IconName = station.trend === 'up' ? 'trend-up' : station.trend === 'down' ? 'trend-down' : 'trend-flat'
   const subtitle = station.location?.area_name ? `${station.river} · ${station.location.area_name}` : station.river
 
@@ -89,8 +91,8 @@ export default function StationDetailScreen() {
 
       {chartPoints.length > 1 ? (
         <section className="card-block">
-          <h3 className="section-title">Discharge — last 24 hours</h3>
-          <DischargeChart points={chartPoints} thresholds={chartThresholds} />
+          <h3 className="section-title">Discharge — {rangeLabel.toLowerCase()}</h3>
+          <DischargeChart points={chartPoints} thresholds={chartThresholds} rangeLabel={rangeLabel} />
         </section>
       ) : null}
 

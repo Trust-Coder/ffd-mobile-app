@@ -112,11 +112,15 @@ function flow(seed: Seed): FlowLatest {
   }
 }
 
+const SERIES_HOURS = 168 // 7 days, hourly
+
 function series(seed: Seed): SeriesPoint[] {
   const amp = Math.max(2000, Math.round(seed.discharge * 0.06))
   const pts: SeriesPoint[] = []
-  for (let i = 23; i >= 0; i--) {
-    const outflow = Math.max(0, Math.round(seed.discharge + amp * Math.sin((24 - i) / 3) + amp * 0.25 * Math.cos((24 - i) / 1.7)))
+  for (let i = SERIES_HOURS - 1; i >= 0; i--) {
+    const t = SERIES_HOURS - i // hours elapsed
+    // Slow multi-day swell + a daily-ish oscillation → a natural 7-day shape.
+    const outflow = Math.max(0, Math.round(seed.discharge + amp * Math.sin(t / 22) + amp * 0.4 * Math.sin(t / 4)))
     pts.push({
       t: isoAgo(i * HOUR),
       inflow: Math.round(outflow * 0.92),
@@ -133,7 +137,7 @@ function detail(seed: Seed): StationDetail {
   return {
     station: station(seed),
     thresholds: thresholds(seed),
-    series: { hours: 24, from: isoAgo(23 * HOUR), to: isoAgo(0), points: series(seed) },
+    series: { hours: SERIES_HOURS, from: isoAgo((SERIES_HOURS - 1) * HOUR), to: isoAgo(0), points: series(seed) },
   }
 }
 

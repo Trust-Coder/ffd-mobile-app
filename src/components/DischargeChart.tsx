@@ -15,6 +15,8 @@ interface Props {
   points: ChartPoint[]
   thresholds?: ChartThreshold[]
   unit?: string
+  /** Sentence-case window label, e.g. "Last 7 days". */
+  rangeLabel?: string
 }
 
 const W = 320
@@ -28,7 +30,7 @@ const PLOT_H = H - PAD.top - PAD.bottom
  * threshold lines overlaid. Scales to container width via a viewBox; no chart
  * library (keeps the mobile bundle lean).
  */
-export default function DischargeChart({ points, thresholds = [], unit = 'cusecs' }: Props) {
+export default function DischargeChart({ points, thresholds = [], unit = 'cusecs', rangeLabel = 'recent period' }: Props) {
   if (points.length < 2) {
     return <div className="chart-empty">Not enough data to plot.</div>
   }
@@ -51,7 +53,7 @@ export default function DischargeChart({ points, thresholds = [], unit = 'cusecs
 
   return (
     <figure className="chart">
-      <svg viewBox={`0 0 ${W} ${H}`} className="chart-svg" role="img" aria-label="Discharge over the last 24 hours">
+      <svg viewBox={`0 0 ${W} ${H}`} className="chart-svg" role="img" aria-label={`Discharge over the ${rangeLabel.toLowerCase()}`}>
         <defs>
           <linearGradient id="dischargeFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--water)" stopOpacity="0.35" />
@@ -75,7 +77,7 @@ export default function DischargeChart({ points, thresholds = [], unit = 'cusecs
         <circle cx={x(points.length - 1)} cy={y(last.value)} r="3.5" fill="var(--water)" stroke="var(--card)" strokeWidth="1.5" />
       </svg>
       <figcaption className="chart-cap">
-        Last 24 hours · latest <strong>{fmtInt(last.value)}</strong> {unit}
+        {rangeLabel} · latest <strong>{fmtInt(last.value)}</strong> {unit}
       </figcaption>
     </figure>
   )
