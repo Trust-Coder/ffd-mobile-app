@@ -1,5 +1,6 @@
 import type {
   Advisory,
+  AlertDetail,
   AlertNotification,
   AuthTokenResponse,
   AuthUser,
@@ -166,7 +167,16 @@ const ADVISORIES: Advisory[] = [
   { id: 202, type: 'advisory', type_label: 'Advisory', title: 'Seasonal flood outlook — monsoon onset', body: '<p>The monsoon is expected to establish over the upper catchments next week. Routine vigilance advised.</p>', severity: 'LOW', issue_time: isoAgo(10 * 24 * HOUR), published_at: isoAgo(10 * 24 * HOUR), valid_until: null, lifecycle: 'expired', rivers_affected: null, guidance: null, has_file: false, original_filename: null, download_url: null },
 ]
 
+const ALERT_BODY_HTML: Record<number, string> = {
+  305:
+    '<p>The Flood Forecasting Division advises residents and local authorities along the <strong>Chenab</strong> and <strong>Jhelum</strong> rivers to prepare for elevated flows over the coming week as pre-monsoon rainfall intensifies.</p>' +
+    '<h4>Recommended actions</h4>' +
+    '<ul><li>Avoid low-lying areas, riverbeds and weak embankments.</li><li>Move livestock and movable assets to higher ground.</li><li>Follow instructions issued by the local administration.</li></ul>' +
+    '<p>Monitor this app and <a href="https://floodupdates.com">floodupdates.com</a> for the latest river readings and bulletins.</p>',
+}
+
 const ALERTS: AlertNotification[] = [
+  { id: 305, type: 'alert', scope: 'broadcast', title: 'Pre-monsoon flood preparedness advisory', body: 'FFD advises residents along the Chenab and Jhelum to prepare for higher flows this week. Tap to read the full guidance.', body_text: 'FFD advises residents along the Chenab and Jhelum to prepare for higher flows this week. Tap to read the full guidance.', content_type: 'html', has_html: true, lifecycle: 'active', severity: 'high', data: { alert_id: 305, content_type: 'html', deeplink: 'ffd://alert/305' }, sent_at: isoAgo(1 * HOUR) },
   { id: 301, type: 'station_alert', scope: 'broadcast', title: 'Medium Flood — Marala', body: 'Flows rose to 186,400 cusecs on the Chenab and are expected to keep rising over the next 24 hours.', severity: 'medium', data: { station_id: 5, deeplink: 'ffd://station/5' }, sent_at: isoAgo(2 * HOUR) },
   { id: 302, type: 'advisory', scope: 'broadcast', title: 'Flood advisory issued for the Chenab', body: 'A high flood risk advisory is now active for the Chenab at Marala. Tap for guidance.', severity: 'high', data: { advisory_id: 201, deeplink: 'ffd://advisory/201' }, sent_at: isoAgo(6 * HOUR) },
   { id: 303, type: 'bulletin', scope: 'broadcast', title: 'Daily Flood Bulletin published', body: 'The latest FFD flood bulletin is now available.', severity: 'normal', data: { bulletin_id: 101, deeplink: 'ffd://bulletin/101' }, sent_at: isoAgo(28 * HOUR) },
@@ -215,6 +225,10 @@ export const mocks = {
     asPage(severity ? BULLETINS.filter((b) => b.severity === severity) : BULLETINS),
   publication: (id: number): Publication => ALL_PUBLICATIONS.find((p) => p.id === id) ?? ALL_PUBLICATIONS[0],
   alertsPage: (): Paginated<AlertNotification> => asPage(ALERTS),
+  alertDetail: (id: number): AlertDetail => {
+    const base = ALERTS.find((a) => a.id === id) ?? ALERTS[0]
+    return { ...base, body_html: ALERT_BODY_HTML[base.id] ?? null }
+  },
 
   inboxPage: (): Paginated<AlertNotification> => asPage(inbox, { unread_count: inbox.filter((a) => a.read_at == null).length }),
   markRead: (id: number): void => {

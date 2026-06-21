@@ -11,6 +11,7 @@ export function routeForData(data: Record<string, unknown> | null | undefined): 
   if (typeof data.station_id === 'number') return `/stations/${data.station_id}`
   if (typeof data.bulletin_id === 'number') return `/bulletins/${data.bulletin_id}`
   if (typeof data.advisory_id === 'number') return `/advisories/${data.advisory_id}`
+  if (typeof data.alert_id === 'number') return `/alerts/${data.alert_id}`
   if (typeof data.deeplink === 'string') return routeForDeeplink(data.deeplink)
   return null
 }
@@ -23,6 +24,7 @@ const KIND_TO_PATH: Record<string, string> = {
   station: 'stations',
   bulletin: 'bulletins',
   advisory: 'advisories',
+  alert: 'alerts',
 }
 
 /**
@@ -31,7 +33,7 @@ const KIND_TO_PATH: Record<string, string> = {
  *   https://<host>/app/<type>/<id>     — App Link / Universal Link (WhatsApp, web)
  */
 export function routeForDeeplink(url: string): string | null {
-  const match = url.match(/(?:ffd:\/\/|\/app\/)(station|bulletin|advisory)\/(\d+)/)
+  const match = url.match(/(?:ffd:\/\/|\/app\/)(station|bulletin|advisory|alert)\/(\d+)/)
   if (!match) return null
   return `/${KIND_TO_PATH[match[1]]}/${match[2]}`
 }

@@ -35,13 +35,14 @@ function AlertRow({ alert, unread, onOpen }: RowProps) {
         <p className="alert-body">{alert.body}</p>
         <div className="alert-meta">
           {alert.severity ? <SeverityChip status={status} /> : null}
+          {alert.lifecycle === 'withdrawn' ? <span className="alert-withdrawn">Withdrawn</span> : null}
           <span className="alert-time">{fmtRelative(alert.sent_at)}</span>
         </div>
       </div>
     </>
   )
 
-  const className = 'alert-item' + (unread ? ' unread' : '')
+  const className = 'alert-item' + (unread ? ' unread' : '') + (alert.lifecycle === 'withdrawn' ? ' withdrawn' : '')
   return href ? (
     <Link to={href} className={className + ' link-reset'} onClick={() => onOpen(alert)}>
       {inner}

@@ -2,6 +2,7 @@ import { apiRequest, cachedGet } from '@/lib/api'
 import type { CachedResult, RequestOptions } from '@/lib/api'
 import type {
   Advisory,
+  AlertDetail,
   AlertNotification,
   Bulletin,
   FlowLatest,
@@ -124,6 +125,12 @@ export function getAdvisory(id: number): Promise<CachedResult<Advisory>> {
 export function getAlertsPage(cursor: string | null): Promise<CachedResult<Paginated<AlertNotification>>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.alertsPage()))
   return getPage<AlertNotification>('/alerts', 'alerts.page', cursor)
+}
+
+/** A single CMS alert with its rich HTML body (0009). Public; broadcast+sent only, else 404. */
+export function getAlert(id: number): Promise<CachedResult<AlertDetail>> {
+  if (mockEnabled) return Promise.resolve(ok(mocks.alertDetail(id)))
+  return cachedGet<AlertDetail>(`/alerts/${id}`, `alerts.${id}`)
 }
 
 // ── Authenticated (§D inbox / §E watchlist + preferences) ──────────────────

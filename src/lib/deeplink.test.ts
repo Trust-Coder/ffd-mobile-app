@@ -7,6 +7,7 @@ describe('routeForDeeplink', () => {
     expect(routeForDeeplink('ffd://advisory/12')).toBe('/advisories/12')
     expect(routeForDeeplink('ffd://station/5')).toBe('/stations/5')
     expect(routeForDeeplink('ffd://bulletin/7')).toBe('/bulletins/7')
+    expect(routeForDeeplink('ffd://alert/305')).toBe('/alerts/305')
   })
   it('parses the https App Link form (with trailing query/path)', () => {
     expect(routeForDeeplink('https://host/app/advisory/3?utm=wa')).toBe('/advisories/3')
@@ -24,6 +25,7 @@ describe('routeForData', () => {
     expect(routeForData({ station_id: 9 })).toBe('/stations/9')
     expect(routeForData({ bulletin_id: 2 })).toBe('/bulletins/2')
     expect(routeForData({ advisory_id: 4 })).toBe('/advisories/4')
+    expect(routeForData({ alert_id: 305 })).toBe('/alerts/305')
   })
   it('falls back to the deeplink string (FCM payloads)', () => {
     expect(routeForData({ deeplink: 'ffd://advisory/1' })).toBe('/advisories/1')

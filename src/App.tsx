@@ -9,6 +9,7 @@ import HomeScreen from '@/screens/HomeScreen'
 import StationsScreen from '@/screens/StationsScreen'
 import StationDetailScreen from '@/screens/StationDetailScreen'
 import AlertsScreen from '@/screens/AlertsScreen'
+import AlertDetailScreen from '@/screens/AlertDetailScreen'
 import BulletinsScreen from '@/screens/BulletinsScreen'
 import BulletinDetailScreen from '@/screens/BulletinDetailScreen'
 import AdvisoryDetailScreen from '@/screens/AdvisoryDetailScreen'
@@ -33,6 +34,7 @@ export default function App() {
                 <Route path="stations" element={<StationsScreen />} />
                 <Route path="stations/:id" element={<StationDetailScreen />} />
                 <Route path="alerts" element={<AlertsScreen />} />
+                <Route path="alerts/:id" element={<AlertDetailScreen />} />
                 <Route path="bulletins" element={<BulletinsScreen />} />
                 <Route path="bulletins/:id" element={<BulletinDetailScreen />} />
                 <Route path="advisories/:id" element={<AdvisoryDetailScreen />} />

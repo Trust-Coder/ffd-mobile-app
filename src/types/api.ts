@@ -130,14 +130,19 @@ export type Bulletin = Publication
 export type Advisory = Publication
 
 // ── Notifications / alerts ─────────────────────────────────────────────────
-export type AlertType = 'advisory' | 'bulletin' | 'station_alert' | 'info'
+export type AlertType = 'advisory' | 'bulletin' | 'station_alert' | 'info' | 'alert'
 export type AlertScope = 'broadcast' | 'user' | 'station'
+/** CMS alert content discriminator + lifecycle (0009). */
+export type AlertContentType = 'text' | 'html'
+export type AlertLifecycle = 'active' | 'withdrawn'
 
 export interface AlertData {
   deeplink?: string // e.g. "ffd://advisory/1"
   station_id?: number
   bulletin_id?: number
   advisory_id?: number
+  alert_id?: number
+  content_type?: AlertContentType
   [key: string]: unknown
 }
 
@@ -147,11 +152,24 @@ export interface AlertNotification {
   scope: AlertScope
   title: string
   body: string
+  /** Alias of `body` — the always-present text channel (0009). */
+  body_text?: string
+  /** 0009: 'text' (default) | 'html'. HTML alerts carry a rich body in the detail. */
+  content_type?: AlertContentType
+  /** List flag — true when a rich `body_html` is available via the detail endpoint. */
+  has_html?: boolean
+  /** 0009: 'active' | 'withdrawn' — a withdrawn alert is greyed/flagged. */
+  lifecycle?: AlertLifecycle
   severity?: string | null // lowercase: normal|low|medium|high|very_high|ex_high
   data?: AlertData
   sent_at: string
   /** Present only on the authenticated §D inbox; absent on the public feed. */
   read_at?: string | null
+}
+
+/** GET /api/app/v1/alerts/{id} — the list item plus the sanitised rich HTML body (0009). */
+export interface AlertDetail extends AlertNotification {
+  body_html?: string | null
 }
 
 // ── Auth (§B) ──────────────────────────────────────────────────────────────
