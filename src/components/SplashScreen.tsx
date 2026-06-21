@@ -93,7 +93,20 @@ export default function LaunchScreen({ onDone }: { onDone?: () => void }) {
     WebkitFontSmoothing: 'antialiased',
   }
 
-  const logoStyle: CSSProperties = { height: 74, width: 'auto', objectFit: 'contain' }
+  // Round white plate behind each logo so they read on the blue dark-mode
+  // background (and look like intentional chips on the white light-mode one).
+  const badgeStyle: CSSProperties = {
+    width: 96,
+    height: 96,
+    borderRadius: '50%',
+    background: '#ffffff',
+    display: 'grid',
+    placeItems: 'center',
+    flex: 'none',
+    boxShadow: resolved === 'dark' ? '0 6px 20px rgba(0,0,0,0.45)' : '0 2px 12px rgba(16,25,54,0.12)',
+    border: resolved === 'dark' ? '1px solid rgba(255,255,255,0.55)' : '1px solid rgba(16,25,54,0.06)',
+  }
+  const logoStyle: CSSProperties = { height: 58, maxWidth: 64, width: 'auto', objectFit: 'contain' }
 
   return (
     <div
@@ -105,10 +118,14 @@ export default function LaunchScreen({ onDone }: { onDone?: () => void }) {
     >
       <div
         className="launch-logos"
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '22px' }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '18px' }}
       >
-        <img src="/images/gop-logo.png" alt="Government of Pakistan" style={logoStyle} />
-        <img src="/images/pmd-logo.png" alt="Pakistan Meteorological Department" style={logoStyle} />
+        <span className="launch-badge" style={badgeStyle}>
+          <img src="/images/gop-logo.png" alt="Government of Pakistan" style={logoStyle} />
+        </span>
+        <span className="launch-badge" style={badgeStyle}>
+          <img src="/images/pmd-logo.png" alt="Pakistan Meteorological Department" style={logoStyle} />
+        </span>
       </div>
 
       <div className="launch-text" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
