@@ -2,9 +2,9 @@ import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'com.pmd.floodupdates',
-  appName: 'FFD Flood',
+  appName: 'FFD Lahore',
   webDir: 'dist',
-  backgroundColor: '#0A4A52',
+  backgroundColor: '#070b18',
   plugins: {
     SplashScreen: {
       launchAutoHide: false, // hidden in initNative() once the app shell mounts
