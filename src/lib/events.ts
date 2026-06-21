@@ -5,3 +5,10 @@ export const PUSH_RECEIVED_EVENT = 'ffd:push-received'
 
 /** Dispatched on app resume and pull-to-refresh; the data hooks reload on it. */
 export const APP_REFRESH_EVENT = 'ffd:refresh'
+
+/** A message for the screen-reader live region (LiveAnnouncer). */
+export const ANNOUNCE_EVENT = 'ffd:announce'
+
+export function announce(message: string): void {
+  window.dispatchEvent(new CustomEvent(ANNOUNCE_EVENT, { detail: { message } }))
+}

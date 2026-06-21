@@ -140,6 +140,7 @@ export async function markAlertRead(id: number): Promise<void> {
     return
   }
   await apiRequest(`/me/alerts/${id}/read`, { method: 'POST', auth: true })
+  await clearCacheKey('me.alerts.page') // don't serve a stale "unread" page offline
 }
 
 /** Unread count for the nav badge — reads the inbox page's authoritative meta.unread_count. */

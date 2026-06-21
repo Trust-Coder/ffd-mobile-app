@@ -11,6 +11,7 @@ import { fmtDateTime } from '@/lib/format'
 
 const SEVERITY_OPTIONS = [
   { value: '', label: 'All' },
+  { value: 'EX_HIGH', label: 'Exceptional' },
   { value: 'VERY_HIGH', label: 'Very High' },
   { value: 'HIGH', label: 'High' },
   { value: 'MEDIUM', label: 'Medium' },
@@ -20,10 +21,8 @@ const SEVERITY_OPTIONS = [
 
 export default function BulletinsScreen() {
   const [severity, setSeverity] = useState('')
-  const { items, error, stale, cachedAt, loading, loadingMore, hasMore, reload, loadMore } = usePaginated(
-    (cursor) => getBulletinsPage({ severity: severity || undefined }, cursor),
-    [severity],
-  )
+  const { items, error, loadMoreError, stale, cachedAt, loading, loadingMore, hasMore, reload, loadMore } =
+    usePaginated((cursor) => getBulletinsPage({ severity: severity || undefined }, cursor), [severity])
   const bulletins = items
 
   return (
@@ -64,6 +63,16 @@ export default function BulletinsScreen() {
             <button type="button" className="btn-ghost block load-more" onClick={loadMore} disabled={loadingMore}>
               {loadingMore ? 'Loading…' : 'Load more'}
             </button>
+          ) : (
+            <p className="list-end">You’re all caught up.</p>
+          )}
+          {loadMoreError ? (
+            <p className="error-text load-more-error" role="alert">
+              {loadMoreError}{' '}
+              <button type="button" className="link-btn" onClick={loadMore}>
+                Retry
+              </button>
+            </p>
           ) : null}
         </>
       )}

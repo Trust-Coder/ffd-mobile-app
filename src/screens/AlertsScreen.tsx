@@ -52,10 +52,8 @@ function AlertRow({ alert, unread, onOpen }: RowProps) {
 export default function AlertsScreen() {
   const { isAuthenticated } = useAuth()
   const { decrement: decrementUnread, setCount } = useUnread()
-  const { items, meta, error, stale, cachedAt, loading, loadingMore, hasMore, reload, loadMore } = usePaginated(
-    (cursor) => (isAuthenticated ? getInboxPage(cursor) : getAlertsPage(cursor)),
-    [isAuthenticated],
-  )
+  const { items, meta, error, loadMoreError, stale, cachedAt, loading, loadingMore, hasMore, reload, loadMore } =
+    usePaginated((cursor) => (isAuthenticated ? getInboxPage(cursor) : getAlertsPage(cursor)), [isAuthenticated])
   const [readIds, setReadIds] = useState<Set<number>>(new Set())
 
   // Drive the nav badge from the inbox we're showing (one fetch, badge ↔ list agree).
@@ -119,6 +117,14 @@ export default function AlertsScreen() {
             <button type="button" className="btn-ghost block load-more" onClick={loadMore} disabled={loadingMore}>
               {loadingMore ? 'Loading…' : 'Load more'}
             </button>
+          ) : null}
+          {loadMoreError ? (
+            <p className="error-text load-more-error" role="alert">
+              {loadMoreError}{' '}
+              <button type="button" className="link-btn" onClick={loadMore}>
+                Retry
+              </button>
+            </p>
           ) : null}
         </>
       )}

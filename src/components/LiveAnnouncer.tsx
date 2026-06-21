@@ -1,23 +1,26 @@
 import { useEffect, useState } from 'react'
-import { PUSH_RECEIVED_EVENT } from '@/lib/events'
+import { ANNOUNCE_EVENT } from '@/lib/events'
 
 /**
- * Visually-hidden ARIA live region so screen-reader users are told when a flood
- * alert arrives in the foreground (assertive — these are time-critical).
+ * Visually-hidden ARIA live region. Other code calls `announce(message)`
+ * (lib/events) to speak status to screen-reader users — new flood alerts,
+ * refresh start/finish, etc. Assertive because flood messages are time-critical.
  */
 export default function LiveAnnouncer() {
   const [message, setMessage] = useState('')
 
   useEffect(() => {
     let timer: number | undefined
-    const onPush = () => {
-      setMessage('New flood alert received. Open the Alerts tab to view it.')
+    const onAnnounce = (e: Event) => {
+      const detail = (e as CustomEvent<{ message?: string }>).detail
+      if (!detail?.message) return
+      setMessage(detail.message)
       window.clearTimeout(timer)
       timer = window.setTimeout(() => setMessage(''), 4000)
     }
-    window.addEventListener(PUSH_RECEIVED_EVENT, onPush)
+    window.addEventListener(ANNOUNCE_EVENT, onAnnounce)
     return () => {
-      window.removeEventListener(PUSH_RECEIVED_EVENT, onPush)
+      window.removeEventListener(ANNOUNCE_EVENT, onAnnounce)
       window.clearTimeout(timer)
     }
   }, [])

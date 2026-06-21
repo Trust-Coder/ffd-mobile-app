@@ -14,9 +14,14 @@ export function advisoryState(advisory: Advisory): AdvisoryLifecycle {
 
   const now = Date.now()
   if (advisory.valid_until) {
-    if (Date.parse(advisory.valid_until) < now) return 'expired'
-  } else if (advisory.issue_time && now - Date.parse(advisory.issue_time) > DAY_MS) {
-    return 'expired'
+    const until = Date.parse(advisory.valid_until)
+    if (Number.isNaN(until) || until < now) return 'expired'
+    return 'active'
   }
+
+  // No explicit window: fall back to a 24h-from-issue heuristic. If we can't even
+  // parse issue_time, fail safe to expired rather than show a stale "Active" card.
+  const issued = Date.parse(advisory.issue_time)
+  if (Number.isNaN(issued) || now - issued > DAY_MS) return 'expired'
   return 'active'
 }

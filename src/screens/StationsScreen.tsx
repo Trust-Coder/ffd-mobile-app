@@ -61,6 +61,7 @@ export default function StationsScreen() {
                 sub={s.location?.area_name ? `${s.river} · ${s.location.area_name}` : s.river}
                 discharge={s.discharge}
                 status={s.status}
+                observedAt={s.observed_at}
               />
             </li>
           ))}

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
 import StationRow from '@/components/StationRow'
@@ -38,7 +39,7 @@ export default function HomeScreen() {
       {active && advState === 'active' ? (
         <Link to={`/advisories/${active.id}`} className="advisory-card active link-reset" aria-label="Active flood advisory">
           <div className="advisory-head">
-            <span className="advisory-badge pulse" style={{ background: severityColor(active.severity ?? 'HIGH') }}>
+            <span className="advisory-badge pulse" style={{ '--sev': severityColor(active.severity ?? 'HIGH') } as CSSProperties}>
               Active Advisory
             </span>
             <span className="advisory-state">
@@ -105,7 +106,7 @@ export default function HomeScreen() {
           <ul className="station-list">
             {elevated.map((s) => (
               <li key={s.station_id}>
-                <StationRow id={s.station_id} name={s.name} sub={s.river} discharge={s.discharge} status={s.status} />
+                <StationRow id={s.station_id} name={s.name} sub={s.river} discharge={s.discharge} status={s.status} observedAt={s.observed_at} />
               </li>
             ))}
           </ul>

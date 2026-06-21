@@ -12,7 +12,10 @@ export function SeverityChip({ status, label }: { status: FloodStatus; label?: s
 }
 
 export function StatusDot({ status }: { status: FloodStatus }) {
-  return <span className="status-dot" style={{ background: severityColor(status) }} aria-hidden="true" />
+  // Non-colour cue for colour-blind users: the dot carries the level as a label.
+  return (
+    <span className="status-dot" style={{ background: severityColor(status) }} role="img" aria-label={`${severityLabel(status)} level`} />
+  )
 }
 
 export function LoadingState({ label = 'Loading…' }: { label?: string }) {

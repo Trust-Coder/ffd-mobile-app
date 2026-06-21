@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { CachedResult } from '@/lib/api'
 import { ApiException } from '@/lib/api'
 import { APP_REFRESH_EVENT } from '@/lib/events'
+import { trackLoad } from '@/lib/refresh'
 
 export interface ResourceState<T> {
   data: T | null
@@ -41,7 +42,7 @@ export function useResource<T>(
     let active = true
     setLoading(true)
     setError(null)
-    loader()
+    trackLoad(loader())
       .then((res) => {
         if (!active) return
         setData(res.data)

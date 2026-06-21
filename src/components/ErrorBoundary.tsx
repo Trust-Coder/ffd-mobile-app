@@ -18,7 +18,8 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    track('app_crash', { message: error.message, stack: info.componentStack?.slice(0, 500) })
+    // Send only non-PII signal — error.message can embed rendered user data.
+    track('app_crash', { name: error.name, stack: info.componentStack?.slice(0, 500) })
   }
 
   render() {

@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import BottomNav from '@/components/BottomNav'
 import PushManager from '@/components/PushManager'
 import LiveAnnouncer from '@/components/LiveAnnouncer'
-import { APP_REFRESH_EVENT } from '@/lib/events'
+import { announce } from '@/lib/events'
+import { dispatchRefresh } from '@/lib/refresh'
 
 const THRESHOLD = 70 // px pull to trigger
 const MAX_PULL = 100
-const SPINNER_MS = 700
 
 export default function AppShell() {
   const mainRef = useRef<HTMLElement>(null)
+  const { pathname } = useLocation()
   const [pull, setPull] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
   const pullRef = useRef(0)
@@ -21,12 +22,18 @@ export default function AppShell() {
     setPull(n)
   }
 
+  // Scroll the (single, persistent) scroll container to top on route change.
+  useEffect(() => {
+    mainRef.current?.scrollTo(0, 0)
+  }, [pathname])
+
   // Pull-to-refresh on the scroll container (native non-passive touchmove so we
   // can suppress the browser's overscroll while pulling).
   useEffect(() => {
     const el = mainRef.current
     if (!el) return
     let startY: number | null = null
+    let startX = 0
     let pulling = false
 
     const onStart = (e: TouchEvent) => {
@@ -34,14 +41,22 @@ export default function AppShell() {
         startY = null
         return
       }
+      // Ignore gestures starting inside a horizontally-scrollable strip (filter chips).
+      if ((e.target as HTMLElement | null)?.closest('.filter-chips')) {
+        startY = null
+        return
+      }
       startY = e.touches[0].clientY
+      startX = e.touches[0].clientX
     }
     const onMove = (e: TouchEvent) => {
       if (startY === null) return
-      const delta = e.touches[0].clientY - startY
-      if (delta > 0 && el.scrollTop <= 0) {
+      const dy = e.touches[0].clientY - startY
+      const dx = Math.abs(e.touches[0].clientX - startX)
+      // Only a dominantly-vertical downward drag at the top counts as a pull.
+      if (dy > 0 && dy > dx * 1.2 && el.scrollTop <= 0) {
         pulling = true
-        const dist = Math.min(MAX_PULL, delta * 0.5)
+        const dist = Math.min(MAX_PULL, dy * 0.5)
         setPullValue(dist)
         if (dist > 4) e.preventDefault()
       }
@@ -50,12 +65,13 @@ export default function AppShell() {
       if (pulling && pullRef.current >= THRESHOLD) {
         refreshingRef.current = true
         setRefreshing(true)
-        window.dispatchEvent(new Event(APP_REFRESH_EVENT))
-        window.setTimeout(() => {
+        announce('Refreshing flood data')
+        void dispatchRefresh().then(() => {
           refreshingRef.current = false
           setRefreshing(false)
           setPullValue(0)
-        }, SPINNER_MS)
+          announce('Flood data updated')
+        })
       } else {
         setPullValue(0)
       }

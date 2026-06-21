@@ -8,7 +8,7 @@ import { Preferences } from '@capacitor/preferences'
 import { APP_VERSION, getPushPermission, pushSupported, registerForPush, requestPushPermission } from '@/lib/push'
 import { heartbeat, registerDevice } from '@/lib/devices'
 import { routeForData, routeForDeeplink } from '@/lib/deeplink'
-import { APP_REFRESH_EVENT, PUSH_RECEIVED_EVENT } from '@/lib/events'
+import { announce, APP_REFRESH_EVENT, PUSH_RECEIVED_EVENT } from '@/lib/events'
 import { track } from '@/lib/analytics'
 
 const PROMPT_DISMISSED_KEY = 'ffd.push.prompt_dismissed'
@@ -51,6 +51,7 @@ export default function PushManager() {
       await add(
         PushNotifications.addListener('pushNotificationReceived', () => {
           window.dispatchEvent(new Event(PUSH_RECEIVED_EVENT))
+          announce('New flood alert received. Open the Alerts tab to view it.')
         }),
       )
       await add(
