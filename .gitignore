@@ -28,6 +28,10 @@ android/app/src/main/assets/capacitor.plugins.json
 **/google-services.json
 **/GoogleService-Info.plist
 
+# Google OAuth client secret — SERVER-SIDE only; must never ship in the app or be committed
+client_secret_*.json
+*.apps.googleusercontent.com.json
+
 # Android signing — never commit
 android/keystore.properties
 *.keystore

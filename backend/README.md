@@ -39,6 +39,7 @@ same file. We coordinate directly only when a change spans both sides at once.
 | 0007 | [`0007-run-migrations-localhost.md`](0007-run-migrations-localhost.md) | Pending migrations on ffd_database (advisory/active + alerts 500) | DONE · [response](0007-run-migrations-localhost.response.md) |
 | 0008 | [`0008-fcm-project-confirm-audience-separation.md`](0008-fcm-project-confirm-audience-separation.md) | Confirm FCM project (`ffd-web-app`) + keep public push audience separate from the FFD Hydro data app | DELIVERED · [response](0008-fcm-project-confirm-audience-separation.response.md) |
 | 0009 | [`0009-cms-alerts-rich-content.md`](0009-cms-alerts-rich-content.md) | CMS "Send Alert" page (rich HTML editor) + channel-agnostic text/HTML alert protocol | OPEN |
+| 0010 | [`0010-public-app-social-login.md`](0010-public-app-social-login.md) | Public-app Google social login on `/api/app/v1` (mirrors staff flow, app:access token) | OPEN |
 
 ## Request template
 
