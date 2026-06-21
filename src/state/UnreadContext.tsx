@@ -9,9 +9,16 @@ interface UnreadValue {
   refresh: () => void
   /** Local decrement after a single mark-read — avoids refetching the inbox per tap. */
   decrement: () => void
+  /** Set the count authoritatively from a fetched inbox page (badge↔list consistency). */
+  setCount: (n: number) => void
 }
 
-const UnreadContext = createContext<UnreadValue>({ count: 0, refresh: () => {}, decrement: () => {} })
+const UnreadContext = createContext<UnreadValue>({
+  count: 0,
+  refresh: () => {},
+  decrement: () => {},
+  setCount: () => {},
+})
 
 /** Tracks the unread inbox count for the Alerts nav badge. Refreshes on auth
  *  change and on every foreground push; AlertsScreen calls refresh() after a
@@ -40,8 +47,12 @@ export function UnreadProvider({ children }: { children: ReactNode }) {
   }, [refresh])
 
   const decrement = useCallback(() => setCount((c) => Math.max(0, c - 1)), [])
+  const setExact = useCallback((n: number) => setCount(Math.max(0, n)), [])
 
-  const value = useMemo(() => ({ count, refresh, decrement }), [count, refresh, decrement])
+  const value = useMemo(
+    () => ({ count, refresh, decrement, setCount: setExact }),
+    [count, refresh, decrement, setExact],
+  )
   return <UnreadContext.Provider value={value}>{children}</UnreadContext.Provider>
 }
 

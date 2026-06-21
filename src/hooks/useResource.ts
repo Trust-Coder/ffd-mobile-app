@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { CachedResult } from '@/lib/api'
 import { ApiException } from '@/lib/api'
+import { APP_REFRESH_EVENT } from '@/lib/events'
 
 export interface ResourceState<T> {
   data: T | null
@@ -29,6 +30,12 @@ export function useResource<T>(
   const [nonce, setNonce] = useState(0)
 
   const reload = useCallback(() => setNonce((n) => n + 1), [])
+
+  // Reload on app resume / pull-to-refresh.
+  useEffect(() => {
+    window.addEventListener(APP_REFRESH_EVENT, reload)
+    return () => window.removeEventListener(APP_REFRESH_EVENT, reload)
+  }, [reload])
 
   useEffect(() => {
     let active = true

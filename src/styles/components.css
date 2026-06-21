@@ -120,7 +120,7 @@
 .stale-banner {
   background: rgba(217, 151, 0, 0.12);
   border: 1px solid rgba(217, 151, 0, 0.4);
-  color: #8a6200;
+  color: #6b4d00;
   border-radius: 10px;
   padding: 9px 12px;
   font-size: 12.5px;
@@ -136,8 +136,9 @@
   letter-spacing: 0.2px;
   padding: 2px 8px;
   border-radius: 999px;
-  color: var(--sev);
-  background: color-mix(in srgb, var(--sev) 14%, transparent);
+  /* Darken the label toward ink and lighten the fill, so even amber/low meets contrast. */
+  color: color-mix(in srgb, var(--sev) 60%, #0b1f2a);
+  background: color-mix(in srgb, var(--sev) 16%, #ffffff);
   white-space: nowrap;
 }
 .status-dot {
@@ -694,6 +695,9 @@
 .btn-primary.block {
   display: block;
   width: 100%;
+}
+.load-more {
+  margin: 4px 0 12px;
 }
 .link-btn {
   display: inline-block;

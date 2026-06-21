@@ -52,6 +52,27 @@ function buildQuery(params: Record<string, string | undefined>): string {
   return qs ? `?${qs}` : ''
 }
 
+function pageUrl(path: string, cursor: string | null): string {
+  if (!cursor) return path
+  const sep = path.includes('?') ? '&' : '?'
+  return `${path}${sep}cursor=${encodeURIComponent(cursor)}`
+}
+
+/** A page of a cursor-paginated list. Page one (cursor null) is offline-tolerant. */
+async function getPage<T>(
+  path: string,
+  cacheKey: string,
+  cursor: string | null,
+  opts: RequestOptions = {},
+): Promise<CachedResult<Paginated<T>>> {
+  const url = pageUrl(path, cursor)
+  if (cursor) {
+    const data = await apiRequest<Paginated<T>>(url, { ...opts, method: 'GET' })
+    return { data, stale: false }
+  }
+  return cachedGet<Paginated<T>>(url, cacheKey, opts)
+}
+
 export function getFlowsLatest(): Promise<CachedResult<FlowLatest[]>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.flowsLatest()))
   return getList<FlowLatest>('/flows/latest', 'flows.latest')
@@ -72,10 +93,18 @@ export function getActiveAdvisory(): Promise<CachedResult<Advisory | null>> {
   return cachedGet<Advisory | null>('/advisory/active', 'advisory.active')
 }
 
+/** First page only — used for the Home "latest bulletin" teaser. */
 export function getBulletins(filter: BulletinFilter = {}): Promise<CachedResult<Bulletin[]>> {
   if (mockEnabled) return Promise.resolve(ok(mocks.bulletins(filter.severity)))
   const qs = buildQuery({ type: filter.type, severity: filter.severity, since: filter.since })
   return getList<Bulletin>(`/bulletins${qs}`, `bulletins.list${qs}`)
+}
+
+/** Paginated bulletins feed for the Bulletins screen (with Load more). */
+export function getBulletinsPage(filter: BulletinFilter, cursor: string | null): Promise<CachedResult<Paginated<Bulletin>>> {
+  if (mockEnabled) return Promise.resolve(ok(mocks.bulletinsPage(filter.severity)))
+  const qs = buildQuery({ type: filter.type, severity: filter.severity, since: filter.since })
+  return getPage<Bulletin>(`/bulletins${qs}`, `bulletins.page${qs}`, cursor)
 }
 
 export function getBulletin(id: number): Promise<CachedResult<Bulletin>> {
@@ -91,16 +120,18 @@ export function getAdvisory(id: number): Promise<CachedResult<Advisory>> {
   return cachedGet<Advisory>(`/advisories/${id}`, `advisories.${id}`)
 }
 
-export function getAlerts(): Promise<CachedResult<AlertNotification[]>> {
-  if (mockEnabled) return Promise.resolve(ok(mocks.alerts()))
-  return getList<AlertNotification>('/alerts', 'alerts.feed')
+/** Public alerts feed, paginated. */
+export function getAlertsPage(cursor: string | null): Promise<CachedResult<Paginated<AlertNotification>>> {
+  if (mockEnabled) return Promise.resolve(ok(mocks.alertsPage()))
+  return getPage<AlertNotification>('/alerts', 'alerts.page', cursor)
 }
 
 // ── Authenticated (§D inbox / §E watchlist + preferences) ──────────────────
 
-export function getInbox(): Promise<CachedResult<AlertNotification[]>> {
-  if (mockEnabled) return Promise.resolve(ok(mocks.inbox()))
-  return getList<AlertNotification>('/me/alerts', 'me.alerts', { auth: true })
+/** Authed inbox, paginated. Page meta carries `unread_count` (spans all pages). */
+export function getInboxPage(cursor: string | null): Promise<CachedResult<Paginated<AlertNotification>>> {
+  if (mockEnabled) return Promise.resolve(ok(mocks.inboxPage()))
+  return getPage<AlertNotification>('/me/alerts', 'me.alerts.page', cursor, { auth: true })
 }
 
 export async function markAlertRead(id: number): Promise<void> {
@@ -111,11 +142,10 @@ export async function markAlertRead(id: number): Promise<void> {
   await apiRequest(`/me/alerts/${id}/read`, { method: 'POST', auth: true })
 }
 
-/** The authoritative unread count for the nav badge (meta.unread_count spans all pages). */
+/** Unread count for the nav badge — reads the inbox page's authoritative meta.unread_count. */
 export async function getUnreadCount(): Promise<number> {
-  if (mockEnabled) return mocks.inbox().filter((a) => a.read_at == null).length
-  const page = await apiRequest<Paginated<AlertNotification>>('/me/alerts', { auth: true })
-  return page.meta?.unread_count ?? page.items.filter((a) => a.read_at == null).length
+  const { data } = await getInboxPage(null)
+  return data.meta.unread_count ?? data.items.filter((a) => a.read_at == null).length
 }
 
 export function getWatchlist(): Promise<CachedResult<WatchlistStation[]>> {

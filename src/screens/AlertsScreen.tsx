@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
 import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
-import { useResource } from '@/hooks/useResource'
-import { getAlerts, getInbox, markAlertRead } from '@/lib/endpoints'
+import { usePaginated } from '@/hooks/usePaginated'
+import { getAlertsPage, getInboxPage, markAlertRead } from '@/lib/endpoints'
 import type { AlertNotification } from '@/types/api'
 import { severityColor, statusFromLoose } from '@/lib/severity'
 import { routeForAlert } from '@/lib/deeplink'
@@ -51,12 +51,19 @@ function AlertRow({ alert, unread, onOpen }: RowProps) {
 
 export default function AlertsScreen() {
   const { isAuthenticated } = useAuth()
-  const { decrement: decrementUnread } = useUnread()
-  const { data, error, stale, cachedAt, loading, reload } = useResource(
-    () => (isAuthenticated ? getInbox() : getAlerts()),
+  const { decrement: decrementUnread, setCount } = useUnread()
+  const { items, meta, error, stale, cachedAt, loading, loadingMore, hasMore, reload, loadMore } = usePaginated(
+    (cursor) => (isAuthenticated ? getInboxPage(cursor) : getAlertsPage(cursor)),
     [isAuthenticated],
   )
   const [readIds, setReadIds] = useState<Set<number>>(new Set())
+
+  // Drive the nav badge from the inbox we're showing (one fetch, badge ↔ list agree).
+  useEffect(() => {
+    if (isAuthenticated && meta) {
+      setCount(meta.unread_count ?? items.filter((a) => a.read_at == null).length)
+    }
+  }, [isAuthenticated, meta, items, setCount])
 
   // Refresh when a push lands while in the foreground.
   useEffect(() => {
@@ -68,17 +75,15 @@ export default function AlertsScreen() {
     (alert: AlertNotification) => {
       if (!isAuthenticated || alert.read_at != null || readIds.has(alert.id)) return
       setReadIds((prev) => new Set(prev).add(alert.id))
-      decrementUnread() // optimistic; refreshed authoritatively on next push/auth change
+      decrementUnread() // optimistic; reconciled on next reload's meta.unread_count
       void markAlertRead(alert.id).catch(() => {})
     },
     [isAuthenticated, readIds, decrementUnread],
   )
 
   const isUnread = (a: AlertNotification) => isAuthenticated && a.read_at == null && !readIds.has(a.id)
-
-  const alerts = data ?? []
-  const today = alerts.filter((a) => isToday(a.sent_at))
-  const earlier = alerts.filter((a) => !isToday(a.sent_at))
+  const today = items.filter((a) => isToday(a.sent_at))
+  const earlier = items.filter((a) => !isToday(a.sent_at))
 
   function group(title: string, list: AlertNotification[]) {
     if (!list.length) return null
@@ -100,16 +105,21 @@ export default function AlertsScreen() {
 
       {stale ? <StaleBanner cachedAt={cachedAt} /> : null}
 
-      {loading && !data ? (
+      {loading && !items.length ? (
         <LoadingState label="Loading alerts…" />
-      ) : error && !data ? (
+      ) : error && !items.length ? (
         <ErrorState message={error} onRetry={reload} />
-      ) : alerts.length === 0 ? (
+      ) : items.length === 0 ? (
         <EmptyState message="No alerts yet. Flood advisories, bulletins and station alerts will appear here." />
       ) : (
         <>
           {group('Today', today)}
           {group('Earlier', earlier)}
+          {hasMore ? (
+            <button type="button" className="btn-ghost block load-more" onClick={loadMore} disabled={loadingMore}>
+              {loadingMore ? 'Loading…' : 'Load more'}
+            </button>
+          ) : null}
         </>
       )}
     </div>

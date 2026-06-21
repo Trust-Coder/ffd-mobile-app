@@ -4,9 +4,11 @@ import type {
   AuthTokenResponse,
   AuthUser,
   Bulletin,
+  CursorMeta,
   FloodStatus,
   FlowLatest,
   NotificationPreferences,
+  Paginated,
   Publication,
   SeriesPoint,
   Station,
@@ -173,6 +175,14 @@ const ALERTS: AlertNotification[] = [
 
 const ALL_PUBLICATIONS: Publication[] = [...BULLETINS, ...ADVISORIES]
 
+// Dev fixtures return a single full page (no real cursor paging).
+function asPage<T>(items: T[], extra: Partial<CursorMeta> = {}): Paginated<T> {
+  return {
+    items,
+    meta: { count: items.length, per_page: items.length, next_cursor: null, has_more: false, server_time: isoAgo(0), ...extra },
+  }
+}
+
 // ── Personalization fixtures (mutable so add/remove/toggle reflect in dev) ───
 const DEMO_USER: AuthUser = { id: 1, name: 'Demo User', email: 'demo@ffd.gov.pk' }
 
@@ -201,10 +211,12 @@ export const mocks = {
   activeAdvisory: (): Advisory | null => ADVISORIES[0],
   bulletins: (severity?: string): Bulletin[] =>
     severity ? BULLETINS.filter((b) => b.severity === severity) : BULLETINS,
+  bulletinsPage: (severity?: string): Paginated<Bulletin> =>
+    asPage(severity ? BULLETINS.filter((b) => b.severity === severity) : BULLETINS),
   publication: (id: number): Publication => ALL_PUBLICATIONS.find((p) => p.id === id) ?? ALL_PUBLICATIONS[0],
-  alerts: (): AlertNotification[] => ALERTS,
+  alertsPage: (): Paginated<AlertNotification> => asPage(ALERTS),
 
-  inbox: (): AlertNotification[] => inbox,
+  inboxPage: (): Paginated<AlertNotification> => asPage(inbox, { unread_count: inbox.filter((a) => a.read_at == null).length }),
   markRead: (id: number): void => {
     const item = inbox.find((a) => a.id === id)
     if (item) item.read_at = new Date().toISOString()

@@ -4,7 +4,7 @@
   --surface: #eef3f2;
   --card: #ffffff;
   --line: #dbe5e3;
-  --muted: #5c7079;
+  --muted: #475a62; /* darkened for WCAG 1.4.3 contrast on small text */
 
   --primary: #0e6e78;
   --primary-deep: #0a4a52;

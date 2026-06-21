@@ -1,24 +1,23 @@
-import { Preferences } from '@capacitor/preferences'
 import type { AuthUser } from '@/types/api'
+import { secureGet, secureRemove, secureSet } from '@/lib/secureStore'
 
 /**
- * Sanctum bearer-token + cached-user storage. Persisted via @capacitor/preferences
- * so it survives app restarts (native: Android SharedPreferences; web: localStorage).
+ * Sanctum bearer-token + cached-user storage, routed through the secure-store
+ * seam (lib/secureStore) so the at-rest backing can be hardened in one place.
  */
 const TOKEN_KEY = 'ffd.auth.token'
 const USER_KEY = 'ffd.auth.user'
 
 export async function getToken(): Promise<string | null> {
-  const { value } = await Preferences.get({ key: TOKEN_KEY })
-  return value
+  return secureGet(TOKEN_KEY)
 }
 
 export async function setToken(token: string): Promise<void> {
-  await Preferences.set({ key: TOKEN_KEY, value: token })
+  await secureSet(TOKEN_KEY, token)
 }
 
 export async function clearToken(): Promise<void> {
-  await Preferences.remove({ key: TOKEN_KEY })
+  await secureRemove(TOKEN_KEY)
 }
 
 export async function isAuthenticated(): Promise<boolean> {
@@ -26,7 +25,7 @@ export async function isAuthenticated(): Promise<boolean> {
 }
 
 export async function getStoredUser(): Promise<AuthUser | null> {
-  const { value } = await Preferences.get({ key: USER_KEY })
+  const value = await secureGet(USER_KEY)
   if (!value) return null
   try {
     return JSON.parse(value) as AuthUser
@@ -36,9 +35,9 @@ export async function getStoredUser(): Promise<AuthUser | null> {
 }
 
 export async function setStoredUser(user: AuthUser): Promise<void> {
-  await Preferences.set({ key: USER_KEY, value: JSON.stringify(user) })
+  await secureSet(USER_KEY, JSON.stringify(user))
 }
 
 export async function clearStoredUser(): Promise<void> {
-  await Preferences.remove({ key: USER_KEY })
+  await secureRemove(USER_KEY)
 }

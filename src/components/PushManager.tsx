@@ -8,7 +8,7 @@ import { Preferences } from '@capacitor/preferences'
 import { APP_VERSION, getPushPermission, pushSupported, registerForPush, requestPushPermission } from '@/lib/push'
 import { heartbeat, registerDevice } from '@/lib/devices'
 import { routeForData, routeForDeeplink } from '@/lib/deeplink'
-import { PUSH_RECEIVED_EVENT } from '@/lib/events'
+import { APP_REFRESH_EVENT, PUSH_RECEIVED_EVENT } from '@/lib/events'
 import { track } from '@/lib/analytics'
 
 const PROMPT_DISMISSED_KEY = 'ffd.push.prompt_dismissed'
@@ -70,7 +70,12 @@ export default function PushManager() {
           if (route) navigate(route)
         }),
       )
-      await add(CapApp.addListener('resume', () => void heartbeat()))
+      await add(
+        CapApp.addListener('resume', () => {
+          void heartbeat()
+          window.dispatchEvent(new Event(APP_REFRESH_EVENT)) // refresh visible data on resume
+        }),
+      )
 
       // Distinct Android channel for flood alerts (Android-only; safe to call repeatedly).
       if (Capacitor.getPlatform() === 'android') {
