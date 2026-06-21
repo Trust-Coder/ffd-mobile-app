@@ -4,24 +4,29 @@ const DAY_MS = 24 * 60 * 60 * 1000
 
 /**
  * Resolves an advisory's effective state for fail-safe rendering (0006).
- * Server `lifecycle` is authoritative; the client also independently checks
- * `valid_until` (so a cached/offline advisory expires on time) and falls back to
- * a 24h-from-issue heuristic when no window was set (backend's recommendation).
+ *
+ * The server's `lifecycle` is authoritative when the data is fresh — FFD
+ * advisories can stay in force for days without an explicit `valid_until`, so we
+ * must NOT second-guess an explicit `lifecycle:"active"` online. The 24h-from-
+ * issue heuristic is only a fail-safe for stale (offline-cached) data or when
+ * the server didn't supply a lifecycle. An explicit `valid_until` is always
+ * honoured (so a window that has demonstrably passed expires even offline).
  */
-export function advisoryState(advisory: Advisory): AdvisoryLifecycle {
+export function advisoryState(advisory: Advisory, opts: { stale?: boolean } = {}): AdvisoryLifecycle {
   if (advisory.lifecycle === 'withdrawn') return 'withdrawn'
   if (advisory.lifecycle === 'expired') return 'expired'
 
-  const now = Date.now()
   if (advisory.valid_until) {
     const until = Date.parse(advisory.valid_until)
-    if (Number.isNaN(until) || until < now) return 'expired'
-    return 'active'
+    return !Number.isNaN(until) && until < Date.now() ? 'expired' : 'active'
   }
 
-  // No explicit window: fall back to a 24h-from-issue heuristic. If we can't even
-  // parse issue_time, fail safe to expired rather than show a stale "Active" card.
+  // Fresh data + server says active → trust it (no client-side expiry guess).
+  if (advisory.lifecycle === 'active' && !opts.stale) return 'active'
+
+  // Fallback: lifecycle unknown, or data is stale/offline → 24h-from-issue. Fail
+  // safe to expired if we can't even parse issue_time.
   const issued = Date.parse(advisory.issue_time)
-  if (Number.isNaN(issued) || now - issued > DAY_MS) return 'expired'
+  if (Number.isNaN(issued) || Date.now() - issued > DAY_MS) return 'expired'
   return 'active'
 }

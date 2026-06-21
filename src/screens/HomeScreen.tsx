@@ -26,7 +26,7 @@ export default function HomeScreen() {
   const peak = stations.length ? highestStatus(stations) : 'NORMAL'
   const latestBulletin = bulletins.data?.[0]
   const active = advisory.data
-  const advState = active ? advisoryState(active) : null
+  const advState = active ? advisoryState(active, { stale: advisory.stale }) : null
 
   return (
     <div className="screen">

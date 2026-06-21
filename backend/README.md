@@ -36,6 +36,7 @@ same file. We coordinate directly only when a change spans both sides at once.
 | 0004 | [`0004-auth-inbox-personalization.md`](0004-auth-inbox-personalization.md) | §B Auth + §D Inbox + §E Watchlist/Prefs (Phase 3) | DELIVERED · [response](0004-auth-inbox-personalization.response.md) |
 | 0005 | [`0005-broadcast-fanout-applinks.md`](0005-broadcast-fanout-applinks.md) | §F Unified broadcast fan-out + App Link assets (Phase 4) | DELIVERED · [response](0005-broadcast-fanout-applinks.response.md) · WhatsApp/SHA-256 pending external |
 | 0006 | [`0006-advisory-lifecycle-bulletin-severity.md`](0006-advisory-lifecycle-bulletin-severity.md) | Advisory valid_until/severity + Bulletin severity (audit gaps) | DELIVERED · [response](0006-advisory-lifecycle-bulletin-severity.response.md) |
+| 0007 | [`0007-run-migrations-localhost.md`](0007-run-migrations-localhost.md) | Pending migrations on ffd_database (advisory/active + alerts 500) | DONE · [response](0007-run-migrations-localhost.response.md) |
 
 ## Request template
 
