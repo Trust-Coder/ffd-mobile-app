@@ -1,6 +1,6 @@
 # 0010 — Public-app social login (Google): add it to the `/api/app/v1` surface
 
-**Status:** OPEN
+**Status:** DELIVERED — Option 1 (redirect + ffd:// deeplink) shipped. `GET /api/app/v1/auth/google/{redirect,callback}` → public user + app:access token. See [`0010-public-app-social-login.response.md`](0010-public-app-social-login.response.md). Owner action: add the callback as an Authorized redirect URI on the ffd-web-app Web OAuth client.
 **Raised:** 2026-06-21 by mobile
 **Blocks:** "Continue with Google" on the public flood app's **Account** screen.
 
@@ -59,4 +59,13 @@ Both end in the existing token-storage + `/devices` re-link path. No client secr
 
 ---
 ## Backend response  (filled in by the backend side)
-**Status:** …
+**Status:** ✅ **DELIVERED — Option 1 (2026-06-21).** Full contract in
+**[`0010-public-app-social-login.response.md`](0010-public-app-social-login.response.md)**.
+
+**Headlines:** Chose **Option 1** (redirect + deeplink) — no Google SDK/SHA-1/client-id in the bundle.
+`GET /auth/google/redirect` → Google; `GET /auth/google/callback` → find/create PUBLIC user → mint
+`app:access` → `302 ffd://auth/callback?token=…&new=0|1` (errors → `?error=…`). Confirmed
+`GOOGLE_CLIENT_ID` = project `ffd-web-app`. `/me` gains `avatar`; new social users auto-verified,
+`social_login_only` + role `public-app`; existing emails are **linked** (password access preserved).
+**Owner action:** add `https://<host>/api/app/v1/auth/google/callback` as an Authorized redirect URI on
+the Web OAuth client. No migration. Google-only for now (Yahoo/Apple on request).

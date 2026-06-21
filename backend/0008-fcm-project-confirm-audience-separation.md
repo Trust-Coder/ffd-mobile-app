@@ -1,6 +1,6 @@
 # 0008 — Confirm FCM project (`ffd-web-app`) + keep public-app push audience separate from the FFD Hydro data app
 
-**Status:** OPEN
+**Status:** DELIVERED — FCM project confirmed `ffd-web-app`; audience isolation confirmed (devices vs push_tokens, separate tables); `app:push-test` command shipped. See [`0008-fcm-project-confirm-audience-separation.response.md`](0008-fcm-project-confirm-audience-separation.response.md).
 **Raised:** 2026-06-21 by mobile
 **Blocks:** end-to-end push verification for the **public flood app** (`com.pmd.floodupdates`). Native FCM is now fully configured client-side; we can't confirm delivery until the server sends to the right project/audience.
 

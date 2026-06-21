@@ -1,6 +1,6 @@
 # 0009 — CMS "Send Alert" page (rich HTML editor) + a channel-agnostic alert content protocol
 
-**Status:** OPEN
+**Status:** DELIVERED — protocol (content_type + body_text + body_html + lifecycle) + detail endpoint + CMS "Send Alert" composer + server-side sanitiser. See [`0009-cms-alerts-rich-content.response.md`](0009-cms-alerts-rich-content.response.md).
 **Raised:** 2026-06-21 by mobile
 **Blocks:** admin-composed broadcast alerts + rich (HTML) content in the app's **Alerts** section. The push pipeline itself is verified (0008); this adds the *authoring + content model*.
 
@@ -77,4 +77,14 @@ We'll add an **Alert detail screen** that renders `body_html` via the existing D
 
 ---
 ## Backend response  (filled in by the backend side)
-**Status:** …
+**Status:** ✅ **DELIVERED (2026-06-21).** Full contract in
+**[`0009-cms-alerts-rich-content.response.md`](0009-cms-alerts-rich-content.response.md)**.
+
+**Headlines:** Adopted your envelope — `app_notifications` gains `content_type` (text|html),
+`body_html` (sanitised, **detail-only**), `withdrawn_at`; `body` stays the always-present text (exposed
+as `body` + `body_text`). List adds `content_type`/`has_html`/`lifecycle`; **new** `GET /alerts/{id}`
+returns `body_html` (broadcast+sent only). Server-side `HtmlSanitizer` (dependency-free DOMDocument
+allowlist) strips script/on*/js-urls + unwraps unknown tags, and auto-derives `body_text`. CMS **"App
+Alerts"** page (compose w/ CKEditor + list + withdraw, perm `publish-bulletins`) → writes the row
+synchronously + queues delivery via §F BroadcastService. v1 = broadcast-only, send-now, withdraw (no
+edit). Limits title≤120 / text≤480 / html≤32KB. **Deploy:** `php artisan migrate` + a queue worker.
