@@ -1,11 +1,11 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { FloodStatus } from '@/types/api'
-import { severityColor, severityLabel } from '@/lib/severity'
+import { severityColor, severityKey, severityLabel } from '@/lib/severity'
 import { fmtRelative } from '@/lib/format'
 
 export function SeverityChip({ status, label }: { status: FloodStatus; label?: string }) {
   return (
-    <span className="sev-chip" style={{ '--sev': severityColor(status) } as CSSProperties}>
+    <span className={`sev-chip sev-${severityKey(status)}`} style={{ '--sev': severityColor(status) } as CSSProperties}>
       {label ?? severityLabel(status)}
     </span>
   )

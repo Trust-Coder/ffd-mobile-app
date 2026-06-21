@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FFD Flood — Rebrand · Direction A · Teal Evolution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;450;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   FFD Flood — REBRAND PREVIEW
+   Direction A · "Teal Evolution"
+   The deep-teal "calm authority" lineage, modernized:
+   vivid teal primary, warm-neutral surfaces, confident
+   display type, soft layered elevation, generous spacing.
+   This mockup IS the token spec.
+   ============================================================ */
+
+/* ---------- LIGHT (default :root) ---------- */
+:root{
+  /* Brand — vivid, premium teal. Deliberately bluer/brighter
+     than the Normal-severity green-teal so a brand chip never
+     reads as a "Normal" status. */
+  --brand:        #0d8a96;   /* primary action / brand */
+  --brand-strong: #0a6f7a;   /* pressed / deep */
+  --brand-ink:    #064249;   /* brand text on light tint */
+  --brand-tint:   #e3f4f4;   /* soft brand wash */
+  --water:        #57c7d4;   /* decorative accent */
+
+  /* Warm-neutral surfaces — a hint of warmth keeps it premium,
+     not clinical. */
+  --bg:        #f4f2ee;      /* page behind cards (warm sand) */
+  --surface:   #faf8f4;      /* sunk surfaces / inputs */
+  --card:      #ffffff;      /* raised cards */
+  --card-2:    #fbfaf7;      /* nested rows inside cards */
+  --line:      #e7e1d8;      /* hairline */
+  --line-soft: #efeae2;
+
+  /* Text */
+  --ink:    #1a2327;         /* near-black, warm */
+  --ink-2:  #3c4a50;
+  --muted:  #66747b;         /* AA on card (4.6:1) */
+  --faint:  #8b969c;
+
+  /* Severity — escalating danger scale, red reserved for top.
+     Refined a touch for vibrancy; meaning preserved. */
+  --normal:   #1f8a72;
+  --low:      #c98700;
+  --medium:   #e05f08;
+  --high:     #d33f24;
+  --veryhigh: #b3160f;
+  /* Severity text tones tuned for AA as small label text on cards */
+  --normal-ink:   #156152;
+  --low-ink:      #8a5d00;
+  --medium-ink:   #9c3f04;
+  --high-ink:     #9c2c18;
+  --veryhigh-ink: #851009;
+
+  /* Header gradient */
+  --hdr-1: #0a5b65;
+  --hdr-2: #074049;
+
+  /* Elevation — soft, layered, modern */
+  --e1: 0 1px 2px rgba(16,40,44,.05), 0 2px 8px rgba(16,40,44,.05);
+  --e2: 0 2px 4px rgba(16,40,44,.06), 0 10px 28px rgba(16,40,44,.08);
+  --e3: 0 4px 10px rgba(16,40,44,.08), 0 22px 48px rgba(16,40,44,.12);
+  --ring: 0 0 0 3px rgba(13,138,150,.18);
+
+  --r-sm: 10px;
+  --r:    16px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+}
+
+/* ---------- DARK ---------- */
+[data-theme="dark"]{
+  --brand:        #28c2cf;
+  --brand-strong: #45d2dd;
+  --brand-ink:    #aef0f4;
+  --brand-tint:   #103338;
+  --water:        #3fb6c4;
+
+  --bg:        #0c1417;
+  --surface:   #121d21;
+  --card:      #16242a;
+  --card-2:    #1b2c32;
+  --line:      #25383f;
+  --line-soft: #1f3036;
+
+  --ink:    #eef4f3;
+  --ink-2:  #c8d6d6;
+  --muted:  #93a6a8;         /* AA on dark card */
+  --faint:  #6f8488;
+
+  --normal:   #2fb393;
+  --low:      #f0b73c;
+  --medium:   #ff8a3d;
+  --high:     #ff6a4d;
+  --veryhigh: #ff5648;
+  --normal-ink:   #6fe0c1;
+  --low-ink:      #ffce6b;
+  --medium-ink:   #ffac74;
+  --high-ink:     #ff9d86;
+  --veryhigh-ink: #ff968a;
+
+  --hdr-1: #0c3940;
+  --hdr-2: #07262c;
+
+  --e1: 0 1px 2px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.35);
+  --e2: 0 2px 6px rgba(0,0,0,.45), 0 12px 30px rgba(0,0,0,.5);
+  --e3: 0 6px 14px rgba(0,0,0,.5), 0 26px 52px rgba(0,0,0,.6);
+  --ring: 0 0 0 3px rgba(40,194,207,.28);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:
+    radial-gradient(140% 90% at 15% -10%, #16323a 0%, #0b1418 55%) fixed,
+    #0b1418;
+  min-height:100vh;color:#e9efee;
+  padding:34px 20px 56px;
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:.005em;
+}
+
+/* ---------- page header ---------- */
+.page-head{max-width:880px;margin:0 auto 26px;}
+.page-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:#7fd9e2;background:rgba(40,194,207,.1);
+  border:1px solid rgba(40,194,207,.25);
+  padding:6px 12px;border-radius:999px;
+}
+.page-head h1{
+  font-family:'Sora';font-weight:700;font-size:30px;letter-spacing:-.02em;
+  color:#fff;margin-top:14px;line-height:1.1;
+}
+.page-head h1 b{color:#4fd6e1;font-weight:800;}
+.page-head p{
+  color:#9fb6ba;font-size:14.5px;line-height:1.6;margin-top:9px;max-width:620px;
+}
+.page-head .swatches{display:flex;gap:9px;margin-top:18px;flex-wrap:wrap;}
+.sw{
+  display:flex;align-items:center;gap:8px;
+  font-size:11.5px;color:#aebfc2;font-family:'IBM Plex Mono';
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  padding:6px 11px 6px 7px;border-radius:999px;
+}
+.sw i{width:16px;height:16px;border-radius:5px;display:block;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);}
+
+/* ---------- frame stage ---------- */
+.stage{
+  max-width:880px;margin:0 auto;
+  display:flex;flex-wrap:wrap;gap:34px;justify-content:center;align-items:flex-start;
+}
+.frame-wrap{display:flex;flex-direction:column;align-items:center;gap:13px;}
+.frame-tag{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:600;letter-spacing:.04em;color:#bcccce;
+}
+.frame-tag svg{width:14px;height:14px;}
+
+/* ---------- phone ---------- */
+.phone{
+  width:390px;max-width:92vw;height:830px;max-height:none;
+  background:var(--bg);border-radius:46px;overflow:hidden;position:relative;
+  box-shadow:0 0 0 12px #0b1418, 0 0 0 14px #243a40, var(--e3);
+  display:flex;flex-direction:column;color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;
+}
+.notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:30px;background:#0b1418;border-radius:0 0 16px 16px;z-index:60;}
+.notch::after{content:"";position:absolute;top:11px;right:26px;width:8px;height:8px;border-radius:50%;background:#1c2c31;box-shadow:inset 0 0 0 2px #29424a;}
+
+.screen{flex:1;overflow-y:auto;position:relative;padding-bottom:96px;scrollbar-width:none;}
+.screen::-webkit-scrollbar{width:0;}
+
+/* ---------- app bar ---------- */
+.appbar{
+  background:linear-gradient(157deg,var(--hdr-1) 0%, var(--hdr-2) 100%);
+  color:#fff;padding:50px 20px 22px;position:relative;overflow:hidden;
+}
+.appbar::after{
+  content:"";position:absolute;right:-40px;top:-50px;width:180px;height:180px;
+  border-radius:50%;background:radial-gradient(circle, rgba(87,199,212,.22), transparent 70%);
+}
+.appbar-top{display:flex;align-items:center;gap:12px;position:relative;z-index:2;}
+.brandmark{
+  width:40px;height:40px;border-radius:12px;flex:none;
+  background:linear-gradient(150deg, var(--water), var(--brand));
+  display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.brandmark svg{width:22px;height:22px;color:#06343a;}
+.appbar-title{flex:1;min-width:0;}
+.appbar-title .eyebrow{
+  font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:#9fdbe2;font-weight:600;
+}
+.appbar-title h1{font-family:'Sora';font-weight:700;font-size:22px;letter-spacing:-.015em;margin-top:1px;}
+.appbar-title .sub{font-size:12px;color:#a9d3d9;margin-top:3px;font-weight:450;}
+.icon-btn{
+  width:44px;height:44px;border-radius:13px;flex:none;cursor:pointer;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);
+  color:#eafbfd;display:grid;place-items:center;
+  transition:background .18s ease, transform .12s ease;
+}
+.icon-btn svg{width:20px;height:20px;}
+
+.body{padding:18px 16px 0;}
+
+/* ---------- section title ---------- */
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:24px 4px 12px;}
+.sec h2{font-family:'Sora';font-weight:600;font-size:15px;letter-spacing:-.01em;color:var(--ink);}
+.sec a{font-size:12.5px;color:var(--brand);font-weight:600;text-decoration:none;cursor:pointer;}
+.sec a:hover{text-decoration:underline;}
+
+/* ---------- advisory card ---------- */
+.advisory{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--e2);overflow:hidden;position:relative;cursor:pointer;
+  transition:transform .14s ease, box-shadow .2s ease;
+}
+.advisory.active{
+  border-color:color-mix(in srgb, var(--medium) 45%, var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--medium) 28%, transparent), var(--e2);
+}
+.advisory.active::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:linear-gradient(var(--medium), color-mix(in srgb,var(--medium) 70%, var(--high)));
+}
+.adv-head{
+  display:flex;align-items:center;gap:9px;padding:14px 16px 12px 19px;
+}
+.adv-head .lab{
+  font-family:'Sora';font-weight:600;font-size:12.5px;color:var(--ink-2);
+  display:flex;align-items:center;gap:8px;
+}
+.adv-head .lab svg{width:16px;height:16px;color:var(--medium);}
+.badge-active{
+  margin-left:auto;display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:700;letter-spacing:.02em;
+  color:var(--medium-ink);
+  background:color-mix(in srgb, var(--medium) 15%, var(--card));
+  border:1px solid color-mix(in srgb, var(--medium) 30%, transparent);
+  padding:4px 10px 4px 8px;border-radius:999px;
+}
+.badge-active .pulse{
+  width:8px;height:8px;border-radius:50%;background:var(--medium);position:relative;
+}
+.badge-active .pulse::after{
+  content:"";position:absolute;inset:0;border-radius:50%;background:var(--medium);
+  animation:ping 1.8s cubic-bezier(0,0,.2,1) infinite;
+}
+@keyframes ping{0%{transform:scale(1);opacity:.7;}70%,100%{transform:scale(2.6);opacity:0;}}
+.adv-body{padding:2px 19px 16px;}
+.adv-body h3{font-family:'Sora';font-weight:600;font-size:16px;line-height:1.32;letter-spacing:-.01em;margin-bottom:7px;color:var(--ink);}
+.adv-body p{font-size:13px;color:var(--muted);line-height:1.55;}
+.adv-valid{
+  display:flex;gap:22px;margin-top:14px;padding-top:13px;
+  border-top:1px solid var(--line-soft);
+}
+.adv-valid .vl{font-size:10.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;font-weight:600;}
+.adv-valid .vv{font-family:'IBM Plex Mono';font-weight:500;color:var(--ink-2);margin-top:3px;font-size:12.5px;}
+
+/* expired advisory — de-emphasized, NOT dashed */
+.advisory.expired{
+  background:var(--card-2);box-shadow:var(--e1);border-color:var(--line-soft);
+}
+.advisory.expired .adv-head .lab{color:var(--faint);}
+.advisory.expired .adv-head .lab svg{color:var(--faint);}
+.advisory.expired .adv-body h3{color:var(--ink-2);}
+.advisory.expired .adv-body h3, .advisory.expired .adv-body p{opacity:.82;}
+.badge-expired{
+  margin-left:auto;display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--faint);
+  background:var(--surface);border:1px solid var(--line-soft);
+  padding:4px 11px;border-radius:999px;
+}
+
+/* ---------- national severity ribbon ---------- */
+.ribbon{
+  display:flex;align-items:center;gap:12px;margin-top:14px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:13px 16px;box-shadow:var(--e1);
+}
+.ribbon .rdot{
+  width:13px;height:13px;border-radius:50%;flex:none;position:relative;
+  background:var(--medium);box-shadow:0 0 0 4px color-mix(in srgb, var(--medium) 18%, transparent);
+}
+.ribbon .rtxt{flex:1;min-width:0;}
+.ribbon .rtxt .a{font-size:11px;color:var(--muted);font-weight:500;}
+.ribbon .rtxt .b{font-family:'Sora';font-weight:600;font-size:14.5px;color:var(--ink);margin-top:1px;letter-spacing:-.01em;}
+.ribbon .rmore{font-size:11.5px;color:var(--muted);font-weight:500;text-align:right;flex:none;}
+.ribbon .rmore b{display:block;font-family:'IBM Plex Mono';color:var(--ink);font-size:15px;font-weight:600;}
+
+/* ---------- stat cards ---------- */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+.stat{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:15px 15px 14px;box-shadow:var(--e1);position:relative;overflow:hidden;
+  transition:transform .14s ease, box-shadow .2s ease;
+}
+.stat .n{font-family:'IBM Plex Mono';font-weight:600;font-size:29px;color:var(--ink);letter-spacing:-.02em;line-height:1;}
+.stat .n small{font-size:13px;color:var(--muted);font-weight:500;}
+.stat .t{font-size:12px;color:var(--muted);margin-top:8px;font-weight:500;display:flex;align-items:center;gap:7px;}
+.stat .t .dot{width:8px;height:8px;border-radius:50%;flex:none;}
+
+/* ---------- bulletin teaser ---------- */
+.teaser{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--e2);overflow:hidden;cursor:pointer;
+  transition:transform .14s ease, box-shadow .2s ease;
+}
+.teaser .tbar{height:5px;}
+.teaser .tc{padding:15px 16px;}
+.teaser .tmeta{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.teaser .tmeta .tm{font-size:11px;color:var(--faint);font-weight:500;}
+.teaser h3{font-family:'Sora';font-weight:600;font-size:15px;line-height:1.35;letter-spacing:-.01em;margin-bottom:5px;color:var(--ink);}
+.teaser p{font-size:12.5px;color:var(--muted);line-height:1.55;}
+.teaser .tread{margin-top:11px;font-size:12px;font-weight:600;color:var(--brand);display:inline-flex;align-items:center;gap:5px;}
+.teaser .tread svg{width:14px;height:14px;}
+
+/* ---------- severity chip ---------- */
+.sev-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;letter-spacing:.01em;
+  padding:4px 10px 4px 8px;border-radius:999px;white-space:nowrap;
+  color:var(--_ink);
+  background:color-mix(in srgb, var(--_sev) 16%, var(--card));
+  border:1px solid color-mix(in srgb, var(--_sev) 30%, transparent);
+}
+.sev-chip .cd{width:7px;height:7px;border-radius:50%;background:var(--_sev);flex:none;}
+
+/* ---------- station rows ---------- */
+.station{
+  display:flex;align-items:center;gap:13px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:13px 15px;margin-bottom:10px;box-shadow:var(--e1);cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:transform .14s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.station .sdot{width:11px;height:11px;border-radius:50%;flex:none;}
+.station .info{flex:1;min-width:0;}
+.station .nm{font-family:'Sora';font-weight:600;font-size:14.5px;letter-spacing:-.01em;color:var(--ink);}
+.station .rv{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.station .rd{text-align:right;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.station .val{font-family:'IBM Plex Mono';font-weight:600;font-size:15.5px;color:var(--ink);letter-spacing:-.01em;}
+.station .val small{font-size:9.5px;color:var(--faint);font-weight:500;margin-left:2px;}
+.station .upd{font-size:10px;color:var(--faint);margin-top:5px;}
+
+/* ---------- gauge card ---------- */
+.gauge{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--e2);padding:18px 18px 16px;margin-top:14px;
+}
+.gauge .gh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.gauge .gtitle{font-family:'Sora';font-weight:600;font-size:13.5px;color:var(--ink);}
+.gauge .gloc{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.gauge .greadout{display:flex;align-items:flex-end;gap:9px;margin-top:14px;}
+.gauge .gbig{font-family:'IBM Plex Mono';font-weight:600;font-size:40px;line-height:.92;letter-spacing:-.03em;color:var(--ink);}
+.gauge .gunit{font-size:13px;color:var(--muted);padding-bottom:5px;font-weight:500;}
+.gauge .gtrend{
+  margin-left:auto;display:inline-flex;align-items:center;gap:5px;
+  font-family:'IBM Plex Mono';font-weight:600;font-size:13px;
+  color:var(--high-ink);background:color-mix(in srgb,var(--high) 14%, var(--card));
+  border:1px solid color-mix(in srgb,var(--high) 26%, transparent);
+  padding:5px 10px;border-radius:999px;align-self:flex-end;margin-bottom:4px;
+}
+.gauge .gtrend svg{width:14px;height:14px;}
+.gauge .gmeta{display:flex;align-items:center;gap:10px;margin-top:14px;}
+.gauge .gtime{font-size:11.5px;color:var(--faint);margin-left:auto;}
+.chartwrap{margin-top:14px;}
+.chart-svg{width:100%;height:150px;display:block;overflow:visible;}
+.tlabel{font-family:'IBM Plex Mono';font-size:8.5px;font-weight:600;}
+.legend{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;}
+.legend div{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.legend i{width:16px;height:3px;border-radius:2px;display:inline-block;}
+.legend i.dash{height:0;border-top:2px dashed var(--medium);background:none;}
+
+/* ---------- alerts inbox ---------- */
+.grp{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--faint);margin:18px 4px 10px;}
+.alert{
+  display:flex;gap:13px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:14px 15px 14px 17px;margin-bottom:10px;box-shadow:var(--e1);
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .14s ease, box-shadow .2s ease;
+}
+.alert.unread{background:color-mix(in srgb, var(--brand) 6%, var(--card));border-color:color-mix(in srgb,var(--brand) 22%, var(--line));}
+.alert .accent{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:0 3px 3px 0;}
+.alert .aicon{
+  width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;
+}
+.alert .aicon svg{width:20px;height:20px;}
+.alert .ac{flex:1;min-width:0;}
+.alert .atop{display:flex;align-items:center;gap:8px;}
+.alert .atop .nm{font-family:'Sora';font-weight:600;font-size:13.5px;flex:1;min-width:0;color:var(--ink);letter-spacing:-.01em;}
+.alert .atop .tm{font-size:10.5px;color:var(--faint);flex:none;}
+.alert .am{font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px;}
+.alert .ud{width:9px;height:9px;border-radius:50%;background:var(--brand);flex:none;align-self:flex-start;margin-top:5px;box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 22%, transparent);}
+
+/* ---------- severity ramp ---------- */
+.ramp{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--e1);padding:15px;
+}
+.ramp .rrow{display:flex;flex-wrap:wrap;gap:8px;}
+
+/* ---------- form ---------- */
+.formcard{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--e2);padding:17px;margin-top:14px;
+}
+.tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;
+  background:var(--surface);border:1px solid var(--line-soft);
+  border-radius:13px;padding:4px;margin-bottom:15px;
+}
+.tab{
+  border:0;background:transparent;padding:10px;border-radius:9px;cursor:pointer;
+  font-family:'Inter';font-weight:600;font-size:13.5px;color:var(--muted);
+  transition:color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.tab.on{background:var(--card);color:var(--brand-ink);box-shadow:var(--e1);}
+.field-label{font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:6px;display:block;}
+.field{
+  width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;
+  background:var(--surface);font-family:'Inter';font-size:14.5px;color:var(--ink);
+  transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.field::placeholder{color:var(--faint);}
+.field:focus{outline:0;border-color:var(--brand);background:var(--card);box-shadow:var(--ring);}
+.btn-primary{
+  display:block;width:100%;margin-top:14px;padding:14px;border:0;border-radius:13px;cursor:pointer;
+  background:linear-gradient(180deg, var(--brand), var(--brand-strong));
+  color:#fff;font-family:'Sora';font-weight:600;font-size:15px;letter-spacing:.005em;
+  box-shadow:0 4px 14px color-mix(in srgb, var(--brand) 40%, transparent), inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .12s ease, box-shadow .2s ease, filter .15s ease;
+}
+[data-theme="dark"] .btn-primary{color:#04282c;}
+.btn-note{font-size:11px;color:var(--faint);text-align:center;margin-top:9px;line-height:1.5;}
+
+/* ---------- bottom nav ---------- */
+.nav{
+  position:absolute;bottom:0;left:0;right:0;height:78px;z-index:50;
+  background:color-mix(in srgb, var(--card) 86%, transparent);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);display:flex;padding:8px 6px 12px;
+}
+.nav button{
+  flex:1;border:0;background:none;cursor:pointer;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  color:var(--faint);font-size:10px;font-weight:600;font-family:'Inter';min-height:44px;
+  transition:color .15s ease;border-radius:12px;
+}
+.nav button svg{width:23px;height:23px;}
+.nav button.on{color:var(--brand);}
+.nav button.on .navpill{
+  position:absolute;top:2px;width:42px;height:30px;border-radius:10px;
+  background:color-mix(in srgb,var(--brand) 14%, transparent);z-index:-1;
+}
+.nav .nbadge{
+  position:absolute;top:1px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;
+  background:var(--high);color:#fff;font-size:9.5px;font-weight:700;border-radius:999px;
+  display:grid;place-items:center;border:2px solid var(--card);font-family:'IBM Plex Mono';
+}
+
+/* ---------- hover / press (pointer devices only) ---------- */
+@media (hover:hover){
+  .icon-btn:hover{background:rgba(255,255,255,.22);}
+  .advisory:hover, .teaser:hover, .station:hover, .alert:hover{
+    transform:translateY(-2px);box-shadow:var(--e2);
+  }
+  .station:hover{border-color:color-mix(in srgb,var(--brand) 30%, var(--line));}
+  .stat:hover{transform:translateY(-2px);box-shadow:var(--e2);}
+  .sev-chip:hover{filter:brightness(1.04);}
+  .btn-primary:hover{filter:brightness(1.05);box-shadow:0 6px 20px color-mix(in srgb,var(--brand) 50%, transparent), inset 0 1px 0 rgba(255,255,255,.2);}
+  .nav button:hover{color:var(--brand);}
+  .tab:hover:not(.on){color:var(--ink-2);}
+}
+.icon-btn:active{transform:scale(.94);}
+.btn-primary:active{transform:translateY(1px) scale(.99);filter:brightness(.96);}
+.station:active, .advisory:active, .teaser:active, .alert:active{transform:scale(.992);}
+.tab:active{transform:scale(.98);}
+
+/* pressed-state demo button (second state) */
+.btn-primary.is-pressed{
+  transform:translateY(1px);filter:brightness(.94);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.22);
+  background:linear-gradient(180deg, var(--brand-strong), var(--brand-strong));
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+  .badge-active .pulse::after{display:none;}
+}
+
+/* ---------- narrow screens: stack ---------- */
+@media (max-width:840px){
+  .stage{gap:40px;}
+}
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <span class="page-eyebrow">FFD Flood · Rebrand Preview</span>
+  <h1>Direction A — <b>Teal Evolution</b></h1>
+  <p>The deep-teal “calm authority” lineage, modernized: a vivid, premium teal primary, warm-neutral surfaces, confident Sora display type, and soft layered elevation. The lowest-risk direction — clearly an upgrade of today. Light and dark themes shown side by side.</p>
+  <div class="swatches">
+    <span class="sw"><i style="background:#0d8a96"></i>Brand #0D8A96</span>
+    <span class="sw"><i style="background:#1f8a72"></i>Normal</span>
+    <span class="sw"><i style="background:#c98700"></i>Low</span>
+    <span class="sw"><i style="background:#e05f08"></i>Medium</span>
+    <span class="sw"><i style="background:#d33f24"></i>High</span>
+    <span class="sw"><i style="background:#b3160f"></i>Very High</span>
+  </div>
+</header>
+
+<div class="stage">
+  <!-- ============ LIGHT FRAME ============ -->
+  <div class="frame-wrap">
+    <span class="frame-tag">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+      Light
+    </span>
+    <div class="phone" id="phone-light"></div>
+  </div>
+
+  <!-- ============ DARK FRAME ============ -->
+  <div class="frame-wrap">
+    <span class="frame-tag">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      Dark
+    </span>
+    <div class="phone" data-theme="dark" id="phone-dark"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     The kitchen-sink markup is built once in JS and injected
+     into BOTH frames, so the two themes are byte-identical and
+     therefore genuinely comparable.
+     ============================================================ -->
+<script>
+/* ---- icon set (inline SVG, consistent 24-grid, 1.9 stroke) ---- */
+const I = {
+  home:    '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/>',
+  stations:'<path d="M3 17l4.5-8 3.5 5 3-7 4.5 10"/><path d="M3 21h18"/>',
+  bell:    '<path d="M18 8.5A6 6 0 0 0 6 8.5c0 6-3 8-3 8h18s-3-2-3-8"/><path d="M13.6 21a2 2 0 0 1-3.2 0"/>',
+  doc:     '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h4"/>',
+  person:  '<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5"/>',
+  refresh: '<path d="M20 11a8 8 0 1 0-1.6 5.4"/><path d="M20 5v6h-6"/>',
+  star:    '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17.9 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z"/>',
+  check:   '<path d="M5 12.5l4.2 4.2L19 7"/>',
+  download:'<path d="M12 4v11M7 11l5 5 5-5"/><path d="M5 20h14"/>',
+  close:   '<path d="M6 6l12 12M18 6L6 18"/>',
+  warn:    '<path d="M12 9v4.5M12 17h.01M10.3 4 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 4a2 2 0 0 0-3.4 0z"/>',
+  up:      '<path d="M12 19V6M6 12l6-6 6 6"/>',
+  down:    '<path d="M12 5v13M6 12l6 6 6-6"/>',
+  moon:    '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  chev:    '<path d="M9 6l6 6-6 6"/>',
+  drop:    '<path d="M12 3c3.5 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2.5-6 6-10z"/>',
+  info:    '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>',
+};
+const svg = (k, w=20) =>
+  `<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
+
+/* severity meta */
+const SEV = {
+  normal:   {v:'--normal',  i:'--normal-ink',  l:'Normal'},
+  low:      {v:'--low',     i:'--low-ink',     l:'Low'},
+  medium:   {v:'--medium',  i:'--medium-ink',  l:'Medium'},
+  high:     {v:'--high',    i:'--high-ink',    l:'High'},
+  veryhigh: {v:'--veryhigh',i:'--veryhigh-ink',l:'Very High'},
+};
+const chip = (sev, label) => {
+  const s = SEV[sev];
+  return `<span class="sev-chip" style="--_sev:var(${s.v});--_ink:var(${s.i})"><span class="cd"></span>${label||s.l}</span>`;
+};
+
+/* ---- mini discharge chart (area gradient + 2 dashed thresholds) ---- */
+function chartSVG(uid){
+  const W=320,H=150,pad=10;
+  // synthetic rising series
+  const raw=[118,121,119,126,131,129,138,146,151,149,158,168,178,186];
+  const max=196, min=108;
+  const X=i=>pad+i*(W-2*pad)/(raw.length-1);
+  const Y=v=>H-pad-((v-min)/(max-min))*(H-2*pad);
+  let d='M'+X(0).toFixed(1)+' '+Y(raw[0]).toFixed(1);
+  for(let i=1;i<raw.length;i++){
+    const cx=((X(i-1)+X(i))/2).toFixed(1);
+    d+=` C ${cx} ${Y(raw[i-1]).toFixed(1)}, ${cx} ${Y(raw[i]).toFixed(1)}, ${X(i).toFixed(1)} ${Y(raw[i]).toFixed(1)}`;
+  }
+  const area=d+` L ${X(raw.length-1).toFixed(1)} ${H-pad} L ${X(0).toFixed(1)} ${H-pad} Z`;
+  const medY=Y(165).toFixed(1), highY=Y(188).toFixed(1);
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="g-${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--brand)" stop-opacity=".34"/>
+        <stop offset="1" stop-color="var(--brand)" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <line x1="${pad}" y1="${medY}" x2="${W-pad}" y2="${medY}" stroke="var(--medium)" stroke-width="1.3" stroke-dasharray="5 5" opacity=".8"/>
+    <text x="${W-pad}" y="${medY-4}" text-anchor="end" class="tlabel" fill="var(--medium-ink)">MEDIUM</text>
+    <line x1="${pad}" y1="${highY}" x2="${W-pad}" y2="${highY}" stroke="var(--high)" stroke-width="1.3" stroke-dasharray="5 5" opacity=".8"/>
+    <text x="${W-pad}" y="${highY-4}" text-anchor="end" class="tlabel" fill="var(--high-ink)">HIGH</text>
+    <path d="${area}" fill="url(#g-${uid})"/>
+    <path d="${d}" fill="none" stroke="var(--brand)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${X(raw.length-1).toFixed(1)}" cy="${Y(raw[raw.length-1]).toFixed(1)}" r="4.5" fill="var(--brand)" stroke="var(--card)" stroke-width="2.5"/>
+  </svg>`;
+}
+
+/* ---- station row ---- */
+function stationRow(s){
+  return `<div class="station">
+    <span class="sdot" style="background:var(${SEV[s.sev].v})"></span>
+    <div class="info">
+      <div class="nm">${s.n}</div>
+      <div class="rv">${s.r} River · ${s.loc}</div>
+    </div>
+    <div class="rd">
+      <div class="val">${s.flow}<small>cusecs</small></div>
+      ${chip(s.sev)}
+      <div class="upd">updated ${s.upd}</div>
+    </div>
+  </div>`;
+}
+
+/* ---- the whole screen ---- */
+function buildScreen(uid){
+return `
+<div class="screen">
+
+  <!-- app bar -->
+  <div class="appbar">
+    <div class="appbar-top">
+      <div class="brandmark">${svg('drop',22)}</div>
+      <div class="appbar-title">
+        <div class="eyebrow">Flood Forecasting Division</div>
+        <h1>FFD Flood</h1>
+        <div class="sub">National river status · 09:40 PKT</div>
+      </div>
+      <button class="icon-btn" aria-label="Refresh">${svg('refresh',20)}</button>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- active advisory -->
+    <div class="advisory active">
+      <div class="adv-head">
+        <span class="lab">${svg('warn',16)} Flood Advisory</span>
+        <span class="badge-active"><span class="pulse"></span>Active Advisory</span>
+      </div>
+      <div class="adv-body">
+        <h3>Monsoon advisory — Chenab &amp; Jhelum catchments</h3>
+        <p>An active weather system over the upper catchments may push flows to medium–high levels. Communities along the Chenab and Jhelum should stay alert.</p>
+        <div class="adv-valid">
+          <div><div class="vl">Issued</div><div class="vv">21 Jun · 08:00</div></div>
+          <div><div class="vl">Valid until</div><div class="vv">23 Jun · 18:00</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- expired advisory (de-emphasized, not dashed) -->
+    <div class="advisory expired" style="margin-top:12px;">
+      <div class="adv-head">
+        <span class="lab">${svg('warn',16)} Flood Advisory</span>
+        <span class="badge-expired">Expired</span>
+      </div>
+      <div class="adv-body">
+        <h3>Low-flood advisory — Sutlej at Sulemanki</h3>
+        <p>Flows have receded to normal. This advisory closed on 19 Jun and is kept for reference.</p>
+        <div class="adv-valid">
+          <div><div class="vl">Issued</div><div class="vv">17 Jun · 14:00</div></div>
+          <div><div class="vl">Closed</div><div class="vv">19 Jun · 10:00</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- national severity ribbon -->
+    <div class="ribbon">
+      <span class="rdot"></span>
+      <div class="rtxt">
+        <div class="a">National status</div>
+        <div class="b">Highest level: Medium flood</div>
+      </div>
+      <div class="rmore"><b>3</b> rivers elevated</div>
+    </div>
+
+    <!-- stat cards -->
+    <div class="stats">
+      <div class="stat">
+        <div class="n">31<small> stations</small></div>
+        <div class="t"><span class="dot" style="background:var(--brand)"></span>Monitored live</div>
+      </div>
+      <div class="stat">
+        <div class="n">3<small> / 5</small></div>
+        <div class="t"><span class="dot" style="background:var(--medium)"></span>Above normal</div>
+      </div>
+    </div>
+
+    <!-- latest bulletin teaser -->
+    <div class="sec"><h2>Latest bulletin</h2><a>All bulletins</a></div>
+    <div class="teaser">
+      <div class="tbar" style="background:var(--medium)"></div>
+      <div class="tc">
+        <div class="tmeta">${chip('medium','Medium Flood')}<span class="tm">Today · 09:30 PKT</span></div>
+        <h3>Rising flows expected at Marala on the Chenab</h3>
+        <p>Upstream rainfall over the catchment is pushing inflows higher through the next 24–36 hours. Communities along the Chenab should monitor updates.</p>
+        <span class="tread">Read bulletin ${svg('chev',14)}</span>
+      </div>
+    </div>
+
+    <!-- rivers above normal -->
+    <div class="sec"><h2>Rivers above normal</h2><a>View all</a></div>
+    ${stationRow({n:'Marala', r:'Chenab', loc:'Sialkot',    flow:'186,400', sev:'medium', upd:'2h ago'})}
+    ${stationRow({n:'Khanki', r:'Chenab', loc:'Gujranwala', flow:'171,200', sev:'low',    upd:'2h ago'})}
+
+    <!-- gauge card -->
+    <div class="sec"><h2>Station gauge — Marala</h2><a>Detail</a></div>
+    <div class="gauge">
+      <div class="gh">
+        <div>
+          <div class="gtitle">Marala Headworks</div>
+          <div class="gloc">Chenab River · Sialkot</div>
+        </div>
+        ${chip('medium','Medium Flood')}
+      </div>
+      <div class="greadout">
+        <div class="gbig">186,400</div>
+        <div class="gunit">cusecs</div>
+        <span class="gtrend">${svg('up',14)} +8.4%</span>
+      </div>
+      <div class="chartwrap">
+        ${chartSVG(uid)}
+        <div class="legend">
+          <div><i style="background:var(--brand)"></i>Observed flow</div>
+          <div><i class="dash" style="border-color:var(--medium)"></i>Medium</div>
+          <div><i class="dash" style="border-color:var(--high)"></i>High</div>
+        </div>
+      </div>
+      <div class="gmeta">
+        <span class="gtime">Last 24 h · updated 09:40 PKT</span>
+      </div>
+    </div>
+
+    <!-- alerts inbox -->
+    <div class="sec"><h2>Alerts</h2><a>Inbox</a></div>
+    <div class="grp">Today</div>
+    <div class="alert unread">
+      <span class="accent" style="background:var(--medium)"></span>
+      <div class="aicon" style="background:color-mix(in srgb,var(--medium) 14%, var(--card));color:var(--medium-ink)">${svg('stations',20)}</div>
+      <div class="ac">
+        <div class="atop"><span class="nm">Medium Flood — Marala</span><span class="tm">09:30</span></div>
+        <div class="am">Flows rose to 186,400 cusecs on the Chenab and are expected to keep rising over the next 24 hours.</div>
+      </div>
+      <span class="ud"></span>
+    </div>
+    <div class="alert">
+      <span class="accent" style="background:var(--low)"></span>
+      <div class="aicon" style="background:color-mix(in srgb,var(--low) 14%, var(--card));color:var(--low-ink)">${svg('bell',20)}</div>
+      <div class="ac">
+        <div class="atop"><span class="nm">Low Flood — Trimmu</span><span class="tm">06:00</span></div>
+        <div class="am">Trimmu Headworks on the Chenab reached low flood level. No immediate escalation forecast.</div>
+      </div>
+    </div>
+
+    <!-- severity ramp -->
+    <div class="sec"><h2>Severity scale</h2></div>
+    <div class="ramp">
+      <div class="rrow">
+        ${chip('normal')}${chip('low')}${chip('medium')}${chip('high')}${chip('veryhigh')}
+      </div>
+    </div>
+
+    <!-- form -->
+    <div class="sec"><h2>Account</h2></div>
+    <div class="formcard">
+      <div class="tabs">
+        <button class="tab on">Sign in</button>
+        <button class="tab">Register</button>
+      </div>
+      <label class="field-label">Email address</label>
+      <input class="field" type="email" placeholder="you@example.com" value="">
+      <button class="btn-primary">Continue</button>
+      <!-- second/pressed state shown for reference below -->
+      <button class="btn-primary is-pressed" style="margin-top:10px;">Continue — pressed state</button>
+      <div class="btn-note">Hover lifts &amp; brightens · press sinks &amp; darkens.</div>
+    </div>
+
+  </div>
+
+  <!-- bottom nav -->
+  <nav class="nav">
+    <button class="on"><span class="navpill"></span>${svg('home',23)}Home</button>
+    <button>${svg('stations',23)}Stations</button>
+    <button><span class="nbadge">2</span>${svg('bell',23)}Alerts</button>
+    <button>${svg('doc',23)}Bulletins</button>
+    <button>${svg('person',23)}Account</button>
+  </nav>
+
+</div>`;
+}
+
+document.getElementById('phone-light').innerHTML = '<div class="notch"></div>' + buildScreen('lt');
+document.getElementById('phone-dark').innerHTML  = '<div class="notch"></div>' + buildScreen('dk');
+
+/* tiny interactivity so tabs/press feel live in the preview */
+document.querySelectorAll('.tabs').forEach(tabs=>{
+  tabs.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      tabs.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+      t.classList.add('on');
+    });
+  });
+});
+document.querySelectorAll('.nav').forEach(nav=>{
+  nav.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      nav.querySelectorAll('button').forEach(x=>{x.classList.remove('on');const p=x.querySelector('.navpill');if(p)p.remove();});
+      b.classList.add('on');
+      if(!b.querySelector('.navpill')){const p=document.createElement('span');p.className='navpill';b.prepend(p);}
+    });
+  });
+});
+</script>
+</body>
+</html>

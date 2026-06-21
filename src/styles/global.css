@@ -92,9 +92,11 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background: var(--card);
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
   border-top: 1px solid var(--line);
-  box-shadow: 0 -2px 12px rgba(11, 31, 42, 0.05);
+  box-shadow: var(--shadow-sm);
   z-index: 10;
 }
 
@@ -110,20 +112,45 @@ body {
   font-weight: 600;
   letter-spacing: 0.2px;
   -webkit-tap-highlight-color: transparent;
+  transition: color 0.18s ease, transform 0.12s ease;
+}
+
+/* Active-tab pill behind the icon. */
+.nav-item .nav-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .nav-item.active {
   color: var(--primary);
+}
+.nav-item.active .nav-icon-wrap {
+  background: var(--primary-weak);
+  box-shadow: var(--glow);
 }
 
 .nav-item svg {
   opacity: 0.9;
 }
 
-.nav-icon-wrap {
-  position: relative;
-  display: inline-flex;
+@media (hover: hover) {
+  .nav-item:hover {
+    color: var(--primary);
+  }
+  .nav-item:hover .nav-icon-wrap {
+    background: var(--primary-weak);
+  }
 }
+.nav-item:active {
+  transform: scale(0.94);
+}
+
 .nav-badge {
   position: absolute;
   top: -5px;
@@ -131,13 +158,17 @@ body {
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--high);
-  color: #fff;
+  color: var(--text-on-danger);
   font-size: 10px;
   font-weight: 700;
   line-height: 16px;
   text-align: center;
+  border: 2px solid var(--card);
+}
+[data-theme="dark"] .nav-badge {
+  box-shadow: 0 0 10px -1px var(--high);
 }
 
 /* ── Screens ───────────────────────────────────────────────── */
@@ -167,9 +198,11 @@ body {
 
 .screen-header h1 {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: 24px;
   letter-spacing: -0.3px;
-  color: var(--primary-deep);
+  color: var(--ink);
 }
 
 .screen-header p {
@@ -180,27 +213,37 @@ body {
 
 /* ── Flood advisory card ───────────────────────────────────── */
 .advisory-card {
+  position: relative;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 16px;
   box-shadow: var(--shadow);
   margin-bottom: 14px;
+  transition: transform 0.14s ease, box-shadow 0.2s ease;
 }
 
-/* Highlighted treatment when an advisory is active. */
+/* Hero treatment when an advisory is active. */
 .advisory-card.active {
   border-color: var(--medium);
-  border-width: 1.5px;
+  box-shadow: 0 0 0 4px var(--medium-fill), var(--shadow);
+}
+[data-theme="dark"] .advisory-card.active {
+  box-shadow: 0 0 0 4px var(--medium-fill), 0 0 28px -6px var(--medium), var(--shadow);
 }
 
-/* Expired advisory fails safe to a calm, de-emphasised state. */
+/* Expired advisory: clearly de-emphasised — lifted-flat, NOT dashed. */
 .advisory-card.expired {
+  background: var(--card-2);
+  border-color: var(--line-soft);
+  box-shadow: var(--shadow-sm);
   opacity: 0.92;
-  border-style: dashed;
+}
+.advisory-card.expired .advisory-title {
+  color: var(--muted);
 }
 .advisory-badge.muted {
-  background: var(--line);
+  background: var(--line-soft);
   color: var(--muted);
 }
 
@@ -213,13 +256,12 @@ body {
 
 .advisory-badge {
   font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--primary-deep);
-  background: rgba(14, 110, 120, 0.1);
-  padding: 3px 8px;
-  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: var(--primary);
+  background: var(--primary-weak);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
 }
 
 .advisory-state {
@@ -241,11 +283,12 @@ body {
   gap: 8px;
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
 }
 
 .ribbon-dot {
@@ -258,13 +301,13 @@ body {
 
 /* ── Phase-0 placeholder note ──────────────────────────────── */
 .placeholder-note {
-  background: rgba(95, 182, 196, 0.1);
-  border: 1px dashed var(--water);
-  border-radius: 12px;
+  background: var(--water-weak);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   padding: 14px 16px;
   font-size: 13px;
   line-height: 1.55;
-  color: var(--primary-deep);
+  color: var(--ink);
 }
 
 .placeholder-note code {

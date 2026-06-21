@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
+import Icon from '@/components/Icon'
+import type { IconName } from '@/components/Icon'
 import DischargeChart from '@/components/DischargeChart'
 import type { ChartPoint, ChartThreshold } from '@/components/DischargeChart'
 import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
@@ -56,7 +58,7 @@ export default function StationDetailScreen() {
 
   const { station, thresholds } = data
   const latestLevel = data.series.points.at(-1)?.level ?? null
-  const trendArrow = station.trend === 'up' ? '▲' : station.trend === 'down' ? '▼' : '▬'
+  const trendIcon: IconName = station.trend === 'up' ? 'trend-up' : station.trend === 'down' ? 'trend-down' : 'trend-flat'
   const subtitle = station.location?.area_name ? `${station.river} · ${station.location.area_name}` : station.river
 
   return (
@@ -69,7 +71,9 @@ export default function StationDetailScreen() {
         <div className="gauge-readout">
           <span className="gauge-value readout">{fmtInt(station.discharge)}</span>
           <span className="gauge-unit">cusecs</span>
-          <span className={'gauge-trend trend-' + station.trend}>{trendArrow}</span>
+          <span className={'gauge-trend trend-' + station.trend}>
+            <Icon name={trendIcon} size={20} />
+          </span>
         </div>
         <div className="gauge-meta">
           <SeverityChip status={station.status} />

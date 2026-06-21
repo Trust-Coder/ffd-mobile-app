@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FFD Rebrand — Direction C · Slate Utility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DIRECTION C · SLATE UTILITY  —  token spec lives here.
+   Near-neutral slate/zinc surfaces, single vivid electric-blue
+   accent reserved for brand/interaction; semantic severity ramp
+   stays maximally legible. Instrument-panel aesthetic.
+   ============================================================ */
+
+:root{
+  /* ---- Brand accent (electric blue) — distinct from Normal teal ---- */
+  --accent:        #2563ff;
+  --accent-strong: #1d52e6;
+  --accent-soft:   rgba(37,99,255,.12);
+  --accent-ink:    #1b4ad1;   /* AA text-on-light variant */
+
+  /* ---- Slate / zinc surface scale (light) ---- */
+  --bg:        #eef1f5;   /* app canvas behind cards          */
+  --surface:   #f6f8fb;   /* recessed surfaces / inputs        */
+  --card:      #ffffff;   /* raised cards                      */
+  --card-2:    #fbfcfe;   /* subtle alt fill                   */
+  --line:      #dde3ec;   /* hairline border                   */
+  --line-soft: #e7ecf3;   /* faint divider                     */
+  --ink:       #0e151f;   /* primary text                      */
+  --ink-2:     #34404e;   /* secondary text                    */
+  --muted:     #5d6b7a;   /* tertiary / meta (AA on card)      */
+  --faint:     #8a96a4;   /* quietest meta                     */
+
+  /* slate header gradient */
+  --bar-1:#171f2b;
+  --bar-2:#0c1320;
+  --bar-ink:#eef2f8;
+  --bar-sub:#9aa7b8;
+
+  /* ---- Severity ramp (semantic; red reserved for top) ---- */
+  --normal:   #1f8a73;
+  --low:      #c98800;
+  --medium:   #df6209;
+  --high:     #d6402a;
+  --veryhigh: #b01410;
+
+  /* tinted fills for chips/icons on light */
+  --normal-tint:   rgba(31,138,115,.13);
+  --low-tint:      rgba(201,136,0,.15);
+  --medium-tint:   rgba(223,98,9,.13);
+  --high-tint:     rgba(214,64,42,.13);
+  --veryhigh-tint: rgba(176,20,16,.13);
+  /* AA-darkened label inks on light */
+  --normal-ink:   #136854;
+  --low-ink:      #936300;
+  --medium-ink:   #a4470a;
+  --high-ink:     #a72c1c;
+  --veryhigh-ink: #8e0f0c;
+
+  --radius:18px;
+  --radius-sm:12px;
+  --radius-xs:9px;
+  --shadow-sm: 0 1px 2px rgba(14,21,31,.05);
+  --shadow:    0 1px 2px rgba(14,21,31,.05), 0 8px 22px -8px rgba(14,21,31,.14);
+  --shadow-lg: 0 1px 2px rgba(14,21,31,.06), 0 24px 50px -16px rgba(14,21,31,.28);
+
+  --ease:cubic-bezier(.2,.7,.3,1);
+}
+
+[data-theme="dark"]{
+  --accent:        #4f86ff;
+  --accent-strong: #6e9bff;
+  --accent-soft:   rgba(79,134,255,.18);
+  --accent-ink:    #93b5ff;
+
+  --bg:        #0a0e14;
+  --surface:   #121821;
+  --card:      #151c27;
+  --card-2:    #1a222e;
+  --line:      #29333f;
+  --line-soft: #222b36;
+  --ink:       #eef2f8;
+  --ink-2:     #c2ccd9;
+  --muted:     #95a3b3;
+  --faint:     #6f7d8c;
+
+  --bar-1:#10161f;
+  --bar-2:#070b11;
+  --bar-ink:#f1f5fb;
+  --bar-sub:#8b99ab;
+
+  /* brighten severities for dark-surface AA */
+  --normal:   #34b89a;
+  --low:      #e6a92b;
+  --medium:   #f5853a;
+  --high:     #ff6a52;
+  --veryhigh: #ff5b50;
+
+  --normal-tint:   rgba(52,184,154,.16);
+  --low-tint:      rgba(230,169,43,.18);
+  --medium-tint:   rgba(245,133,58,.16);
+  --high-tint:     rgba(255,106,82,.17);
+  --veryhigh-tint: rgba(255,91,80,.17);
+  --normal-ink:   #4fd0b1;
+  --low-ink:      #f0bb4e;
+  --medium-ink:   #ff9c5c;
+  --high-ink:     #ff8b78;
+  --veryhigh-ink: #ff7e72;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+  --shadow:    0 1px 2px rgba(0,0,0,.4), 0 10px 26px -10px rgba(0,0,0,.6);
+  --shadow-lg: 0 1px 2px rgba(0,0,0,.5), 0 28px 60px -18px rgba(0,0,0,.75);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:
+    radial-gradient(120% 90% at 15% -10%, #1d2735 0%, transparent 55%),
+    radial-gradient(120% 90% at 90% 0%, #141b27 0%, transparent 50%),
+    #0c1119;
+  min-height:100vh;color:#e9eef6;
+  padding:44px 24px 64px;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ---------- page chrome (the comparison sheet, not the app) ---------- */
+.page-head{max-width:980px;margin:0 auto 30px;}
+.page-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:600;letter-spacing:.14em;
+  color:#8a99b3;text-transform:uppercase;
+}
+.page-eyebrow .tag{
+  font-family:'IBM Plex Mono',monospace;font-weight:600;
+  background:rgba(79,134,255,.16);color:#9fbcff;border:1px solid rgba(79,134,255,.3);
+  padding:3px 9px;border-radius:999px;letter-spacing:.02em;font-size:11px;
+}
+.page-head h1{
+  font-family:'Sora',sans-serif;font-weight:600;font-size:30px;letter-spacing:-.02em;
+  margin:14px 0 8px;color:#f4f7fc;
+}
+.page-head p{font-size:14px;line-height:1.6;color:#9aa7bd;max-width:680px;}
+.page-head .swatches{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;}
+.sw{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  padding:7px 12px 7px 9px;border-radius:10px;font-size:12px;color:#c4cee0;
+  font-family:'IBM Plex Mono',monospace;
+}
+.sw i{width:15px;height:15px;border-radius:5px;display:block;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);}
+
+/* ---------- side-by-side rig ---------- */
+.rig{
+  display:flex;gap:40px;justify-content:center;align-items:flex-start;
+  flex-wrap:wrap;max-width:980px;margin:0 auto;
+}
+.frame-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.frame-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12.5px;font-weight:600;color:#aebbd0;letter-spacing:.02em;
+}
+.frame-tag .dotk{width:9px;height:9px;border-radius:50%;}
+
+/* phone shell */
+.phone{
+  width:390px;max-width:92vw;height:824px;
+  border-radius:46px;position:relative;overflow:hidden;
+  background:var(--bg);color:var(--ink);
+  box-shadow:0 0 0 2px #11161f, 0 0 0 12px #1c2431, 0 0 0 13px #0a0e15, 0 46px 90px -28px rgba(0,0,0,.7);
+  display:flex;flex-direction:column;
+  font-family:'Inter',system-ui,sans-serif;
+}
+.notch{
+  position:absolute;top:11px;left:50%;transform:translateX(-50%);
+  width:118px;height:30px;background:#06090e;border-radius:999px;z-index:80;
+  display:flex;align-items:center;justify-content:flex-end;gap:7px;padding-right:14px;
+}
+.notch::before{content:"";width:8px;height:8px;border-radius:50%;background:#1c2733;box-shadow:inset 0 0 0 1px #2c3a49;}
+.notch::after{content:"";width:34px;height:5px;border-radius:999px;background:#10161e;}
+
+.viewport{flex:1;overflow:hidden;position:relative;}
+.scroll{
+  position:absolute;inset:0;overflow-y:auto;padding-bottom:96px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.scroll::-webkit-scrollbar{width:0;height:0;}
+
+/* ---------- app bar ---------- */
+.appbar{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(165deg,var(--bar-1),var(--bar-2));
+  color:var(--bar-ink);padding:50px 18px 18px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.appbar .row{display:flex;align-items:flex-start;gap:12px;}
+.appbar .brand-mark{
+  width:38px;height:38px;border-radius:11px;flex:none;
+  background:linear-gradient(150deg,var(--accent),var(--accent-strong));
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  box-shadow:0 6px 16px -4px var(--accent-soft), inset 0 0 0 1px rgba(255,255,255,.18);
+}
+.appbar .tt{flex:1;min-width:0;}
+.appbar .kicker{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;
+  color:var(--bar-sub);font-weight:500;
+}
+.appbar h1{
+  font-family:'Sora',sans-serif;font-weight:600;font-size:20px;letter-spacing:-.01em;
+  margin-top:2px;line-height:1.1;
+}
+.appbar .sub{font-size:12px;color:var(--bar-sub);margin-top:3px;display:flex;align-items:center;gap:6px;}
+.appbar .live{display:inline-flex;align-items:center;gap:5px;}
+.appbar .live .lp{width:6px;height:6px;border-radius:50%;background:#3ddc97;box-shadow:0 0 0 0 rgba(61,220,151,.6);animation:livep 2s infinite;}
+@keyframes livep{0%{box-shadow:0 0 0 0 rgba(61,220,151,.55);}70%{box-shadow:0 0 0 6px rgba(61,220,151,0);}100%{box-shadow:0 0 0 0 rgba(61,220,151,0);}}
+.iconbtn{
+  width:44px;height:44px;flex:none;border-radius:12px;cursor:pointer;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  color:var(--bar-ink);display:flex;align-items:center;justify-content:center;
+  transition:background .15s var(--ease), transform .12s var(--ease);
+}
+@media (hover:hover){.iconbtn:hover{background:rgba(255,255,255,.14);}}
+.iconbtn:active{transform:scale(.93);background:rgba(255,255,255,.2);}
+.iconbtn svg{transition:transform .5s var(--ease);}
+.iconbtn:active svg{transform:rotate(180deg);}
+
+/* ---------- generic body ---------- */
+.body{padding:16px 16px 0;}
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:22px 4px 11px;}
+.sec h2{
+  font-family:'Sora',sans-serif;font-weight:600;font-size:14px;letter-spacing:.005em;color:var(--ink);
+  display:flex;align-items:center;gap:8px;
+}
+.sec h2 .cnt{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;
+  color:var(--muted);background:var(--surface);border:1px solid var(--line);
+  padding:1px 7px;border-radius:999px;
+}
+.sec a{font-size:12.5px;color:var(--accent-ink);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:3px;}
+@media (hover:hover){.sec a:hover{text-decoration:underline;}}
+
+/* ---------- advisory card (severity-tinted) ---------- */
+.advisory{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;position:relative;cursor:pointer;
+  transition:transform .14s var(--ease), box-shadow .14s var(--ease);
+}
+.advisory.active{
+  border-color:color-mix(in srgb, var(--sev) 45%, var(--line));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--sev) 30%,transparent), var(--shadow);
+}
+@media (hover:hover){.advisory:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg);}}
+.advisory:active{transform:translateY(0) scale(.995);}
+.advisory .edge{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sev);}
+.advisory .ah{
+  display:flex;align-items:center;gap:9px;padding:13px 15px 13px 18px;
+  background:color-mix(in srgb,var(--sev) 7%, var(--card));
+  border-bottom:1px solid color-mix(in srgb,var(--sev) 16%, var(--line));
+}
+.advisory .ah .ico{color:var(--sev-ink);display:flex;}
+.advisory .ah .ti{font-family:'Sora',sans-serif;font-weight:600;font-size:12.5px;color:var(--ink);}
+.badge-active{
+  margin-left:auto;display:inline-flex;align-items:center;gap:7px;
+  font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--sev-ink);
+  background:color-mix(in srgb,var(--sev) 16%, var(--card));
+  border:1px solid color-mix(in srgb,var(--sev) 32%, transparent);
+  padding:4px 9px 4px 8px;border-radius:999px;
+}
+.badge-active .pulse{
+  width:7px;height:7px;border-radius:50%;background:var(--sev);
+  animation:pulse 1.8s infinite;
+}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--sev) 60%,transparent);}70%{box-shadow:0 0 0 7px transparent;}100%{box-shadow:0 0 0 0 transparent;}}
+.advisory .ab{padding:14px 15px 15px 18px;}
+.advisory .ab h3{font-family:'Sora',sans-serif;font-weight:600;font-size:15px;line-height:1.34;margin-bottom:6px;color:var(--ink);letter-spacing:-.005em;}
+.advisory .ab p{font-size:12.5px;color:var(--muted);line-height:1.55;}
+.advisory .guide{
+  display:flex;gap:9px;margin-top:12px;padding:11px 12px;border-radius:var(--radius-sm);
+  background:var(--surface);border:1px solid var(--line-soft);
+}
+.advisory .guide svg{flex:none;color:var(--sev-ink);margin-top:1px;}
+.advisory .guide p{font-size:12px;color:var(--ink-2);line-height:1.5;}
+.advisory .valid{
+  display:flex;gap:10px;margin-top:13px;padding-top:13px;
+  border-top:1px solid var(--line-soft);
+}
+.advisory .valid .v{flex:1;}
+.advisory .valid .vl{font-size:10px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;font-weight:600;}
+.advisory .valid .vv{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:12.5px;color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums;}
+
+/* expired advisory — de-emphasized, NOT dashed */
+.advisory.expired{box-shadow:var(--shadow-sm);background:var(--card-2);border-color:var(--line-soft);}
+.advisory.expired .edge{background:var(--faint);opacity:.5;}
+.advisory.expired .ah{background:transparent;border-bottom-color:var(--line-soft);}
+.advisory.expired .ah .ico{color:var(--faint);}
+.advisory.expired .ab h3{color:var(--ink-2);font-weight:600;}
+.advisory.expired .ab p{color:var(--faint);}
+.badge-expired{
+  margin-left:auto;display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:600;letter-spacing:.03em;color:var(--muted);
+  background:var(--surface);border:1px solid var(--line);padding:4px 10px;border-radius:999px;
+}
+
+/* ---------- national severity ribbon ---------- */
+.ribbon{
+  margin-top:16px;border-radius:var(--radius);overflow:hidden;position:relative;
+  border:1px solid var(--line);box-shadow:var(--shadow);
+  background:linear-gradient(150deg,var(--bar-1),var(--bar-2));color:#fff;
+}
+.ribbon .rin{position:relative;z-index:2;padding:15px 16px 18px;}
+.ribbon .rtop{display:flex;align-items:center;justify-content:space-between;}
+.ribbon .rk{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--bar-sub);text-transform:uppercase;}
+.ribbon .rpill{
+  display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#fff;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);
+  padding:4px 10px;border-radius:999px;
+}
+.ribbon .rlv{font-family:'Sora',sans-serif;font-weight:600;font-size:17px;margin-top:8px;display:flex;align-items:center;gap:9px;letter-spacing:-.01em;}
+.ribbon .rlv .sd{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.1);}
+.ramp{display:flex;gap:4px;margin-top:13px;}
+.ramp .seg{flex:1;height:7px;border-radius:3px;opacity:.32;transition:opacity .3s var(--ease);}
+.ramp .seg.on{opacity:1;}
+.ramp-legend{display:flex;justify-content:space-between;margin-top:7px;font-size:9.5px;color:var(--bar-sub);font-family:'IBM Plex Mono',monospace;letter-spacing:.02em;}
+
+/* ---------- stat cards ---------- */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+.stat{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:15px 14px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+}
+.stat .sh{display:flex;align-items:center;justify-content:space-between;}
+.stat .si{
+  width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  background:var(--accent-soft);color:var(--accent-ink);
+}
+.stat .si.sev{background:var(--sev-tint);color:var(--sev-ink);}
+.stat .n{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:27px;color:var(--ink);letter-spacing:-.02em;margin-top:11px;font-variant-numeric:tabular-nums;line-height:1;}
+.stat .n small{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:0;}
+.stat .t{font-size:11.5px;color:var(--muted);margin-top:5px;font-weight:500;}
+
+/* ---------- bulletin teaser ---------- */
+.teaser{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;cursor:pointer;position:relative;
+  transition:transform .14s var(--ease), box-shadow .14s var(--ease);
+  display:flex;
+}
+@media (hover:hover){.teaser:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg);}}
+.teaser:active{transform:scale(.995);}
+.teaser .edge{width:4px;background:var(--sev);flex:none;}
+.teaser .tc{padding:14px 15px;flex:1;min-width:0;}
+.teaser .meta{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.teaser .tm{font-size:11px;color:var(--faint);font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;}
+.teaser h3{font-family:'Sora',sans-serif;font-weight:600;font-size:14.5px;line-height:1.34;margin-bottom:5px;color:var(--ink);letter-spacing:-.005em;}
+.teaser p{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.teaser .more{display:inline-flex;align-items:center;gap:3px;margin-top:9px;font-size:12px;font-weight:600;color:var(--accent-ink);}
+
+/* severity chip (shared) */
+.sev-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:700;letter-spacing:.01em;
+  padding:3px 9px 3px 8px;border-radius:999px;white-space:nowrap;
+  color:var(--sev-ink);background:var(--sev-tint);
+  border:1px solid color-mix(in srgb,var(--sev) 24%, transparent);
+}
+.sev-chip .sd{width:7px;height:7px;border-radius:50%;background:var(--sev);flex:none;}
+
+/* ---------- station rows ---------- */
+.stationlist{display:flex;flex-direction:column;gap:10px;}
+.station{
+  display:flex;align-items:center;gap:13px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:13px 14px 13px 13px;box-shadow:var(--shadow-sm);cursor:pointer;position:relative;
+  transition:transform .14s var(--ease), box-shadow .14s var(--ease), border-color .14s var(--ease);
+}
+@media (hover:hover){.station:hover{transform:translateY(-1px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--accent) 30%, var(--line));}}
+.station:active{transform:scale(.992);}
+.station .sd{width:11px;height:11px;border-radius:50%;flex:none;background:var(--sev);box-shadow:0 0 0 3px var(--sev-tint);}
+.station .info{flex:1;min-width:0;}
+.station .nm{font-family:'Sora',sans-serif;font-weight:600;font-size:14px;color:var(--ink);letter-spacing:-.005em;}
+.station .rv{font-size:11.5px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;}
+.station .rv .u{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--faint);}
+.station .rd{text-align:right;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.station .readout{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14.5px;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.station .readout .un{font-size:9.5px;color:var(--faint);font-weight:500;margin-left:3px;}
+
+/* ---------- gauge card ---------- */
+.gauge{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px 16px 16px;margin-top:14px;
+}
+.gauge .gh{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.gauge .gh .gname{font-family:'Sora',sans-serif;font-weight:600;font-size:14px;color:var(--ink);}
+.gauge .gh .gloc{font-size:11px;color:var(--muted);margin-top:1px;}
+.gauge .read{display:flex;align-items:flex-end;gap:9px;margin-top:12px;}
+.gauge .big{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:42px;line-height:.92;letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums;}
+.gauge .un{font-size:12.5px;color:var(--muted);padding-bottom:5px;}
+.gauge .trend{margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding-bottom:4px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;}
+.trend.up{color:var(--high);}
+.trend.down{color:var(--normal);}
+.gauge .chartwrap{margin-top:16px;position:relative;}
+.gauge .ch-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.gauge .ch-h .ct{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;}
+.gauge .ch-h .cu{font-size:10.5px;color:var(--faint);}
+.gauge svg.chart{width:100%;height:150px;display:block;overflow:visible;}
+.legend{display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;}
+.legend div{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.legend i{width:15px;height:3px;border-radius:2px;display:inline-block;}
+.legend i.dash{height:0;border-top:2px dashed var(--medium);width:15px;}
+
+/* ---------- alerts inbox ---------- */
+.alert{
+  display:flex;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-sm);padding:13px 14px 13px 13px;box-shadow:var(--shadow-sm);
+  cursor:pointer;position:relative;overflow:hidden;margin-bottom:10px;
+  transition:transform .14s var(--ease), box-shadow .14s var(--ease);
+}
+@media (hover:hover){.alert:hover{transform:translateY(-1px);box-shadow:var(--shadow);}}
+.alert:active{transform:scale(.994);}
+.alert.unread{background:color-mix(in srgb,var(--accent) 5%, var(--card));border-color:color-mix(in srgb,var(--accent) 22%, var(--line));}
+.alert.unread .accent{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);}
+.alert .ai{
+  width:40px;height:40px;border-radius:11px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--sev-tint);color:var(--sev-ink);
+}
+.alert.unread{padding-left:16px;}
+.alert .ac{flex:1;min-width:0;}
+.alert .at{display:flex;align-items:center;gap:8px;}
+.alert .at .nm{font-family:'Sora',sans-serif;font-weight:600;font-size:13.5px;color:var(--ink);flex:1;min-width:0;letter-spacing:-.005em;}
+.alert .at .tm{font-size:10.5px;color:var(--faint);font-family:'IBM Plex Mono',monospace;flex:none;}
+.alert .am{font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px;}
+.alert .ud{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;align-self:center;box-shadow:0 0 0 3px var(--accent-soft);}
+.alert.read{opacity:.82;}
+
+/* ---------- chip ramp showcase ---------- */
+.rampcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:16px;margin-top:4px;}
+.rampcard .rr{display:flex;flex-wrap:wrap;gap:8px;}
+
+/* ---------- form ---------- */
+.formcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:4px;}
+.segmented{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:3px;margin-bottom:15px;}
+.segmented button{
+  border:0;background:transparent;padding:10px;border-radius:8px;cursor:pointer;
+  font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;color:var(--muted);
+  transition:color .15s var(--ease);
+}
+.segmented button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm);border:1px solid var(--line);}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:6px;}
+.field .inp{
+  width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:11px;
+  background:var(--surface);font-family:'Inter',sans-serif;font-size:14.5px;color:var(--ink);
+  transition:border-color .15s var(--ease), box-shadow .15s var(--ease), background .15s var(--ease);
+}
+.field .inp::placeholder{color:var(--faint);}
+.field .inp:focus{outline:0;border-color:var(--accent);background:var(--card);box-shadow:0 0 0 4px var(--accent-soft);}
+.btn-primary{
+  width:100%;border:0;border-radius:12px;padding:14px;cursor:pointer;
+  font-family:'Sora',sans-serif;font-weight:600;font-size:14.5px;color:#fff;
+  background:linear-gradient(150deg,var(--accent),var(--accent-strong));
+  box-shadow:0 8px 18px -8px var(--accent-soft), inset 0 0 0 1px rgba(255,255,255,.14);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .12s var(--ease), box-shadow .15s var(--ease), filter .15s var(--ease);
+}
+@media (hover:hover){.btn-primary:hover{filter:brightness(1.06);box-shadow:0 12px 26px -10px var(--accent-soft), inset 0 0 0 1px rgba(255,255,255,.2);}}
+.btn-primary:active{transform:translateY(1px) scale(.99);filter:brightness(.96);}
+.form-hint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5;}
+.form-hint a{color:var(--accent-ink);font-weight:600;text-decoration:none;}
+
+/* ---------- bottom nav ---------- */
+.nav{
+  position:absolute;bottom:0;left:0;right:0;height:74px;z-index:60;
+  background:color-mix(in srgb,var(--card) 86%, transparent);
+  backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
+  border-top:1px solid var(--line);display:flex;padding-bottom:8px;
+}
+.nav button{
+  flex:1;border:0;background:none;cursor:pointer;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  color:var(--faint);font-family:'Inter',sans-serif;font-size:10px;font-weight:600;
+  transition:color .15s var(--ease);
+}
+.nav button .ig{position:relative;display:flex;align-items:center;justify-content:center;width:34px;height:30px;border-radius:10px;transition:background .15s var(--ease);}
+.nav button.on{color:var(--accent-ink);}
+.nav button.on .ig{background:var(--accent-soft);}
+@media (hover:hover){.nav button:hover{color:var(--ink-2);}}
+.nav button:active .ig{transform:scale(.9);}
+.nav button svg{width:21px;height:21px;}
+.nav .nbadge{
+  position:absolute;top:-3px;right:1px;min-width:16px;height:16px;border-radius:999px;
+  background:var(--high);color:#fff;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+  border:2px solid var(--card);font-family:'IBM Plex Mono',monospace;
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+}
+
+@media (max-width:860px){
+  body{padding:28px 12px 48px;}
+  .rig{gap:28px;}
+}
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <span class="page-eyebrow"><span class="tag">Direction&nbsp;C</span> Slate Utility</span>
+  <h1>FFD Flood — visual rebrand preview</h1>
+  <p>A crisp, data-forward instrument panel. Near-neutral slate/zinc surfaces carry a single vivid <strong style="color:#7fa6ff">electric-blue</strong> accent reserved strictly for brand and interaction, so the semantic severity ramp stays maximally legible. Tabular monospace readouts, sharp hierarchy, generous whitespace — excellent in both light and dark.</p>
+  <div class="swatches">
+    <span class="sw"><i style="background:#2563ff"></i>Accent #2563FF</span>
+    <span class="sw"><i style="background:#ffffff;"></i>Card #FFFFFF</span>
+    <span class="sw"><i style="background:#eef1f5"></i>Canvas #EEF1F5</span>
+    <span class="sw"><i style="background:#0a0e14"></i>Dark #0A0E14</span>
+    <span class="sw"><i style="background:#1f8a73"></i>Normal #1F8A73</span>
+    <span class="sw"><i style="background:#b01410"></i>VeryHigh #B01410</span>
+  </div>
+</header>
+
+<div class="rig" id="rig"></div>
+
+<!-- ============ TEMPLATE: one full phone "kitchen sink" ============ -->
+<template id="phone-tpl">
+<div class="phone">
+  <div class="notch"></div>
+  <div class="viewport">
+    <div class="scroll">
+
+      <!-- APP BAR -->
+      <header class="appbar">
+        <div class="row">
+          <div class="brand-mark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 14c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2"/>
+              <path d="M4 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2"/>
+              <path d="M12 3l5 6H7l5-6z"/>
+            </svg>
+          </div>
+          <div class="tt">
+            <div class="kicker">FLOOD FORECASTING DIVISION · PMD</div>
+            <h1>FFD Flood</h1>
+            <div class="sub"><span class="live"><span class="lp"></span>Live</span> · National river status · 09:40 PKT</div>
+          </div>
+          <button class="iconbtn" aria-label="Refresh">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="body">
+
+        <!-- ACTIVE ADVISORY -->
+        <div class="sec"><h2>Advisory</h2><a href="#">All bulletins
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg></a></div>
+
+        <div class="advisory active" style="--sev:var(--medium);--sev-ink:var(--medium-ink);--sev-tint:var(--medium-tint)">
+          <span class="edge"></span>
+          <div class="ah">
+            <span class="ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+            <span class="ti">Flood Advisory</span>
+            <span class="badge-active"><span class="pulse"></span>Active Advisory</span>
+          </div>
+          <div class="ab">
+            <h3>Monsoon Flood Advisory — Chenab &amp; Jhelum catchments</h3>
+            <p>An active weather system over the upper catchments may push flows to medium–high levels through the next 36 hours.</p>
+            <div class="guide">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <p>Keep clear of riverbeds and low crossings. Follow district and irrigation authority guidance.</p>
+            </div>
+            <div class="valid">
+              <div class="v"><div class="vl">Issued</div><div class="vv">21 Jun · 08:00</div></div>
+              <div class="v"><div class="vl">Valid until</div><div class="vv">23 Jun · 18:00</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXPIRED ADVISORY (de-emphasized, no dashes) -->
+        <div class="advisory expired" style="--sev:var(--low);--sev-ink:var(--low-ink);--sev-tint:var(--low-tint);margin-top:11px;">
+          <span class="edge"></span>
+          <div class="ah">
+            <span class="ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <span class="ti" style="color:var(--ink-2)">Flood Advisory</span>
+            <span class="badge-expired">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>Expired
+            </span>
+          </div>
+          <div class="ab">
+            <h3>Pre-monsoon Watch — Ravi at Balloki</h3>
+            <p>Closed 19 Jun. Flows returned to normal seasonal range; no further action required.</p>
+          </div>
+        </div>
+
+        <!-- NATIONAL SEVERITY RIBBON -->
+        <div class="ribbon">
+          <div class="rin">
+            <div class="rtop">
+              <span class="rk">National status</span>
+              <span class="rpill">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 17l5-9 4 5 3-6 6 10"/></svg>
+                3 rivers elevated
+              </span>
+            </div>
+            <div class="rlv"><span class="sd" style="background:var(--medium)"></span>Medium Flood — Chenab</div>
+            <div class="ramp">
+              <span class="seg on" style="background:var(--normal)"></span>
+              <span class="seg on" style="background:var(--low)"></span>
+              <span class="seg on" style="background:var(--medium)"></span>
+              <span class="seg" style="background:var(--high)"></span>
+              <span class="seg" style="background:var(--veryhigh)"></span>
+            </div>
+            <div class="ramp-legend"><span>Normal</span><span>Low</span><span>Medium</span><span>High</span><span>Very High</span></div>
+          </div>
+        </div>
+
+        <!-- STAT CARDS -->
+        <div class="stats">
+          <div class="stat">
+            <div class="sh">
+              <div class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-8 4 5 3-7 4 10"/><path d="M3 21h18"/></svg></div>
+            </div>
+            <div class="n">42<small> stations</small></div>
+            <div class="t">Monitored live</div>
+          </div>
+          <div class="stat" style="--sev:var(--medium);--sev-ink:var(--medium-ink);--sev-tint:var(--medium-tint)">
+            <div class="sh">
+              <div class="si sev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m4.9 7 2.9 2.9"/><path d="M2 14h4"/><circle cx="12" cy="14" r="6"/></svg></div>
+            </div>
+            <div class="n">3<small> / 5</small></div>
+            <div class="t">Rivers above normal</div>
+          </div>
+        </div>
+
+        <!-- LATEST BULLETIN TEASER -->
+        <div class="sec"><h2>Latest bulletin</h2></div>
+        <div class="teaser" style="--sev:var(--medium);--sev-ink:var(--medium-ink);--sev-tint:var(--medium-tint)">
+          <span class="edge"></span>
+          <div class="tc">
+            <div class="meta">
+              <span class="sev-chip"><span class="sd"></span>Medium Flood</span>
+              <span class="tm">Today · 09:30</span>
+            </div>
+            <h3>Rising flows expected at Marala on the Chenab</h3>
+            <p>Upstream rainfall is pushing inflows higher through the next 24–36 hours. Communities along the Chenab should monitor updates.</p>
+            <span class="more">Read bulletin
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg></span>
+          </div>
+        </div>
+
+        <!-- RIVERS ABOVE NORMAL -->
+        <div class="sec"><h2>Rivers above normal <span class="cnt">3</span></h2><a href="#">View all</a></div>
+        <div class="stationlist">
+          <div class="station" style="--sev:var(--medium);--sev-ink:var(--medium-ink);--sev-tint:var(--medium-tint)">
+            <span class="sd"></span>
+            <div class="info">
+              <div class="nm">Marala</div>
+              <div class="rv">Chenab River · Sialkot <span class="u">· updated 2h ago</span></div>
+            </div>
+            <div class="rd">
+              <div class="readout">186,400<span class="un">cs</span></div>
+              <span class="sev-chip">Medium</span>
+            </div>
+          </div>
+          <div class="station" style="--sev:var(--low);--sev-ink:var(--low-ink);--sev-tint:var(--low-tint)">
+            <span class="sd"></span>
+            <div class="info">
+              <div class="nm">Trimmu</div>
+              <div class="rv">Chenab River · Jhang <span class="u">· updated 2h ago</span></div>
+            </div>
+            <div class="rd">
+              <div class="readout">142,900<span class="un">cs</span></div>
+              <span class="sev-chip">Low</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GAUGE CARD + CHART -->
+        <div class="sec"><h2>Gauge · Marala</h2><a href="#">Details</a></div>
+        <div class="gauge" style="--sev:var(--medium);--sev-ink:var(--medium-ink);--sev-tint:var(--medium-tint)">
+          <div class="gh">
+            <div>
+              <div class="gname">Marala Headworks</div>
+              <div class="gloc">Chenab River · Sialkot</div>
+            </div>
+            <span class="sev-chip"><span class="sd"></span>Medium Flood</span>
+          </div>
+          <div class="read">
+            <span class="big">186,400</span>
+            <span class="un">cusecs</span>
+            <span class="trend up">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+              +4.2%
+            </span>
+          </div>
+          <div class="chartwrap">
+            <div class="ch-h"><span class="ct">Discharge · 24h</span><span class="cu">cusecs</span></div>
+            <svg class="chart" viewBox="0 0 320 150" preserveAspectRatio="none" aria-label="Discharge over the last 24 hours">
+              <defs>
+                <linearGradient id="cgA" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="var(--accent)" stop-opacity=".34"/>
+                  <stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- threshold lines (dashed allowed inside chart) -->
+              <line x1="8" y1="58" x2="312" y2="58" stroke="var(--high)" stroke-width="1.4" stroke-dasharray="5 5" opacity=".75"/>
+              <line x1="8" y1="92" x2="312" y2="92" stroke="var(--medium)" stroke-width="1.4" stroke-dasharray="5 5" opacity=".75"/>
+              <text x="312" y="53" text-anchor="end" font-size="8" font-family="IBM Plex Mono, monospace" fill="var(--high-ink)" font-weight="600">HIGH</text>
+              <text x="312" y="87" text-anchor="end" font-size="8" font-family="IBM Plex Mono, monospace" fill="var(--medium-ink)" font-weight="600">MED</text>
+              <path d="M8 120 C 33 116, 49 110, 70 108 S 110 96, 130 99 S 170 84, 196 78 S 236 74, 258 70 S 296 66, 312 70 L312 142 L8 142 Z" fill="url(#cgA)"/>
+              <path d="M8 120 C 33 116, 49 110, 70 108 S 110 96, 130 99 S 170 84, 196 78 S 236 74, 258 70 S 296 66, 312 70" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="312" cy="70" r="4.5" fill="var(--accent)" stroke="var(--card)" stroke-width="2.5"/>
+            </svg>
+            <div class="legend">
+              <div><i style="background:var(--accent)"></i>Observed flow</div>
+              <div><i class="dash" style="border-top-color:var(--medium)"></i>Medium</div>
+              <div><i class="dash" style="border-top-color:var(--high)"></i>High</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ALERTS INBOX -->
+        <div class="sec"><h2>Alerts</h2><a href="#">Mark all read</a></div>
+        <div class="alert unread" style="--sev:var(--medium);--sev-ink:var(--medium-ink);--sev-tint:var(--medium-tint)">
+          <span class="accent"></span>
+          <div class="ai"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-8 4 5 3-7 4 10"/><path d="M3 21h18"/></svg></div>
+          <div class="ac">
+            <div class="at"><span class="nm">Medium Flood — Marala</span><span class="tm">09:30</span></div>
+            <div class="am">Flows rose to 186,400 cusecs on the Chenab and are expected to keep rising over the next 24 hours.</div>
+          </div>
+          <span class="ud"></span>
+        </div>
+        <div class="alert read" style="--sev:var(--low);--sev-ink:var(--low-ink);--sev-tint:var(--low-tint)">
+          <div class="ai"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          <div class="ac">
+            <div class="at"><span class="nm">Low Flood — Trimmu</span><span class="tm">06:00</span></div>
+            <div class="am">Trimmu Headworks on the Chenab reached low flood level overnight.</div>
+          </div>
+        </div>
+
+        <!-- SEVERITY CHIP RAMP -->
+        <div class="sec"><h2>Severity ramp</h2><span style="font-size:11px;color:var(--faint);font-family:'IBM Plex Mono',monospace;">AA · both themes</span></div>
+        <div class="rampcard">
+          <div class="rr">
+            <span class="sev-chip" style="--sev:var(--normal);--sev-ink:var(--normal-ink);--sev-tint:var(--normal-tint)"><span class="sd"></span>Normal</span>
+            <span class="sev-chip" style="--sev:var(--low);--sev-ink:var(--low-ink);--sev-tint:var(--low-tint)"><span class="sd"></span>Low Flood</span>
+            <span class="sev-chip" style="--sev:var(--medium);--sev-ink:var(--medium-ink);--sev-tint:var(--medium-tint)"><span class="sd"></span>Medium Flood</span>
+            <span class="sev-chip" style="--sev:var(--high);--sev-ink:var(--high-ink);--sev-tint:var(--high-tint)"><span class="sd"></span>High Flood</span>
+            <span class="sev-chip" style="--sev:var(--veryhigh);--sev-ink:var(--veryhigh-ink);--sev-tint:var(--veryhigh-tint)"><span class="sd"></span>Very High Flood</span>
+          </div>
+        </div>
+
+        <!-- FORM SNIPPET -->
+        <div class="sec"><h2>Account</h2></div>
+        <div class="formcard">
+          <div class="segmented">
+            <button class="on">Sign in</button>
+            <button>Register</button>
+          </div>
+          <div class="field">
+            <label>Email or phone</label>
+            <input class="inp" type="text" placeholder="you@example.com" value="mytrustcoder@gmail.com">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input class="inp" type="password" placeholder="••••••••" value="passwordvalue">
+          </div>
+          <button class="btn-primary">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+            Sign in
+          </button>
+          <p class="form-hint">Sync your watchlist across devices. <a href="#">Continue as guest</a></p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="nav">
+      <button class="on" aria-current="page">
+        <span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>
+        Home
+      </button>
+      <button>
+        <span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V9"/><path d="M12 21V4"/><path d="M19 21v-8"/></svg></span>
+        Stations
+      </button>
+      <button>
+        <span class="ig"><span class="nbadge">2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+        Alerts
+      </button>
+      <button>
+        <span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></span>
+        Bulletins
+      </button>
+      <button>
+        <span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+        Account
+      </button>
+    </nav>
+
+  </div>
+</div>
+</template>
+
+<script>
+  // Build the two frames from one template: left = light, right = dark.
+  const tpl = document.getElementById('phone-tpl');
+  const rig = document.getElementById('rig');
+
+  function makeFrame(theme){
+    const wrap = document.createElement('div');
+    wrap.className = 'frame-wrap';
+
+    const tag = document.createElement('div');
+    tag.className = 'frame-tag';
+    const isDark = theme === 'dark';
+    tag.innerHTML = isDark
+      ? '<span class="dotk" style="background:#0a0e14;box-shadow:inset 0 0 0 1px #38465a"></span>'
+        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aebbd0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg> Dark'
+      : '<span class="dotk" style="background:#fff;box-shadow:inset 0 0 0 1px #c6cfdd"></span>'
+        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aebbd0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg> Light';
+
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    if (isDark) node.setAttribute('data-theme', 'dark');
+
+    wrap.appendChild(tag);
+    wrap.appendChild(node);
+    return wrap;
+  }
+
+  rig.appendChild(makeFrame('light'));
+  rig.appendChild(makeFrame('dark'));
+
+  // tiny interactive flourish: segmented control + nav switching (per frame, no globals leak)
+  document.querySelectorAll('.phone').forEach(phone => {
+    phone.querySelectorAll('.segmented').forEach(seg => {
+      seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+        seg.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        const primary = phone.querySelector('.btn-primary');
+        if (primary) primary.lastChild.textContent = b.textContent === 'Register' ? ' Create account' : ' Sign in';
+      }));
+    });
+    phone.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => {
+      phone.querySelectorAll('.nav button').forEach(x => { x.classList.remove('on'); x.removeAttribute('aria-current'); });
+      b.classList.add('on'); b.setAttribute('aria-current','page');
+    }));
+  });
+</script>
+</body>
+</html>

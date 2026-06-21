@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
+import Icon from '@/components/Icon'
 import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import { usePaginated } from '@/hooks/usePaginated'
 import { getAlertsPage, getInboxPage, getPreferences, markAlertRead } from '@/lib/endpoints'
@@ -124,7 +125,7 @@ export default function AlertsScreen() {
 
       {quietHours ? (
         <div className="quiet-note" role="note">
-          🌙 Quiet hours are on — non-critical alerts arrive silently. High-severity flood alerts still notify you.
+          <Icon name="moon" size={16} /> Quiet hours are on — non-critical alerts arrive silently. High-severity flood alerts still notify you.
         </div>
       ) : null}
 

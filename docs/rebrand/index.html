@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FFD Flood — Rebrand directions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { color-scheme: light dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #0b1220;
+        color: #e8edf6;
+        -webkit-font-smoothing: antialiased;
+        padding: 48px 24px;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; }
+      h1 { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 30px; margin: 0 0 6px; letter-spacing: -0.4px; }
+      .lede { color: #9fb0c8; font-size: 15px; line-height: 1.6; margin: 0 0 32px; max-width: 620px; }
+      .grid { display: grid; gap: 18px; }
+      a.card {
+        display: block; text-decoration: none; color: inherit;
+        background: #131c2e; border: 1px solid #243149; border-radius: 16px;
+        padding: 22px 24px; transition: border-color .15s ease, transform .15s ease, background .15s ease;
+      }
+      a.card:hover { border-color: #3a6df0; background: #16213a; transform: translateY(-2px); }
+      .row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .name { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 19px; }
+      .tag { font-size: 12px; color: #8aa0bf; }
+      .desc { color: #9fb0c8; font-size: 14px; line-height: 1.55; margin: 8px 0 14px; }
+      .swatches { display: flex; gap: 8px; align-items: center; }
+      .sw { width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); }
+      .open { font-size: 13px; font-weight: 600; color: #6ea0ff; }
+      .note { margin-top: 28px; font-size: 13px; color: #7d90ab; line-height: 1.6; }
+      .sevramp { display: flex; gap: 4px; margin-top: 14px; }
+      .sevramp .s { height: 8px; flex: 1; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>FFD Flood — choose a rebrand direction</h1>
+      <p class="lede">Three full-rebrand directions, each shown in <strong>light and dark</strong> side by side. The flood
+        <strong>severity scale stays fixed</strong> (red reserved for severe) in all three — only the brand identity, surfaces,
+        type and icons change. Open each, compare, and tell me which one (A, B, or C) to build into the app.</p>
+
+      <div class="grid">
+        <a class="card" href="direction-a.html">
+          <div class="row"><span class="name">A · Teal Evolution</span><span class="open">Open ↗</span></div>
+          <p class="desc">Evolves today's deep-teal “calm authority” into a premium modern look — vivid teal primary
+            (<code>#0D8A96</code>), warm-neutral surfaces, Sora display type, soft layered elevation. Lowest risk, clearly an upgrade.</p>
+          <div class="swatches">
+            <span class="sw" style="background:#0D8A96"></span>
+            <span class="sw" style="background:#F4F2EE"></span>
+            <span class="sw" style="background:#1a2230"></span>
+            <span class="tag">brand · surface · dark</span>
+          </div>
+        </a>
+
+        <a class="card" href="direction-b.html">
+          <div class="row"><span class="name">B · Deep Institutional</span><span class="open">Open ↗</span></div>
+          <p class="desc">Authoritative navy/indigo brand (<code>#2347B8</code>) with a bright cyan “water” accent
+            (<code>#00B4D8</code>). Government-grade, with a standout glowing dark mode. Brand is unmistakably distinct from severity.</p>
+          <div class="swatches">
+            <span class="sw" style="background:#2347B8"></span>
+            <span class="sw" style="background:#00B4D8"></span>
+            <span class="sw" style="background:#070B18"></span>
+            <span class="tag">brand · accent · dark</span>
+          </div>
+        </a>
+
+        <a class="card" href="direction-c.html">
+          <div class="row"><span class="name">C · Slate Utility</span><span class="open">Open ↗</span></div>
+          <p class="desc">Crisp, data-forward instrument panel — near-neutral slate surfaces with one vivid electric-blue accent
+            (<code>#2563FF</code>) reserved for interactive elements, so severity colors pop. Maximum legibility, both themes.</p>
+          <div class="swatches">
+            <span class="sw" style="background:#2563FF"></span>
+            <span class="sw" style="background:#EEF1F5"></span>
+            <span class="sw" style="background:#0A0E14"></span>
+            <span class="tag">accent · surface · dark</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="sevramp" title="Fixed severity ramp (all directions)">
+        <span class="s" style="background:#2e8b7a"></span>
+        <span class="s" style="background:#d99700"></span>
+        <span class="s" style="background:#e2660a"></span>
+        <span class="s" style="background:#d6452a"></span>
+        <span class="s" style="background:#b01810"></span>
+      </div>
+      <p class="note">↑ The fixed severity ramp (Normal → Very High) — identical across all three directions.
+        These are static mockups (the visual contract); the chosen one gets built into the real app with a theme toggle in Account.</p>
+    </div>
+  </body>
+</html>

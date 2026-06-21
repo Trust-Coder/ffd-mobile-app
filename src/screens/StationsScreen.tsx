@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import ScreenHeader from '@/components/ScreenHeader'
+import Icon from '@/components/Icon'
 import FilterChips from '@/components/FilterChips'
 import StationRow from '@/components/StationRow'
 import { LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
@@ -43,7 +44,7 @@ export default function StationsScreen() {
         />
         {query ? (
           <button type="button" className="search-clear" onClick={() => setQuery('')} aria-label="Clear search">
-            ✕
+            <Icon name="close" size={18} />
           </button>
         ) : null}
       </div>

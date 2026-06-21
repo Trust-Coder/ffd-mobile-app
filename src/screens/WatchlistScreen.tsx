@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
+import Icon from '@/components/Icon'
 import Switch from '@/components/Switch'
 import { SeverityChip, StatusDot, LoadingState, ErrorState, EmptyState } from '@/components/ui'
 import { useAuth } from '@/auth/AuthContext'
@@ -88,7 +89,7 @@ export default function WatchlistScreen() {
               <div className="watch-item-actions">
                 <Switch checked={s.alert_enabled} onChange={(v) => toggleAlert(s.id, v)} ariaLabel={`Alerts for ${s.name}`} />
                 <button type="button" className="watch-remove" onClick={() => remove(s.id)} aria-label={`Remove ${s.name}`}>
-                  ✕
+                  <Icon name="close" size={18} />
                 </button>
               </div>
             </li>

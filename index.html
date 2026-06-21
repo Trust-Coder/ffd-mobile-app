@@ -3,7 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0A4A52" />
+    <meta name="theme-color" content="#f4f6fb" />
+
+    <!-- No-flash theme bootstrap: resolve the persisted override (or the OS
+         preference for 'system') and set data-theme BEFORE the stylesheet loads,
+         so first paint matches the theme. Reads the @capacitor/preferences web
+         backing key (group-prefixed localStorage). -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('CapacitorStorage.ffd.theme')
+          var mode = stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system'
+          var resolved =
+            mode === 'system'
+              ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+              : mode
+          document.documentElement.dataset.theme = resolved
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', resolved === 'dark' ? '#070b18' : '#f4f6fb')
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light'
+        }
+      })()
+    </script>
+
+    <!-- Web fonts: Sora (display) · Inter (sans) · IBM Plex Mono (numeric). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+
     <title>FFD Flood</title>
   </head>
   <body>

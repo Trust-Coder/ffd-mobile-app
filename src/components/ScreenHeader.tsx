@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Icon from '@/components/Icon'
 import RefreshButton from '@/components/RefreshButton'
 
 interface Props {
@@ -23,9 +24,7 @@ export default function ScreenHeader({ title, subtitle, back, refreshable }: Pro
     <header className={'screen-header' + (back ? ' with-back' : '')}>
       {back ? (
         <button type="button" className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <Icon name="chevron-left" size={22} />
         </button>
       ) : null}
       <div className="screen-header-text">

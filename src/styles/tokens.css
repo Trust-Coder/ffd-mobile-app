@@ -1,29 +1,126 @@
-/* Design tokens — calm authority. Mirrors docs/ffd-app-prototype.html. */
+/* Design tokens — Direction B · "Deep Institutional".
+   Authoritative navy/indigo identity with a bright cyan "water" accent.
+   Source of truth: docs/rebrand/direction-b.html.
+   :root is the light theme; [data-theme="dark"] (set on <html>) is dark.
+   Token NAMES are kept stable so existing components keep working. */
 :root {
-  --ink: #0b1f2a;
-  --surface: #eef3f2;
+  color-scheme: light dark;
+
+  /* ── Brand: deep institutional navy/indigo ─────────────────── */
+  --primary: #2347b8;        /* primary indigo — clearly NOT the green Normal */
+  --primary-deep: #16297a;   /* deepest navy for hero gradients */
+  --primary-strong: #1c39a3; /* pressed/active brand */
+  --primary-weak: #eef1fc;   /* brand wash on light surfaces */
+
+  /* ── Water accent (bright cyan) ────────────────────────────── */
+  --water: #00b4d8;
+  --water-deep: #0090b3;
+  --water-weak: #e2f7fc;
+
+  /* ── Neutral surfaces (light) ──────────────────────────────── */
+  --surface: #f4f6fb;
   --card: #ffffff;
-  --line: #dbe5e3;
-  --muted: #475a62; /* darkened for WCAG 1.4.3 contrast on small text */
+  --card-2: #fbfcff;         /* subtly lifted card */
+  --line: #e2e7f1;
+  --line-soft: #edf0f7;
+  --ink: #101936;            /* near-navy text */
+  --muted: #5a6a8c;          /* AA on white for small text */
 
-  --primary: #0e6e78;
-  --primary-deep: #0a4a52;
-  --water: #5fb6c4;
+  /* ── Text-on-fill (AA-tuned per surface) ───────────────────── */
+  --text-on-primary: #ffffff; /* white on the deep #2347b8 button */
+  --text-on-danger: #ffffff;  /* white on the red nav-badge */
 
-  /* Severity scale — app-owned; mapped from the backend status enum in lib/severity.ts.
-     Red is reserved for genuinely severe levels so it stays meaningful. */
-  --normal: #2e8b7a;
-  --low: #d99700;
-  --medium: #e2660a;
-  --high: #d6452a;
+  /* ── Severity ramp (semantic; red reserved for the top) ────── */
+  --normal: #1f8f6f;
+  --low: #c98800;
+  --medium: #df6207;
+  --high: #d23f24;
   --veryhigh: #b01810;
 
-  --radius: 16px;
-  --shadow: 0 1px 2px rgba(11, 31, 42, 0.06), 0 8px 24px rgba(11, 31, 42, 0.06);
+  /* Per-chip readable ink + fill tuned for AA on light. */
+  --normal-ink: #0c5b46;   --normal-fill: #dff2ec;
+  --low-ink: #7a5300;      --low-fill: #faefd4;
+  --medium-ink: #8a3a02;   --medium-fill: #fce4d2;
+  --high-ink: #8e2516;     --high-fill: #fbe1db;
+  --veryhigh-ink: #7d0f08; --veryhigh-fill: #fad9d5;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  /* "Instrument readout" face for flow/gauge values. */
-  --font-mono: 'SF Mono', 'Roboto Mono', ui-monospace, 'Courier New', monospace;
+  /* ── Warning surface (stale banner / guidance — derived from low) ── */
+  --warning-surface: #faefd4;
+  --warning-border: #e6c889;
+  --warning-ink: #7a5300;
+
+  /* ── Form / depth ──────────────────────────────────────────── */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --ring: rgba(35, 71, 184, 0.16);
+  --shadow-sm: 0 1px 2px rgba(16, 25, 54, 0.05), 0 1px 1px rgba(16, 25, 54, 0.04);
+  --shadow: 0 2px 4px rgba(16, 25, 54, 0.05), 0 12px 28px -8px rgba(16, 25, 54, 0.12);
+  --shadow-lg: 0 8px 18px -6px rgba(16, 25, 54, 0.16), 0 24px 48px -12px rgba(16, 25, 54, 0.18);
+  --elev-hero: 0 18px 40px -16px rgba(22, 41, 122, 0.55);
+  --shadow-thumb: 0 1px 2px rgba(16, 25, 54, 0.25);
+
+  --nav-bg: rgba(255, 255, 255, 0.86);
+  --glow: transparent; /* dark-only accent glow; no-op on light */
+
+  /* ── Type ──────────────────────────────────────────────────── */
+  --font-display: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', ui-monospace, 'Roboto Mono', 'Courier New', monospace;
 
   --nav-h: 64px;
+}
+
+[data-theme="dark"] {
+  /* ── Brand shifts brighter to read on near-black navy ──────── */
+  --primary: #5b7cff;        /* luminous indigo */
+  --primary-deep: #0a1024;
+  --primary-strong: #7390ff;
+  --primary-weak: #18213f;
+
+  --water: #3fdcf6;          /* glowing cyan */
+  --water-deep: #16b9e0;
+  --water-weak: #10243a;
+
+  /* ── Deep near-black navy surfaces ─────────────────────────── */
+  --surface: #070b18;
+  --card: #111933;
+  --card-2: #16203f;
+  --line: #25304f;
+  --line-soft: #1b2540;
+  --ink: #eef2ff;
+  --muted: #9aa6c9;          /* AA on dark card */
+
+  /* Dark button bg is the bright #5b7cff — use dark navy text for AA. */
+  --text-on-primary: #0a1024;
+  --text-on-danger: #ffffff;
+
+  /* Severity: lift toward vivid for dark contrast. */
+  --normal: #2fc79c;
+  --low: #f1b32e;
+  --medium: #ff8a3d;
+  --high: #ff6a4d;
+  --veryhigh: #ff5347;
+
+  --normal-ink: #9af0d4;   --normal-fill: #0e3328;
+  --low-ink: #ffdd8f;      --low-fill: #3a2c08;
+  --medium-ink: #ffc49a;   --medium-fill: #3d240f;
+  --high-ink: #ffb3a3;     --high-fill: #3f1d16;
+  --veryhigh-ink: #ffa59c; --veryhigh-fill: #40160f;
+
+  --warning-surface: #3a2c08;
+  --warning-border: #5a4a1e;
+  --warning-ink: #ffdd8f;
+
+  --ring: rgba(91, 124, 255, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 16px 36px -10px rgba(0, 0, 0, 0.65);
+  --shadow-lg: 0 10px 24px -8px rgba(0, 0, 0, 0.6), 0 30px 60px -16px rgba(0, 0, 0, 0.75);
+  --elev-hero: 0 22px 60px -20px rgba(0, 0, 0, 0.8);
+  --shadow-thumb: 0 1px 3px rgba(0, 0, 0, 0.6);
+
+  --nav-bg: rgba(13, 19, 40, 0.82);
+  --glow: 0 0 0 1px rgba(91, 124, 255, 0.18), 0 0 28px -4px rgba(63, 220, 246, 0.22);
 }

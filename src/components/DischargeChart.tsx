@@ -71,8 +71,8 @@ export default function DischargeChart({ points, thresholds = [], unit = 'cusecs
           ))}
 
         <path d={areaPath} fill="url(#dischargeFill)" />
-        <path d={linePath} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-        <circle cx={x(points.length - 1)} cy={y(last.value)} r="3.5" fill="var(--primary)" stroke="#fff" strokeWidth="1.5" />
+        <path d={linePath} fill="none" stroke="var(--water)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <circle cx={x(points.length - 1)} cy={y(last.value)} r="3.5" fill="var(--water)" stroke="var(--card)" strokeWidth="1.5" />
       </svg>
       <figcaption className="chart-cap">
         Last 24 hours · latest <strong>{fmtInt(last.value)}</strong> {unit}
