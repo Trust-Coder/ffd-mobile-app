@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Icon from '@/components/Icon'
 import Switch from '@/components/Switch'
 import { useAuth } from '@/auth/AuthContext'
 import { addToWatchlist, getWatchlist, removeFromWatchlist, setStationAlert } from '@/lib/endpoints'
@@ -39,7 +40,8 @@ export default function WatchlistControls({ stationId }: { stationId: number }) 
     return (
       <>
         <Link to="/account" className="btn-primary">
-          ★ Add to My Stations
+          <Icon name="star" size={18} />
+          Add to My Stations
         </Link>
         <p className="hint-text">Sign in to add this station to your watchlist and get per-station flood alerts.</p>
       </>
@@ -80,7 +82,8 @@ export default function WatchlistControls({ stationId }: { stationId: number }) 
   return (
     <section className="watch-controls">
       <button type="button" className={watched ? 'btn-ghost block' : 'btn-primary'} onClick={toggleWatch} disabled={busy}>
-        {watched ? '✓ In My Stations — tap to remove' : '★ Add to My Stations'}
+        <Icon name={watched ? 'check' : 'star'} size={18} />
+        {watched ? 'In My Stations — tap to remove' : 'Add to My Stations'}
       </button>
       {watched ? (
         <div className="watch-alert-row">

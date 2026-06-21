@@ -1,4 +1,5 @@
 import ScreenHeader from '@/components/ScreenHeader'
+import Icon from '@/components/Icon'
 import { SeverityChip, LoadingState, ErrorState, EmptyState, StaleBanner } from '@/components/ui'
 import type { ResourceState } from '@/hooks/useResource'
 import type { Publication } from '@/types/api'
@@ -57,7 +58,8 @@ export default function PublicationDetail({ title, state }: { title: string; sta
 
           {data.has_file && isSafeHttpUrl(data.download_url) ? (
             <a className="btn-primary" href={data.download_url ?? undefined} target="_blank" rel="noopener noreferrer">
-              ⬇ Download {data.original_filename ?? 'document'}
+              <Icon name="download" size={18} />
+              Download {data.original_filename ?? 'document'}
             </a>
           ) : null}
         </article>

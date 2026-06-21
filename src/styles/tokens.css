@@ -1,29 +1,374 @@
-/* Design tokens — calm authority. Mirrors docs/ffd-app-prototype.html. */
+/* Design tokens — Direction B · "Deep Institutional".
+   Authoritative navy/indigo identity with a bright cyan "water" accent.
+   Source of truth: docs/rebrand/direction-b.html.
+   :root is the light theme; [data-theme="dark"] (set on <html>) is dark.
+   Token NAMES are kept stable so existing components keep working. */
 :root {
-  --ink: #0b1f2a;
-  --surface: #eef3f2;
+  color-scheme: light dark;
+
+  /* ── Brand: deep institutional navy/indigo ─────────────────── */
+  --primary: #2347b8;        /* primary indigo — clearly NOT the green Normal */
+  --primary-deep: #16297a;   /* deepest navy for hero gradients */
+  --primary-strong: #1c39a3; /* pressed/active brand */
+  --primary-weak: #eef1fc;   /* brand wash on light surfaces */
+
+  /* ── Water accent (bright cyan) ────────────────────────────── */
+  --water: #00b4d8;
+  --water-deep: #0090b3;
+  --water-weak: #e2f7fc;
+
+  /* ── Neutral surfaces (light) ──────────────────────────────── */
+  --surface: #f4f6fb;
   --card: #ffffff;
-  --line: #dbe5e3;
-  --muted: #475a62; /* darkened for WCAG 1.4.3 contrast on small text */
+  --card-2: #fbfcff;         /* subtly lifted card */
+  --line: #e2e7f1;
+  --line-soft: #edf0f7;
+  --ink: #101936;            /* near-navy text */
+  --muted: #5a6a8c;          /* AA on white for small text */
 
-  --primary: #0e6e78;
-  --primary-deep: #0a4a52;
-  --water: #5fb6c4;
+  /* ── Text-on-fill (AA-tuned per surface) ───────────────────── */
+  --text-on-primary: #ffffff; /* white on the deep #2347b8 button */
+  --text-on-danger: #ffffff;  /* white on the red nav-badge */
 
-  /* Severity scale — app-owned; mapped from the backend status enum in lib/severity.ts.
-     Red is reserved for genuinely severe levels so it stays meaningful. */
-  --normal: #2e8b7a;
-  --low: #d99700;
-  --medium: #e2660a;
-  --high: #d6452a;
+  /* ── Severity ramp (semantic; red reserved for the top) ────── */
+  --normal: #1f8f6f;
+  --low: #c98800;
+  --medium: #df6207;
+  --high: #d23f24;
   --veryhigh: #b01810;
 
-  --radius: 16px;
-  --shadow: 0 1px 2px rgba(11, 31, 42, 0.06), 0 8px 24px rgba(11, 31, 42, 0.06);
+  /* Per-chip readable ink + fill tuned for AA on light. */
+  --normal-ink: #0c5b46;   --normal-fill: #dff2ec;
+  --low-ink: #7a5300;      --low-fill: #faefd4;
+  --medium-ink: #8a3a02;   --medium-fill: #fce4d2;
+  --high-ink: #8e2516;     --high-fill: #fbe1db;
+  --veryhigh-ink: #7d0f08; --veryhigh-fill: #fad9d5;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  /* "Instrument readout" face for flow/gauge values. */
-  --font-mono: 'SF Mono', 'Roboto Mono', ui-monospace, 'Courier New', monospace;
+  /* ── Warning surface (stale banner / guidance — derived from low) ── */
+  --warning-surface: #faefd4;
+  --warning-border: #e6c889;
+  --warning-ink: #7a5300;
+
+  /* ── Form / depth ──────────────────────────────────────────── */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --ring: rgba(35, 71, 184, 0.16);
+  --shadow-sm: 0 1px 2px rgba(16, 25, 54, 0.05), 0 1px 1px rgba(16, 25, 54, 0.04);
+  --shadow: 0 2px 4px rgba(16, 25, 54, 0.05), 0 12px 28px -8px rgba(16, 25, 54, 0.12);
+  --shadow-lg: 0 8px 18px -6px rgba(16, 25, 54, 0.16), 0 24px 48px -12px rgba(16, 25, 54, 0.18);
+  --elev-hero: 0 18px 40px -16px rgba(22, 41, 122, 0.55);
+  --shadow-thumb: 0 1px 2px rgba(16, 25, 54, 0.25);
+
+  --nav-bg: rgba(255, 255, 255, 0.86);
+  --glow: transparent; /* dark-only accent glow; no-op on light */
+
+  /* ── Type ──────────────────────────────────────────────────── */
+  --font-display: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', ui-monospace, 'Roboto Mono', 'Courier New', monospace;
 
   --nav-h: 64px;
+}
+
+[data-theme="dark"] {
+  /* ── Brand shifts brighter to read on near-black navy ──────── */
+  --primary: #5b7cff;        /* luminous indigo */
+  --primary-deep: #0a1024;
+  --primary-strong: #7390ff;
+  --primary-weak: #18213f;
+
+  --water: #3fdcf6;          /* glowing cyan */
+  --water-deep: #16b9e0;
+  --water-weak: #10243a;
+
+  /* ── Deep near-black navy surfaces ─────────────────────────── */
+  --surface: #070b18;
+  --card: #111933;
+  --card-2: #16203f;
+  --line: #25304f;
+  --line-soft: #1b2540;
+  --ink: #eef2ff;
+  --muted: #9aa6c9;          /* AA on dark card */
+
+  /* Dark button bg is the bright #5b7cff — use dark navy text for AA. */
+  --text-on-primary: #0a1024;
+  --text-on-danger: #ffffff;
+
+  /* Severity: lift toward vivid for dark contrast. */
+  --normal: #2fc79c;
+  --low: #f1b32e;
+  --medium: #ff8a3d;
+  --high: #ff6a4d;
+  --veryhigh: #ff5347;
+
+  --normal-ink: #9af0d4;   --normal-fill: #0e3328;
+  --low-ink: #ffdd8f;      --low-fill: #3a2c08;
+  --medium-ink: #ffc49a;   --medium-fill: #3d240f;
+  --high-ink: #ffb3a3;     --high-fill: #3f1d16;
+  --veryhigh-ink: #ffa59c; --veryhigh-fill: #40160f;
+
+  --warning-surface: #3a2c08;
+  --warning-border: #5a4a1e;
+  --warning-ink: #ffdd8f;
+
+  --ring: rgba(91, 124, 255, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 16px 36px -10px rgba(0, 0, 0, 0.65);
+  --shadow-lg: 0 10px 24px -8px rgba(0, 0, 0, 0.6), 0 30px 60px -16px rgba(0, 0, 0, 0.75);
+  --elev-hero: 0 22px 60px -20px rgba(0, 0, 0, 0.8);
+  --shadow-thumb: 0 1px 3px rgba(0, 0, 0, 0.6);
+
+  --nav-bg: rgba(13, 19, 40, 0.82);
+  --glow: 0 0 0 1px rgba(91, 124, 255, 0.18), 0 0 28px -4px rgba(63, 220, 246, 0.22);
+}
+
+/* ============================================================
+   Palette A · "Teal Evolution" (light)
+   Source: docs/rebrand/direction-a.html. Vivid premium teal
+   brand over warm-neutral surfaces; soft layered elevation.
+   Selected via <html data-palette="a">. Agnostic tokens
+   (fonts, --nav-h, --radius-pill, color-scheme) inherit :root.
+   ============================================================ */
+[data-palette="a"] {
+  /* ── Brand: vivid teal (deliberately bluer than Normal green) ── */
+  --primary: #0d8a96;
+  --primary-deep: #074049;
+  --primary-strong: #0a6f7a;
+  --primary-weak: #e3f4f4;
+
+  /* ── Water accent ──────────────────────────────────────────── */
+  --water: #57c7d4;
+  --water-deep: #2fa6b4;
+  --water-weak: #e6f6f8;
+
+  /* ── Warm-neutral surfaces (light) ─────────────────────────── */
+  --surface: #f4f2ee;
+  --card: #ffffff;
+  --card-2: #fbfaf7;
+  --line: #e7e1d8;
+  --line-soft: #efeae2;
+  --ink: #1a2327;
+  --muted: #66747b;
+
+  /* ── Text-on-fill ──────────────────────────────────────────── */
+  --text-on-primary: #ffffff; /* white on the deep #0d8a96 button */
+  --text-on-danger: #ffffff;
+
+  /* ── Severity ramp ─────────────────────────────────────────── */
+  --normal: #1f8a72;
+  --low: #c98700;
+  --medium: #e05f08;
+  --high: #d33f24;
+  --veryhigh: #b3160f;
+
+  /* Per-chip ink + derived pale fills (severity ~13% on #fff). */
+  --normal-ink: #156152;   --normal-fill: #e2f0ed;
+  --low-ink: #8a5d00;      --low-fill: #f8efde;
+  --medium-ink: #9c3f04;   --medium-fill: #fbeadf;
+  --high-ink: #9c2c18;     --high-fill: #f9e6e3;
+  --veryhigh-ink: #851009; --veryhigh-fill: #f5e1e0;
+
+  /* ── Warning surface (derived from low) ────────────────────── */
+  --warning-surface: #faecd2;
+  --warning-border: #e6c98a;
+  --warning-ink: #8a5d00;
+
+  /* ── Form / depth ──────────────────────────────────────────── */
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 22px;
+
+  --ring: rgba(13, 138, 150, 0.18);
+  --shadow-sm: 0 1px 2px rgba(16, 40, 44, 0.05), 0 2px 8px rgba(16, 40, 44, 0.05);
+  --shadow: 0 2px 4px rgba(16, 40, 44, 0.06), 0 10px 28px rgba(16, 40, 44, 0.08);
+  --shadow-lg: 0 4px 10px rgba(16, 40, 44, 0.08), 0 22px 48px rgba(16, 40, 44, 0.12);
+  --elev-hero: 0 18px 40px -16px rgba(7, 64, 73, 0.5);
+  --shadow-thumb: 0 1px 2px rgba(16, 40, 44, 0.25);
+
+  --nav-bg: rgba(250, 248, 244, 0.86);
+  --glow: transparent;
+}
+
+/* ── Palette A · "Teal Evolution" (dark) ─────────────────────── */
+[data-palette="a"][data-theme="dark"] {
+  /* ── Brand shifts to bright cyan-teal on near-black ────────── */
+  --primary: #28c2cf;
+  --primary-deep: #07262c;
+  --primary-strong: #45d2dd;
+  --primary-weak: #103338;
+
+  --water: #3fb6c4;
+  --water-deep: #2a93a0;
+  --water-weak: #0e2a30;
+
+  /* ── Deep teal-black surfaces ──────────────────────────────── */
+  --surface: #0c1417;
+  --card: #16242a;
+  --card-2: #1b2c32;
+  --line: #25383f;
+  --line-soft: #1f3036;
+  --ink: #eef4f3;
+  --muted: #93a6a8;
+
+  /* Dark button bg is the bright #28c2cf — use dark teal text. */
+  --text-on-primary: #07262c;
+  --text-on-danger: #ffffff;
+
+  /* ── Severity: lifted for dark contrast ────────────────────── */
+  --normal: #2fb393;
+  --low: #f0b73c;
+  --medium: #ff8a3d;
+  --high: #ff6a4d;
+  --veryhigh: #ff5648;
+
+  /* Per-chip ink + derived deep fills (severity ~13% on card). */
+  --normal-ink: #6fe0c1;   --normal-fill: #0d3a30;
+  --low-ink: #ffce6b;      --low-fill: #3a2f10;
+  --medium-ink: #ffac74;   --medium-fill: #3a2516;
+  --high-ink: #ff9d86;     --high-fill: #3a201a;
+  --veryhigh-ink: #ff968a; --veryhigh-fill: #3a1c19;
+
+  --warning-surface: #3a2c08;
+  --warning-border: #5a4a1e;
+  --warning-ink: #ffce6b;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 22px;
+
+  --ring: rgba(40, 194, 207, 0.28);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.45), 0 12px 30px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 6px 14px rgba(0, 0, 0, 0.5), 0 26px 52px rgba(0, 0, 0, 0.6);
+  --elev-hero: 0 22px 60px -20px rgba(0, 0, 0, 0.8);
+  --shadow-thumb: 0 1px 3px rgba(0, 0, 0, 0.6);
+
+  --nav-bg: rgba(18, 29, 33, 0.82);
+  --glow: 0 0 0 1px rgba(40, 194, 207, 0.18), 0 0 28px -4px rgba(40, 194, 207, 0.22);
+}
+
+/* ============================================================
+   Palette C · "Slate Utility" (light)
+   Source: docs/rebrand/direction-c.html. Near-neutral slate
+   surfaces with a single vivid electric-blue accent; severity
+   ramp stays maximally legible. <html data-palette="c">.
+   ============================================================ */
+[data-palette="c"] {
+  /* ── Brand: electric blue (single accent; reused as water) ─── */
+  --primary: #2563ff;
+  --primary-deep: #1b3aa8;
+  --primary-strong: #1d52e6;
+  --primary-weak: #e6edff;
+
+  --water: #2563ff;
+  --water-deep: #1d52e6;
+  --water-weak: #e6edff;
+
+  /* ── Slate / zinc surfaces (light) ─────────────────────────── */
+  --surface: #eef1f5;
+  --card: #ffffff;
+  --card-2: #fbfcfe;
+  --line: #dde3ec;
+  --line-soft: #e7ecf3;
+  --ink: #0e151f;
+  --muted: #5d6b7a;
+
+  /* ── Text-on-fill ──────────────────────────────────────────── */
+  --text-on-primary: #ffffff; /* white on the #2563ff button */
+  --text-on-danger: #ffffff;
+
+  /* ── Severity ramp ─────────────────────────────────────────── */
+  --normal: #1f8a73;
+  --low: #c98800;
+  --medium: #df6209;
+  --high: #d6402a;
+  --veryhigh: #b01410;
+
+  /* Per-chip ink + fills (C's --*-tint composited on #fff). */
+  --normal-ink: #136854;   --normal-fill: #e2f0ed;
+  --low-ink: #8a5d00;      --low-fill: #f7edd9;
+  --medium-ink: #a4470a;   --medium-fill: #fbebdf;
+  --high-ink: #a72c1c;     --high-fill: #fae6e3;
+  --veryhigh-ink: #8e0f0c; --veryhigh-fill: #f5e0e0;
+
+  /* ── Warning surface (derived from low) ────────────────────── */
+  --warning-surface: #f7ecd2;
+  --warning-border: #e6c98a;
+  --warning-ink: #936300;
+
+  /* ── Form / depth ──────────────────────────────────────────── */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-lg: 22px;
+
+  --ring: rgba(37, 99, 255, 0.18);
+  --shadow-sm: 0 1px 2px rgba(14, 21, 31, 0.05);
+  --shadow: 0 1px 2px rgba(14, 21, 31, 0.05), 0 8px 22px -8px rgba(14, 21, 31, 0.14);
+  --shadow-lg: 0 1px 2px rgba(14, 21, 31, 0.06), 0 24px 50px -16px rgba(14, 21, 31, 0.28);
+  --elev-hero: 0 18px 40px -16px rgba(14, 21, 31, 0.45);
+  --shadow-thumb: 0 1px 2px rgba(14, 21, 31, 0.25);
+
+  --nav-bg: rgba(246, 248, 251, 0.86);
+  --glow: transparent;
+}
+
+/* ── Palette C · "Slate Utility" (dark) ──────────────────────── */
+[data-palette="c"][data-theme="dark"] {
+  /* ── Brand brightens for near-black slate ──────────────────── */
+  --primary: #4f86ff;
+  --primary-deep: #14223f;
+  --primary-strong: #6e9bff;
+  --primary-weak: #1a2742;
+
+  --water: #4f86ff;
+  --water-deep: #6e9bff;
+  --water-weak: #14233f;
+
+  /* ── Deep slate surfaces ───────────────────────────────────── */
+  --surface: #0a0e14;
+  --card: #151c27;
+  --card-2: #1a222e;
+  --line: #29333f;
+  --line-soft: #222b36;
+  --ink: #eef2f8;
+  --muted: #95a3b3;
+
+  /* Dark button bg is the bright #4f86ff — use dark slate text. */
+  --text-on-primary: #0a0e14;
+  --text-on-danger: #ffffff;
+
+  /* ── Severity: brightened for dark-surface AA ──────────────── */
+  --normal: #34b89a;
+  --low: #e6a92b;
+  --medium: #f5853a;
+  --high: #ff6a52;
+  --veryhigh: #ff5b50;
+
+  /* Per-chip ink + fills (C's --*-tint composited on card). */
+  --normal-ink: #4fd0b1;   --normal-fill: #1a3539;
+  --low-ink: #f0bb4e;      --low-fill: #3b3528;
+  --medium-ink: #ff9c5c;   --medium-fill: #392d2a;
+  --high-ink: #ff8b78;     --high-fill: #3d292e;
+  --veryhigh-ink: #ff7e72; --veryhigh-fill: #3d272e;
+
+  --warning-surface: #3a2c08;
+  --warning-border: #5a4a1e;
+  --warning-ink: #f0bb4e;
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-lg: 22px;
+
+  --ring: rgba(79, 134, 255, 0.3);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 26px -10px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 1px 2px rgba(0, 0, 0, 0.5), 0 28px 60px -18px rgba(0, 0, 0, 0.75);
+  --elev-hero: 0 22px 60px -20px rgba(0, 0, 0, 0.8);
+  --shadow-thumb: 0 1px 3px rgba(0, 0, 0, 0.6);
+
+  --nav-bg: rgba(18, 24, 33, 0.82);
+  --glow: 0 0 0 1px rgba(79, 134, 255, 0.18), 0 0 28px -4px rgba(79, 134, 255, 0.22);
 }

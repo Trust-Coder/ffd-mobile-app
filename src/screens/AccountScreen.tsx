@@ -2,6 +2,9 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
+import Icon from '@/components/Icon'
+import ThemeToggle from '@/components/ThemeToggle'
+import PaletteToggle from '@/components/PaletteToggle'
 import { LoadingState } from '@/components/ui'
 import { useAuth } from '@/auth/AuthContext'
 import { ApiException } from '@/lib/api'
@@ -119,16 +122,31 @@ function Profile() {
 
       <nav className="account-links">
         <Link to="/watchlist" className="account-link link-reset">
-          <span>★ My Stations</span>
-          <span className="chev">›</span>
+          <span className="account-link-label">
+            <Icon name="star" size={18} />
+            My Stations
+          </span>
+          <span className="chev">
+            <Icon name="chevron-right" size={18} />
+          </span>
         </Link>
         <Link to="/preferences" className="account-link link-reset">
-          <span>🔔 Notification preferences</span>
-          <span className="chev">›</span>
+          <span className="account-link-label">
+            <Icon name="bell" size={18} />
+            Notification preferences
+          </span>
+          <span className="chev">
+            <Icon name="chevron-right" size={18} />
+          </span>
         </Link>
         <Link to="/alerts" className="account-link link-reset">
-          <span>🗂 Notification history</span>
-          <span className="chev">›</span>
+          <span className="account-link-label">
+            <Icon name="inbox" size={18} />
+            Notification history
+          </span>
+          <span className="chev">
+            <Icon name="chevron-right" size={18} />
+          </span>
         </Link>
       </nav>
 
@@ -145,6 +163,15 @@ export default function AccountScreen() {
   return (
     <div className="screen">
       <ScreenHeader title="Account" subtitle={isAuthenticated ? 'Your profile & alert settings' : 'Sign in to personalise your alerts'} />
+
+      <section className="pref-block" aria-labelledby="appearance-heading">
+        <h3 id="appearance-heading" className="section-title">Appearance</h3>
+        <p className="appearance-label">Mode</p>
+        <ThemeToggle />
+        <p className="appearance-label" style={{ marginTop: '14px' }}>Colour theme</p>
+        <PaletteToggle />
+      </section>
+
       {loading ? <LoadingState label="Loading…" /> : isAuthenticated ? <Profile /> : <AuthPanel />}
     </div>
   )

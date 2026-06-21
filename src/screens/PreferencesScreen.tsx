@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
+import Icon from '@/components/Icon'
 import Switch from '@/components/Switch'
 import FilterChips from '@/components/FilterChips'
 import { LoadingState, ErrorState, EmptyState } from '@/components/ui'
@@ -115,7 +116,16 @@ export default function PreferencesScreen() {
 
           {error ? <p className="error-text" role="alert">{error}</p> : null}
           <button type="button" className="btn-primary" onClick={save} disabled={saving}>
-            {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save preferences'}
+            {saving ? (
+              'Saving…'
+            ) : saved ? (
+              <>
+                <Icon name="check" size={18} />
+                Saved
+              </>
+            ) : (
+              'Save preferences'
+            )}
           </button>
         </>
       )}

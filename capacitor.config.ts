@@ -8,7 +8,7 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchAutoHide: false, // hidden in initNative() once the app shell mounts
-      backgroundColor: '#0A4A52',
+      backgroundColor: '#070b18', // navy "Deep Institutional" — matches LaunchScreen
       androidScaleType: 'CENTER_CROP',
     },
     PushNotifications: {

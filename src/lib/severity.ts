@@ -7,19 +7,25 @@ import type { FloodStatus } from '@/types/api'
  * off the backend `status` string — backend `status_color` values differ and
  * must not be used. EX_HIGH ("Exceptionally High") shares the top visual bucket.
  */
+/** Stable key for severity-driven CSS classes (e.g. `.sev-chip.sev-high`). The
+ *  top two backend levels collapse to one visual bucket ('veryhigh'). */
+export type SeverityKey = 'normal' | 'low' | 'medium' | 'high' | 'veryhigh'
+
 interface SeverityMeta {
   label: string
   /** CSS custom property name in tokens.css */
   varName: string
+  /** Visual-bucket key used for `.sev-{key}` class hooks. */
+  key: SeverityKey
 }
 
 const SEVERITY: Record<FloodStatus, SeverityMeta> = {
-  NORMAL: { label: 'Normal', varName: '--normal' },
-  LOW: { label: 'Low', varName: '--low' },
-  MEDIUM: { label: 'Medium', varName: '--medium' },
-  HIGH: { label: 'High', varName: '--high' },
-  VERY_HIGH: { label: 'Very High', varName: '--veryhigh' },
-  EX_HIGH: { label: 'Exceptionally High', varName: '--veryhigh' },
+  NORMAL: { label: 'Normal', varName: '--normal', key: 'normal' },
+  LOW: { label: 'Low', varName: '--low', key: 'low' },
+  MEDIUM: { label: 'Medium', varName: '--medium', key: 'medium' },
+  HIGH: { label: 'High', varName: '--high', key: 'high' },
+  VERY_HIGH: { label: 'Very High', varName: '--veryhigh', key: 'veryhigh' },
+  EX_HIGH: { label: 'Exceptionally High', varName: '--veryhigh', key: 'veryhigh' },
 }
 
 /** Display order, calmest → most severe. */
@@ -32,6 +38,11 @@ export function severityLabel(status: FloodStatus): string {
 /** A `var(--…)` reference usable directly in inline styles. */
 export function severityColor(status: FloodStatus): string {
   return `var(${SEVERITY[status]?.varName ?? '--normal'})`
+}
+
+/** Visual-bucket key for `.sev-{key}` CSS hooks (EX_HIGH/VERY_HIGH → 'veryhigh'). */
+export function severityKey(status: FloodStatus): SeverityKey {
+  return SEVERITY[status]?.key ?? 'normal'
 }
 
 export function isElevated(status: FloodStatus): boolean {
