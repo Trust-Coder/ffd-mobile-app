@@ -1,23 +1,51 @@
 import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
+import { useTheme } from '@/theme/ThemeContext'
 
 /**
  * Branded cold-start launch overlay. Named `LaunchScreen` to avoid clashing with
- * Capacitor's SplashScreen plugin. Renders above the app on a navy "Deep
- * Institutional" gradient, then fades out (or dismisses on tap / after a timeout).
- *
- * Inline-styled with sensible fallbacks (navy bg, centred column) so it looks
- * right even before the rebrand CSS lands; the other agent restyles the
- * `.launch-screen` / `.launch-logos` / `.launch-text` classes.
+ * Capacitor's SplashScreen plugin. Theme-aware: white in light mode, a soft blue
+ * in dark mode. Fades out (or dismisses on tap / after a timeout).
  */
 const VISIBLE_MS = 1800
 const FADE_MS = 300
+
+interface Scheme {
+  bg: string
+  strong: string // GoP + PMD lines
+  sub: string // Ministry line
+  accent: string // Flood Forecasting Division line
+  spinnerTrack: string
+  spinnerHead: string
+}
+
+const LIGHT: Scheme = {
+  // Essentially white, with a whisper of blue at the top so it isn't flat.
+  bg: 'radial-gradient(135% 80% at 50% -15%, #eaf1ff 0%, #ffffff 55%), #ffffff',
+  strong: '#101936',
+  sub: '#5a6a8c',
+  accent: '#1c39a3',
+  spinnerTrack: 'rgba(35,71,184,0.18)',
+  spinnerHead: '#2347b8',
+}
+
+const DARK: Scheme = {
+  // Slight blue — deep navy-blue, lifted off near-black with a soft top glow.
+  bg: 'radial-gradient(130% 85% at 50% -12%, #18275c 0%, rgba(24,39,92,0) 55%), #0c1838',
+  strong: '#eef2ff',
+  sub: '#aebbe0',
+  accent: '#3fdcf6',
+  spinnerTrack: 'rgba(91,124,255,0.25)',
+  spinnerHead: '#3fdcf6',
+}
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export default function LaunchScreen({ onDone }: { onDone?: () => void }) {
+  const { resolved } = useTheme()
+  const s = resolved === 'dark' ? DARK : LIGHT
   const reduced = prefersReducedMotion()
   const [leaving, setLeaving] = useState(false)
   const [hidden, setHidden] = useState(false)
@@ -58,10 +86,8 @@ export default function LaunchScreen({ onDone }: { onDone?: () => void }) {
     gap: '28px',
     padding: '32px',
     textAlign: 'center',
-    color: '#eef2ff',
-    // Navy "Deep Institutional" gradient fallback (mirrors the mockup hero).
-    background:
-      'radial-gradient(120% 90% at 15% -10%, #1c2a63 0%, rgba(28,42,99,0) 55%), radial-gradient(120% 90% at 100% 0%, #07263a 0%, rgba(7,38,58,0) 50%), #070b18',
+    color: s.strong,
+    background: s.bg,
     opacity: leaving && !reduced ? 0 : 1,
     transition: reduced ? 'none' : `opacity ${FADE_MS}ms ease`,
     WebkitFontSmoothing: 'antialiased',
@@ -89,13 +115,13 @@ export default function LaunchScreen({ onDone }: { onDone?: () => void }) {
         <span style={{ fontFamily: 'var(--font-display, "Sora", system-ui, sans-serif)', fontWeight: 700, fontSize: 19, letterSpacing: '-0.01em' }}>
           Government of Pakistan
         </span>
-        <span style={{ fontFamily: 'var(--font-sans, "Inter", system-ui, sans-serif)', fontWeight: 500, fontSize: 14, color: '#aebbe0' }}>
+        <span style={{ fontFamily: 'var(--font-sans, "Inter", system-ui, sans-serif)', fontWeight: 500, fontSize: 14, color: s.sub }}>
           Ministry of Defence
         </span>
         <span style={{ fontFamily: 'var(--font-display, "Sora", system-ui, sans-serif)', fontWeight: 600, fontSize: 16, marginTop: 6 }}>
           Pakistan Meteorological Department
         </span>
-        <span style={{ fontFamily: 'var(--font-sans, "Inter", system-ui, sans-serif)', fontWeight: 600, fontSize: 14.5, color: '#3fdcf6', letterSpacing: '0.01em' }}>
+        <span style={{ fontFamily: 'var(--font-sans, "Inter", system-ui, sans-serif)', fontWeight: 600, fontSize: 14.5, color: s.accent, letterSpacing: '0.01em' }}>
           Flood Forecasting Division
         </span>
       </div>
@@ -108,8 +134,8 @@ export default function LaunchScreen({ onDone }: { onDone?: () => void }) {
             width: 26,
             height: 26,
             borderRadius: '50%',
-            border: '2.5px solid rgba(91,124,255,0.25)',
-            borderTopColor: '#3fdcf6',
+            border: `2.5px solid ${s.spinnerTrack}`,
+            borderTopColor: s.spinnerHead,
             animation: 'launch-spin 0.8s linear infinite',
           }}
         />
