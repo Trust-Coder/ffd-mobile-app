@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import ScreenHeader from '@/components/ScreenHeader'
 import Icon from '@/components/Icon'
 import ThemeToggle from '@/components/ThemeToggle'
+import PaletteToggle from '@/components/PaletteToggle'
 import { LoadingState } from '@/components/ui'
 import { useAuth } from '@/auth/AuthContext'
 import { ApiException } from '@/lib/api'
@@ -163,9 +164,12 @@ export default function AccountScreen() {
     <div className="screen">
       <ScreenHeader title="Account" subtitle={isAuthenticated ? 'Your profile & alert settings' : 'Sign in to personalise your alerts'} />
 
-      <section className="pref-group" aria-labelledby="appearance-heading">
+      <section className="pref-block" aria-labelledby="appearance-heading">
         <h3 id="appearance-heading" className="section-title">Appearance</h3>
+        <p className="appearance-label">Mode</p>
         <ThemeToggle />
+        <p className="appearance-label" style={{ marginTop: '14px' }}>Colour theme</p>
+        <PaletteToggle />
       </section>
 
       {loading ? <LoadingState label="Loading…" /> : isAuthenticated ? <Profile /> : <AuthPanel />}

@@ -1318,3 +1318,58 @@
 .theme-seg:active {
   transform: scale(0.97);
 }
+
+.appearance-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+/* ── Colour-palette picker ──────────────────────────── */
+.palette-toggle {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.palette-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+.palette-opt.active {
+  border-color: var(--primary);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+@media (hover: hover) {
+  .palette-opt:not(.active):hover {
+    border-color: var(--muted);
+  }
+}
+.palette-opt:active {
+  transform: scale(0.97);
+}
+.palette-swatch {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+.palette-label {
+  line-height: 1;
+}

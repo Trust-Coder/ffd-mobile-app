@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f6fb" />
 
-    <!-- No-flash theme bootstrap: resolve the persisted override (or the OS
-         preference for 'system') and set data-theme BEFORE the stylesheet loads,
-         so first paint matches the theme. Reads the @capacitor/preferences web
-         backing key (group-prefixed localStorage). -->
+    <!-- No-flash bootstrap: resolve the persisted theme override (or the OS
+         preference for 'system') AND the chosen colour palette, and set
+         data-theme + data-palette BEFORE the stylesheet loads, so first paint
+         matches. Reads the @capacitor/preferences web backing keys. -->
     <script>
       (function () {
         try {
@@ -20,11 +20,21 @@
                 ? 'dark'
                 : 'light'
               : mode
-          document.documentElement.dataset.theme = resolved
+          var p = localStorage.getItem('CapacitorStorage.ffd.palette')
+          var palette = p === 'a' || p === 'b' || p === 'c' ? p : 'b'
+          var root = document.documentElement
+          root.dataset.theme = resolved
+          root.dataset.palette = palette
+          var surface = {
+            a: { light: '#f4f2ee', dark: '#0c1417' },
+            b: { light: '#f4f6fb', dark: '#070b18' },
+            c: { light: '#eef1f5', dark: '#0a0e14' },
+          }
           var meta = document.querySelector('meta[name="theme-color"]')
-          if (meta) meta.setAttribute('content', resolved === 'dark' ? '#070b18' : '#f4f6fb')
+          if (meta) meta.setAttribute('content', surface[palette][resolved])
         } catch (e) {
           document.documentElement.dataset.theme = 'light'
+          document.documentElement.dataset.palette = 'b'
         }
       })()
     </script>
