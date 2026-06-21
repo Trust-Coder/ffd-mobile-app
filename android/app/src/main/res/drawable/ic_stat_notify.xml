@@ -1,0 +1,11 @@
+<!-- Notification small icon: a solid white water-drop silhouette. Android masks
+     by alpha and tints with default_notification_color, so the path is solid white. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2.4 C12,2.4 5.2,10.1 5.2,15.1 C5.2,18.85 8.27,21.6 12,21.6 C15.73,21.6 18.8,18.85 18.8,15.1 C18.8,10.1 12,2.4 12,2.4 Z" />
+</vector>
