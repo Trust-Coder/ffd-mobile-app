@@ -35,3 +35,27 @@ export function routeForDeeplink(url: string): string | null {
   if (!match) return null
   return `/${KIND_TO_PATH[match[1]]}/${match[2]}`
 }
+
+export interface AuthCallback {
+  token?: string
+  isNew: boolean
+  error?: string
+}
+
+/**
+ * Parses the social-login return deeplink (0010, Option 1):
+ *   ffd://auth/callback?token=<flat>&new=<0|1>
+ *   ffd://auth/callback?error=<code>
+ * (and the https `/app/auth/callback` App Link variant). Returns null for any
+ * other URL so normal deeplink routing is unaffected.
+ */
+export function parseAuthCallback(url: string): AuthCallback | null {
+  if (!/(?:ffd:\/\/|\/app\/)auth\/callback/.test(url)) return null
+  const query = url.includes('?') ? url.slice(url.indexOf('?') + 1) : ''
+  const params = new URLSearchParams(query)
+  return {
+    token: params.get('token') ?? undefined,
+    isNew: params.get('new') === '1',
+    error: params.get('error') ?? undefined,
+  }
+}

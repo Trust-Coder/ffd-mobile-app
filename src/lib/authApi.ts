@@ -1,4 +1,4 @@
-import { apiRequest } from '@/lib/api'
+import { apiRequest, BASE_URL } from '@/lib/api'
 import type { AuthTokenResponse, AuthUser } from '@/types/api'
 import { getDeviceName } from '@/lib/install'
 import { mockAuth, mockEnabled } from '@/lib/mocks'
@@ -43,4 +43,13 @@ export async function fetchMe(): Promise<AuthUser> {
   // GET /me is enveloped as { ok, data: { user } } (0004).
   const data = await apiRequest<{ user: AuthUser }>('/me', { auth: true })
   return data.user
+}
+
+/**
+ * Social login (0010, Option 1): the URL the app opens in an in-app browser.
+ * The backend runs the Google OAuth dance and 302s back to the app via the
+ * `ffd://auth/callback?token=…&new=0|1` deeplink (errors → `?error=…`).
+ */
+export function googleSignInUrl(): string {
+  return `${BASE_URL}/auth/google/redirect`
 }

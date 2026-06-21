@@ -1,6 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Capacitor } from '@capacitor/core'
+import type { PluginListenerHandle } from '@capacitor/core'
+import { App as CapApp } from '@capacitor/app'
+import { Browser } from '@capacitor/browser'
 import type { AuthTokenResponse, AuthUser } from '@/types/api'
 import { clearStoredUser, clearToken, getStoredUser, getToken, setStoredUser, setToken } from '@/lib/auth'
 import { clearCache } from '@/lib/cache'
@@ -9,6 +12,9 @@ import * as authApi from '@/lib/authApi'
 import type { RegisterInput } from '@/lib/authApi'
 import { APP_VERSION } from '@/lib/push'
 import { getStoredDeviceToken, registerDevice, unregisterDevice } from '@/lib/devices'
+import { parseAuthCallback } from '@/lib/deeplink'
+import { announce } from '@/lib/events'
+import { mockAuth, mockEnabled } from '@/lib/mocks'
 
 interface AuthContextValue {
   user: AuthUser | null
@@ -17,6 +23,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>
   register: (input: RegisterInput) => Promise<void>
   logout: () => Promise<void>
+  signInWithGoogle: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -95,6 +102,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applySession],
   )
 
+  // Adopt a bare bearer token (from the Google sign-in deeplink) and hydrate the
+  // session by fetching /me.
+  const adoptToken = useCallback(async (token: string) => {
+    await setToken(token)
+    const me = await authApi.fetchMe()
+    await setStoredUser(me)
+    setUser(me)
+    await linkDevice()
+  }, [])
+
+  // Social login (0010, Option 1): open the backend's Google redirect in an
+  // in-app browser; the return arrives as the ffd://auth/callback deeplink,
+  // handled by the effect below.
+  const signInWithGoogle = useCallback(async () => {
+    if (mockEnabled) {
+      await applySession(mockAuth.login('demo.google@ffd.pk', 'Google User'))
+      return
+    }
+    const url = authApi.googleSignInUrl()
+    if (Capacitor.isNativePlatform()) await Browser.open({ url })
+    else window.location.href = url
+  }, [applySession])
+
+  // Catch the social-login return deeplink. Owns its own appUrlOpen listener so
+  // Google sign-in works regardless of push support; ignores non-auth deeplinks.
+  useEffect(() => {
+    let handle: PluginListenerHandle | undefined
+    let cancelled = false
+    const onUrl = async (url: string) => {
+      const cb = parseAuthCallback(url)
+      if (!cb) return
+      void Browser.close().catch(() => {})
+      if (cb.error || !cb.token) {
+        announce('Google sign-in was cancelled or failed.')
+        return
+      }
+      try {
+        await adoptToken(cb.token)
+        announce('Signed in with Google.')
+      } catch {
+        announce('Could not complete Google sign-in. Please try again.')
+      }
+    }
+    void CapApp.addListener('appUrlOpen', (e) => {
+      void onUrl(e.url)
+    }).then((h) => {
+      if (cancelled) void h.remove()
+      else handle = h
+    })
+    return () => {
+      cancelled = true
+      void handle?.remove()
+    }
+  }, [adoptToken])
+
   const logout = useCallback(async () => {
     await authApi.logout()
     await clearToken()
@@ -105,8 +167,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, loading, isAuthenticated: user !== null, login, register, logout }),
-    [user, loading, login, register, logout],
+    () => ({ user, loading, isAuthenticated: user !== null, login, register, logout, signInWithGoogle }),
+    [user, loading, login, register, logout, signInWithGoogle],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

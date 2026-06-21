@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { routeForAlert, routeForData, routeForDeeplink } from '@/lib/deeplink'
+import { parseAuthCallback, routeForAlert, routeForData, routeForDeeplink } from '@/lib/deeplink'
 import type { AlertNotification } from '@/types/api'
 
 describe('routeForDeeplink', () => {
@@ -47,5 +47,35 @@ describe('routeForAlert', () => {
       data: { deeplink: 'ffd://advisory/1' },
     }
     expect(routeForAlert(alert)).toBe('/advisories/1')
+  })
+})
+
+describe('parseAuthCallback', () => {
+  it('parses the success deeplink (token + new flag)', () => {
+    expect(parseAuthCallback('ffd://auth/callback?token=abc.def&new=1')).toEqual({
+      token: 'abc.def',
+      isNew: true,
+      error: undefined,
+    })
+    expect(parseAuthCallback('ffd://auth/callback?token=xyz&new=0')).toEqual({
+      token: 'xyz',
+      isNew: false,
+      error: undefined,
+    })
+  })
+  it('parses the error deeplink', () => {
+    expect(parseAuthCallback('ffd://auth/callback?error=google_failed')).toEqual({
+      token: undefined,
+      isNew: false,
+      error: 'google_failed',
+    })
+  })
+  it('parses the https App Link callback form', () => {
+    expect(parseAuthCallback('https://host/app/auth/callback?token=t&new=1')?.token).toBe('t')
+  })
+  it('returns null for non-auth deeplinks (so routing is unaffected)', () => {
+    expect(parseAuthCallback('ffd://advisory/12')).toBeNull()
+    expect(parseAuthCallback('https://host/app/station/9')).toBeNull()
+    expect(parseAuthCallback('garbage')).toBeNull()
   })
 })

@@ -1373,3 +1373,55 @@
 .palette-label {
   line-height: 1;
 }
+
+/* ── Social sign-in ─────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+.btn-google svg {
+  flex: none;
+}
+.btn-google:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+@media (hover: hover) {
+  .btn-google:not(:disabled):hover {
+    border-color: var(--muted);
+    background: var(--card-2);
+  }
+}
+.btn-google:not(:disabled):active {
+  transform: scale(0.99);
+}

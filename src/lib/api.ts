@@ -10,7 +10,7 @@ import { readCache, writeCache } from '@/lib/cache'
  *   failure → { ok: false, error: { code, message, fields? } }
  *   auth-token endpoints respond FLAT (not enveloped).
  */
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '/api/app/v1').replace(/\/$/, '')
+export const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '/api/app/v1').replace(/\/$/, '')
 
 export class ApiException extends Error {
   readonly code: string
